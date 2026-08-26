@@ -1,7 +1,7 @@
 "use client";
 
 import { hierarchy, tree } from "d3-hierarchy";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import type { ExplorationResult, RepresentativeBranch, TraceStep } from "@/paradox/explorer/types";
 
 type VisualNode = {
@@ -46,6 +46,7 @@ function branchNode(branch: RepresentativeBranch, index: number): VisualNode {
 }
 
 export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
+  const reduceMotion = useReducedMotion();
   const failing = run.representativeBranches.find((branch) => !branch.safe);
   const safe = run.representativeBranches.filter((branch) => branch.safe).slice(0, 2);
   const branches = [...(failing ? [failing] : []), ...safe];
@@ -68,7 +69,7 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
           {layout.links().map((link, index) => {
             const danger = !link.target.data.safe;
             const path = `M ${link.source.y} ${link.source.x} C ${(link.source.y + link.target.y) / 2} ${link.source.x}, ${(link.source.y + link.target.y) / 2} ${link.target.x}, ${link.target.y} ${link.target.x}`;
-            return <motion.path key={`${link.target.data.id}-${index}`} d={path} className={danger ? "branch-danger" : "branch-safe"} initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.55, delay: index * 0.04 }} />;
+            return <motion.path key={`${link.target.data.id}-${index}`} d={path} className={danger ? "branch-danger" : "branch-safe"} initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.42, delay: reduceMotion ? 0 : index * 0.025 }} />;
           })}
           {layout.descendants().map((node) => (
             <g key={node.data.id} transform={`translate(${node.y},${node.x})`}>
@@ -79,7 +80,7 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
           ))}
         </g>
       </svg>
-      <div className="canvas-legend"><span><i className="legend-agent" />Agent</span><span><i className="legend-human" />Human</span><span><i className="legend-danger" />Invariant violation</span></div>
+      <div className="canvas-legend"><span><i className="legend-agent" aria-hidden="true" />Agent</span><span><i className="legend-human" aria-hidden="true" />Human</span><span><i className="legend-danger" aria-hidden="true" />Invariant violation</span></div>
     </div>
   );
 }

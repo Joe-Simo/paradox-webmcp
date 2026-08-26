@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, Atom, GitMerge, LoaderCircle, ScanSearch } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { MultiverseCanvas } from "./multiverse-canvas";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { exploreFuturesService } from "@/stores/services";
@@ -22,32 +22,32 @@ export function ExplorationWorkspace() {
   if (finding && session.ledger.guardMode === "versioned") return <VerificationWorkspace />;
 
   return (
-    <main className="lab-grid">
+      <main id="main-content" className="lab-grid" tabIndex={-1}>
       <section className="lab-heading">
         <div>
           <span className="section-label">Bounded semantic exploration</span>
-          <h1>Explore every future<br />before your users do.</h1>
+          <h1>Explore every future<br />{" "}before your users do.</h1>
         </div>
         <div className="lab-action">
           <p>Paradox interleaves the recorded human and agent operations, merges equivalent states, and evaluates each commit.</p>
           <Button size="lg" onClick={() => void exploreFuturesService().catch(() => undefined)} disabled={!hydrated || exploring || !completeTrace}>
-            {exploring ? <LoaderCircle className="size-4 animate-spin" /> : <ScanSearch className="size-4" />}
-            {exploring ? `Exploring · ${progress} states` : "Explore futures"}
+            {exploring ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <ScanSearch className="size-4" aria-hidden="true" />}
+            {exploring ? `Exploring… ${progress} states` : "Explore Futures"}
           </Button>
         </div>
       </section>
 
       {!completeTrace && !run && (
         <section className="record-required">
-          <Atom />
+          <Atom aria-hidden="true" />
           <div><strong>The semantic trace is incomplete.</strong><p>Record inspect, edit, and approve in the instrumented fixture first.</p></div>
-          <Link href="/lab/expense-approval/ledger">Open fixture <ArrowRight /></Link>
+          <Link className={buttonVariants({ variant: "secondary", size: "sm" })} href="/lab/expense-approval/ledger">Open Fixture <ArrowRight aria-hidden="true" /></Link>
         </section>
       )}
 
       {run ? (
         <>
-          <section className="results-header">
+          <section className="results-header" aria-live="polite">
             <div><span>Exploration result</span><strong>{run.finding ? "A stale belief crossed a commit boundary." : "No counterexample survived."}</strong></div>
             <code>{run.id}</code>
           </section>
@@ -60,9 +60,9 @@ export function ExplorationWorkspace() {
           </section>
           {run.finding && (
             <section className="finding-callout">
-              <div className="finding-symbol"><GitMerge /></div>
+              <div className="finding-symbol" aria-hidden="true"><GitMerge /></div>
               <div><span>Shortest computed failure · {run.finding.minimization.originalMicroSteps} → {run.finding.minimization.retainedSemanticSteps} steps</span><strong>{run.finding.semanticSequence.join(" → ")}</strong><p>{run.finding.violation.explanation}</p></div>
-              <Link className="button-link danger-link" href={`/lab/expense-approval/finding/${run.finding.id}`}>Focus counterexample <ArrowRight /></Link>
+              <Link className={buttonVariants({ variant: "error" })} href={`/lab/expense-approval/finding/${run.finding.id}`}>Focus Counterexample <ArrowRight aria-hidden="true" /></Link>
             </section>
           )}
         </>
@@ -73,7 +73,7 @@ export function ExplorationWorkspace() {
           <p>Run the explorer to make every valid ordering visible.</p>
         </section>
       )}
-      {notice && <p role="alert" className="inline-notice lab-notice">{notice}</p>}
+      {notice && <p role="alert" aria-live="polite" className="inline-notice lab-notice">{notice}</p>}
     </main>
   );
 }

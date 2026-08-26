@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { Tooltip } from "@/components/ui/tooltip";
 
@@ -14,6 +14,7 @@ const actionLabel = {
 } as const;
 
 export function TraceStrip() {
+  const reduceMotion = useReducedMotion();
   const events = useParadoxStore((state) => state.session.events);
   const visible = events.filter((event) => event.action !== "apply_version_guard").slice(-5);
   return (
@@ -27,7 +28,7 @@ export function TraceStrip() {
           const details = `Reads: ${event.reads.join(", ") || "none"}. Writes: ${event.writes.join(", ") || "none"}.${token}`;
           return (
             <Tooltip key={event.id} content={details}>
-              <motion.li initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={`trace-event actor-${event.actor}`} tabIndex={0}>
+              <motion.li initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }} className={`trace-event actor-${event.actor}`} tabIndex={0}>
                 <span className="trace-marker">{actorLabel[event.actor]}{index + 1}</span>
                 <div>
                   <strong>{actionLabel[event.action]}</strong>

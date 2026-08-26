@@ -11,18 +11,18 @@ export function PolicyRail() {
       <section>
         <h2>Policy</h2>
         <div className="policy-statement">
-          <Shield />
+          <Shield aria-hidden="true" />
           <div><strong>$3,000 limit</strong><p>Equipment requests below the limit may be approved.</p></div>
         </div>
         <div className="policy-statement">
-          <GitMerge />
+          <GitMerge aria-hidden="true" />
           <div><strong>Human authority</strong><p>Edits become the canonical application state.</p></div>
         </div>
       </section>
       <section className="invariant-section">
         <h2>Invariant</h2>
         <div className={finding && guardMode === "unsafe" ? "invariant-active" : "invariant-idle"}>
-          {finding && guardMode === "unsafe" ? <TriangleAlert /> : <CircleCheck />}
+          {finding && guardMode === "unsafe" ? <TriangleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
           <div>
             <strong>Reviewed state = committed state</strong>
             <code>current.version === reviewed.version</code>

@@ -16,7 +16,7 @@ function surfaceFor(pathname: string) {
 }
 
 export function AppRuntime({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
   const hydrated = useParadoxStore((state) => state.hydrated);
   const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
   const findingId = useParadoxStore((state) => state.finding?.id ?? null);
@@ -59,5 +59,5 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
     };
   }, [pathname, hydrated, guardMode, findingId]);
 
-  return <TooltipProvider delayDuration={240}>{children}</TooltipProvider>;
+  return <TooltipProvider delayDuration={150} skipDelayDuration={0}>{children}</TooltipProvider>;
 }

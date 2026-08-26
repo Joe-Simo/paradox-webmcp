@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,26 +13,23 @@ const navigation = [
 ];
 
 export function ProductShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
   const hydrated = useParadoxStore((state) => state.hydrated);
-  useLayoutEffect(() => {
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [pathname]);
   return (
     <div className="product-shell">
+      <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="product-header">
-        <Link href="/" className="wordmark" aria-label="Paradox home">Paradox</Link>
+        <Link href="/" className="wordmark" aria-label="Paradox home" translate="no">Paradox</Link>
         <span className="header-thesis">The correctness lab for the human-agent web</span>
         <nav aria-label="Primary navigation" className="mode-nav">
           {navigation.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined}>
+            <Link key={item.href} href={item.href} aria-current={pathname === item.href || (item.label === "Explore" && !pathname.endsWith("/ledger")) ? "page" : undefined}>
               {item.label}
             </Link>
           ))}
         </nav>
-        <Button variant="ghost" size="sm" onClick={() => void resetLabService()} aria-label="Reset lab" disabled={!hydrated}>
-          <RotateCcw className="size-3.5" /> Reset
+        <Button variant="tertiary" size="sm" onClick={() => void resetLabService()} disabled={!hydrated}>
+          <RotateCcw className="size-3.5" aria-hidden="true" /> Reset Lab
         </Button>
       </header>
       {children}

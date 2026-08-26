@@ -1,5 +1,6 @@
 import { ProductShell } from "@/components/paradox/product-shell";
+import { AppRuntime } from "@/components/runtime/app-runtime";
 
 export default function ExpenseLabLayout({ children }: { children: React.ReactNode }) {
-  return <ProductShell>{children}</ProductShell>;
+  return <AppRuntime><ProductShell>{children}</ProductShell></AppRuntime>;
 }

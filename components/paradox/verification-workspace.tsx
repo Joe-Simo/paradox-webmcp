@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, CircleStop, LoaderCircle, RotateCw } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { verifyRepairService } from "@/stores/services";
@@ -16,16 +16,17 @@ export function VerificationWorkspace() {
   const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
   const finding = useParadoxStore((state) => state.finding);
   const notice = useParadoxStore((state) => state.notice);
+  const reduceMotion = useReducedMotion();
 
   return (
-    <main className="verification-page">
+    <main id="main-content" className="verification-page" tabIndex={-1}>
       <header className="verification-heading">
         <span className="section-label">Same path. New semantics.</span>
-        <h1>The dangerous future<br />meets the guard.</h1>
+        <h1>The dangerous future<br />{" "}meets the guard.</h1>
         <p>Paradox first replays the exact stored counterexample, then reopens the complete bounded state space.</p>
         <Button size="lg" onClick={() => void verifyRepairService().catch(() => undefined)} disabled={!hydrated || exploring || guardMode !== "versioned" || !finding}>
-          {exploring ? <LoaderCircle className="size-4 animate-spin" /> : <RotateCw className="size-4" />}
-          {exploring ? `Re-exploring · ${progress}` : "Verify repair"}
+          {exploring ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <RotateCw className="size-4" aria-hidden="true" />}
+          {exploring ? `Re-exploring… ${progress}` : "Verify Repair"}
         </Button>
       </header>
 
@@ -35,15 +36,15 @@ export function VerificationWorkspace() {
         <div className="replay-step actor-human"><span>H1</span><strong>Edit to v{finding?.changed.version ?? "—"}</strong><code>{finding ? money.format(finding.changed.amountCents / 100) : "Awaiting finding"}</code></div>
         <div className="replay-line" />
         <div className="replay-step actor-agent"><span>A2</span><strong>Approve expecting v{finding?.believed.version ?? "—"}</strong><code>{finding ? `review_expense_481_v${finding.believed.version}` : "Awaiting finding"}</code></div>
-        <motion.div className="guard-stop" animate={verification ? { scale: [0.92, 1.06, 1] } : {}}>
-          <CircleStop />
+        <motion.div className="guard-stop" animate={verification && !reduceMotion ? { scale: [0.96, 1.025, 1] } : {}} transition={{ duration: 0.3 }}>
+          <CircleStop aria-hidden="true" />
           <div><span>Semantic guard</span><strong>{verification ? verification.exactReplay.code : "Awaiting replay"}</strong></div>
         </motion.div>
       </section>
 
       {verification?.verified && (
-        <section className="verification-result">
-          <div className="verification-statement"><Check /><div><span>Computed result</span><h2>Counterexample eliminated within the explored model.</h2><p>No claim of universal safety is made.</p></div></div>
+        <section className="verification-result" aria-live="polite">
+          <div className="verification-statement"><Check aria-hidden="true" /><div><span>Computed result</span><h2>Counterexample eliminated within the explored model.</h2><p>No claim of universal safety is made.</p></div></div>
           <div className="verification-metrics">
             <div><span>Exact counterexample</span><strong>{verification.exactReplay.blocked ? "Blocked" : "Survived"}</strong></div>
             <div><span>Schedules explored</span><strong>{verification.exploration.schedulesExplored.toLocaleString()}</strong></div>
@@ -54,11 +55,11 @@ export function VerificationWorkspace() {
       )}
       {verification && !verification.verified && (
         <section className="verification-failure" role="alert">
-          <CircleStop />
+          <CircleStop aria-hidden="true" />
           <div><span>Verification failed</span><h2>The counterexample still survives this bounded model.</h2><p>Exact replay: {verification.exactReplay.code}. Surviving counterexamples: {verification.exploration.counterexamples}.</p></div>
         </section>
       )}
-      {notice && <p role="alert" className="inline-notice">{notice}</p>}
+      {notice && <p role="alert" aria-live="polite" className="inline-notice">{notice}</p>}
     </main>
   );
 }

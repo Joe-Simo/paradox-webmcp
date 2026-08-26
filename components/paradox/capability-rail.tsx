@@ -1,6 +1,7 @@
 "use client";
 
-import { Braces, CircleDot, ShieldCheck, Sparkles } from "lucide-react";
+import { Braces, ShieldCheck, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useParadoxStore } from "@/stores/paradox-store";
 
 const descriptions: Record<string, string> = {
@@ -22,24 +23,24 @@ export function CapabilityRail() {
     <aside className="capability-rail" aria-label="Available WebMCP capabilities">
       <div className="rail-heading">
         <span>WebMCP capabilities</span>
-        <CircleDot className={supported ? "registry-live" : "registry-offline"} aria-hidden="true" />
+        <Badge tone={supported ? "green" : "gray"}>{supported ? "Available" : "Unavailable"}</Badge>
       </div>
       {!supported && (
-        <div className="compatibility-note">
-          <Braces className="size-4" />
+        <div className="compatibility-note" role="status">
+          <Braces className="size-4" aria-hidden="true" />
           <p>WebMCP is unavailable in this browser. Human controls remain active.</p>
         </div>
       )}
       {registryError && (
         <div className="compatibility-note" role="alert">
-          <Braces className="size-4" />
+          <Braces className="size-4" aria-hidden="true" />
           <p>Registry error: {registryError}</p>
         </div>
       )}
       <div className="capability-list">
         {capabilities.map((name, index) => (
           <div className="capability-row" key={name}>
-            <div className="capability-icon">{index % 2 === 0 ? <Sparkles /> : <ShieldCheck />}</div>
+            <div className="capability-icon" aria-hidden="true">{index % 2 === 0 ? <Sparkles /> : <ShieldCheck />}</div>
             <div>
               <code>{name}</code>
               <p>{descriptions[name] ?? "Active structured capability."}</p>

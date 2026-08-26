@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { ArrowRight, Braces, CircleAlert, LoaderCircle } from "lucide-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { applyVersionGuardService } from "@/stores/services";
 import { VerificationWorkspace } from "./verification-workspace";
@@ -16,10 +16,10 @@ export function FindingFocus({ findingId }: { findingId: string }) {
   const finding = useParadoxStore((state) => state.finding);
   const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
   if (!hydrated) {
-    return <main className="missing-state" aria-busy="true"><LoaderCircle className="animate-spin" /><h1>Restoring the finding</h1><p>Loading its exact semantic trace.</p></main>;
+    return <main id="main-content" className="missing-state" tabIndex={-1} aria-busy="true"><LoaderCircle className="animate-spin" aria-hidden="true" /><h1>Restoring the Finding</h1><p>Loading its exact semantic trace.</p></main>;
   }
   if (!finding || finding.id !== findingId) {
-    return <main className="missing-state"><CircleAlert /><h1>Finding unavailable</h1><p>This URL does not match the active computed counterexample.</p><Link className="button-link" href="/lab/expense-approval">Return to exploration <ArrowRight /></Link></main>;
+    return <main id="main-content" className="missing-state" tabIndex={-1}><CircleAlert aria-hidden="true" /><h1>Finding Unavailable</h1><p>This URL does not match the active computed counterexample.</p><Link className={buttonVariants()} href="/lab/expense-approval">Return to Exploration <ArrowRight aria-hidden="true" /></Link></main>;
   }
   if (guardMode === "versioned") return <VerificationWorkspace />;
 
@@ -29,10 +29,10 @@ export function FindingFocus({ findingId }: { findingId: string }) {
   };
 
   return (
-    <main className="finding-page">
+    <main id="main-content" className="finding-page" tabIndex={-1}>
       <header className="finding-header">
         <span className="section-label">Shortest counterexample / {finding.scheduleId}</span>
-        <h1>The agent approved a state<br />it never reviewed.</h1>
+        <h1>The agent approved a state<br />{" "}it never reviewed.</h1>
         <p>{finding.violation.explanation}</p>
       </header>
       <section className="temporal-planes" aria-label="Observed, changed, and committed states">
@@ -41,7 +41,7 @@ export function FindingFocus({ findingId }: { findingId: string }) {
         <article className="plane plane-system"><span>Committed</span><div className="plane-marker">S</div><strong>{money.format(finding.committed.amountCents / 100)}</strong><code>approved · version {finding.committed.version}</code><p>The unsafe tool committed without semantic equality.</p></article>
       </section>
       <section className="invariant-failure">
-        <CircleAlert />
+        <CircleAlert aria-hidden="true" />
         <div><span>Invariant violated</span><strong>currentExpense.version === reviewedExpense.version</strong><p>{finding.violation.title}</p></div>
       </section>
       <section className="minimized-sequence" aria-labelledby="minimized-title">
@@ -57,14 +57,17 @@ export function FindingFocus({ findingId }: { findingId: string }) {
       </section>
       <section className="repair-panel">
         <div className="repair-copy"><span className="section-label">Constrained repair</span><h2>Require the version the agent actually inspected.</h2><p>Paradox changes this instrumented lab’s runtime strategy. It does not claim arbitrary source rewriting.</p></div>
-        <pre><Braces aria-hidden="true" /><code>{`if (expense.version !== expectedVersion) {
+        <div className="repair-code">
+          <div className="code-block-header"><span><Braces aria-hidden="true" />guarded-approval.ts</span><span>TypeScript</span></div>
+          <pre aria-label="Version guard implementation"><code>{`if (expense.version !== expectedVersion) {
   return {
     ok: false,
     code: "STATE_CHANGED",
     message: "The expense changed after inspection."
   };
 }`}</code></pre>
-        <Button size="lg" onClick={() => void apply().catch(() => undefined)}>Apply version guard <ArrowRight className="size-4" /></Button>
+        </div>
+        <Button size="lg" onClick={() => void apply().catch(() => undefined)}>Apply Version Guard <ArrowRight className="size-4" aria-hidden="true" /></Button>
       </section>
     </main>
   );
