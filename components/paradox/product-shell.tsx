@@ -25,12 +25,12 @@ export function ProductShell({ children }: { children: React.ReactNode }) {
         <span className="header-thesis">The correctness lab for the human-agent web</span>
         <span className={`header-webmcp ${hydrated && webmcpSupported ? "is-live" : ""}`} role="status">
           <Radio aria-hidden="true" />
-          <span>modelContext</span>
-          <code>{!hydrated ? "connecting" : webmcpSupported ? `${capabilities.length} tools` : "fallback"}</code>
+          <span>{webmcpSupported ? "WebMCP client" : "local controls"}</span>
+          <code>{!hydrated ? "connecting" : webmcpSupported ? `${capabilities.length} tools` : "no registry"}</code>
         </span>
         <nav aria-label="Primary navigation" className="mode-nav">
           {navigation.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={pathname === item.href || (item.label === "Explore" && !pathname.endsWith("/ledger")) ? "page" : undefined}>
+            <Link key={item.href} href={item.href} aria-current={pathname === item.href || (item.label === "Explore" && pathname.startsWith("/lab/expense-approval") && !pathname.endsWith("/ledger")) ? "page" : undefined}>
               {item.label}
             </Link>
           ))}

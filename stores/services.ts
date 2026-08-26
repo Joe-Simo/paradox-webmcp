@@ -9,7 +9,7 @@ import {
   inspectExpense,
 } from "@/domain/ledger/model";
 import { canonicalHash } from "@/domain/ledger/hash";
-import type { DomainResult } from "@/domain/ledger/types";
+import type { DomainResult, InvocationSource } from "@/domain/ledger/types";
 import type { ExplorationResult, VerificationReport, WorkerRequest, WorkerResponse } from "@/paradox/explorer/types";
 import { paradoxStore } from "./paradox-store";
 import { clearDerivedWorkspace, clearWorkspace, loadWorkspace, saveRun, saveSession, saveVerification } from "./persistence";
@@ -50,19 +50,19 @@ async function commitResult<T>(result: DomainResult<T>) {
   return result;
 }
 
-export async function inspectExpenseService(expenseId = "481") {
+export async function inspectExpenseService(expenseId = "481", source: InvocationSource = "local_control") {
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
-  return commitResult(inspectExpense(paradoxStore.getState().session, expenseId));
+  return commitResult(inspectExpense(paradoxStore.getState().session, expenseId, source));
 }
 
-export async function editExpenseService(expenseId: string, amountCents: number) {
+export async function editExpenseService(expenseId: string, amountCents: number, source: InvocationSource = "local_control") {
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
-  return commitResult(editExpenseAmount(paradoxStore.getState().session, expenseId, amountCents));
+  return commitResult(editExpenseAmount(paradoxStore.getState().session, expenseId, amountCents, source));
 }
 
-export async function approveExpenseService(reviewToken: string, expectedVersion?: number) {
+export async function approveExpenseService(reviewToken: string, expectedVersion?: number, source: InvocationSource = "local_control") {
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
-  return commitResult(approveReviewedExpense(paradoxStore.getState().session, reviewToken, expectedVersion));
+  return commitResult(approveReviewedExpense(paradoxStore.getState().session, reviewToken, expectedVersion, source));
 }
 
 function runWorker(request: WorkerRequest, signal?: AbortSignal): Promise<WorkerResponse> {
@@ -127,9 +127,9 @@ export async function exploreFuturesService(maxNodes = 50_000, signal?: AbortSig
   }
 }
 
-export async function applyVersionGuardService() {
+export async function applyVersionGuardService(source: InvocationSource = "local_control") {
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
-  const session = applyVersionGuard(paradoxStore.getState().session);
+  const session = applyVersionGuard(paradoxStore.getState().session, source);
   paradoxStore.setState({ session, verification: null, notice: null });
   await saveSession(session);
   return { ok: true as const, guardMode: session.ledger.guardMode };

@@ -93,6 +93,7 @@ export function ExpenseFixture() {
             <ShieldAlert className="size-4" aria-hidden="true" /> Complete Review
           </Button>
         </div>
+        <p className="control-provenance">These evaluation controls call the same instrumented services as WebMCP and are recorded as <code>local_control</code>.</p>
         {notice && <p role="status" aria-live="polite" className="inline-notice">{notice}</p>}
       </motion.section>
 

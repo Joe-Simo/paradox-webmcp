@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Braces, GitBranch, Radio, RotateCcw, ScanSearch, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -45,7 +46,7 @@ export function CapabilityRail() {
     <aside className="capability-rail" aria-label="Available WebMCP capabilities">
       <div className="rail-heading">
         <span>WebMCP capabilities</span>
-        <Badge tone={supported ? "green" : "gray"}>{!hydrated ? "Connecting" : supported ? "Registry live" : "Unavailable"}</Badge>
+        <Badge tone={supported ? "green" : "gray"}>{!hydrated ? "Connecting" : supported ? "Registry live" : "Client needed"}</Badge>
       </div>
       <div className={`registry-signal ${supported ? "is-live" : ""}`}>
         <div className="registry-orbit" aria-hidden="true"><Radio /></div>
@@ -55,7 +56,7 @@ export function CapabilityRail() {
       {!supported && (
         <div className="compatibility-note" role="status">
           <Braces className="size-4" aria-hidden="true" />
-          <p>WebMCP is unavailable in this browser. Human controls remain active.</p>
+          <p><strong>WebMCP client not detected.</strong> Open this page in a supported agent browser to invoke registered tools. Local controls replay the same domain services. <Link href="/docs#webmcp-client">Setup details</Link></p>
         </div>
       )}
       {registryError && (

@@ -863,3 +863,100 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
   .rift-grid { display: none; }
   .rift-path, .replay-path-sweep { forced-color-adjust: auto; }
 }
+
+/* Public product surface */
+.landing-nav-actions, .hero-actions, .docs-header nav, .landing-footer nav { display: flex; align-items: center; gap: var(--space-4); }
+.landing-nav-actions a[aria-label="Paradox on GitHub"] { width: 40px; justify-content: center; }
+.hero-actions { flex-wrap: wrap; gap: var(--space-3); }
+.hero-text-link { min-height: 44px; display: inline-flex; align-items: center; color: var(--muted-foreground); font-size: 14px; font-weight: 500; }
+.hero-text-link:hover { color: var(--foreground); text-decoration: underline; text-underline-offset: 4px; }
+.hero-copy .hero-proof { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); margin: var(--space-8) 0 0; color: var(--gray-800); font-family: var(--font-geist-mono); font-size: 11px; line-height: 16px; }
+.hero-proof span { display: inline-flex; align-items: center; gap: var(--space-2); }
+.hero-proof span + span::before { content: ""; width: 3px; height: 3px; border-radius: 999px; background: var(--gray-600); }
+.landing-statement { min-height: 420px; display: grid; align-content: center; justify-items: start; border-bottom: 1px solid var(--border-strong); padding: var(--space-24) clamp(32px, 7vw, 104px); }
+.landing-statement h2 { max-width: 980px; margin: var(--space-4) 0 var(--space-8); font-size: clamp(36px, 4.5vw, 58px); font-weight: 600; line-height: 1.08; letter-spacing: -0.052em; text-wrap: balance; }
+.landing-statement a { display: inline-flex; min-height: 44px; align-items: center; gap: var(--space-2); font-size: 14px; font-weight: 500; }
+.landing-footer { min-height: 112px; display: grid; grid-template-columns: 220px 1fr auto; align-items: center; gap: var(--space-6); border-top: 1px solid var(--border-strong); padding: var(--space-6); }
+.landing-footer p { margin: 0; color: var(--muted-foreground); font-size: 13px; }
+.landing-footer nav { font-size: 13px; }
+
+/* Integration documentation */
+.docs-page { width: min(100%, 1440px); min-height: 100vh; margin: 0 auto; border-inline: 1px solid var(--border); background: var(--background-100); }
+.docs-header { position: sticky; z-index: 30; top: 0; min-height: 64px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: rgba(255,255,255,.94); padding: 0 var(--space-6); backdrop-filter: blur(12px); }
+.docs-header nav a { display: inline-flex; min-height: 44px; align-items: center; gap: var(--space-2); font-size: 13px; }
+.docs-header nav svg { width: 15px; }
+.docs-page > main { display: grid; grid-template-columns: 232px minmax(0, 1fr); }
+.docs-index { position: sticky; top: 64px; height: calc(100vh - 64px); align-self: start; border-right: 1px solid var(--border); background: var(--background-200); padding: var(--space-6); }
+.docs-index > span { display: block; margin-bottom: var(--space-4); color: var(--muted-foreground); font-family: var(--font-geist-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.docs-index nav { display: grid; gap: var(--space-1); }
+.docs-index a { padding: var(--space-2); color: var(--muted-foreground); font-size: 13px; }
+.docs-content { min-width: 0; }
+.docs-hero { min-height: 500px; display: grid; align-content: end; border-bottom: 1px solid var(--border-strong); padding: var(--space-16) clamp(32px, 7vw, 104px); }
+.docs-hero h1 { margin: var(--space-4) 0 var(--space-6); font-size: clamp(44px, 5vw, 64px); font-weight: 600; line-height: 1; letter-spacing: -.055em; }
+.docs-hero p { max-width: 700px; margin: 0; color: var(--muted-foreground); font-size: 18px; line-height: 30px; }
+.docs-section { scroll-margin-top: 88px; padding: var(--space-16) clamp(32px, 7vw, 104px); border-bottom: 1px solid var(--border-strong); }
+.docs-section > div:first-child { display: grid; grid-template-columns: 42px minmax(0,1fr); gap: var(--space-4); }
+.docs-section > div:first-child > span { padding-top: 5px; color: var(--muted-foreground); font-family: var(--font-geist-mono); font-size: 12px; }
+.docs-section h2, .docs-cta h2 { margin: 0; font-size: clamp(28px, 3vw, 40px); font-weight: 600; line-height: 1.15; letter-spacing: -.045em; }
+.docs-section > p { max-width: 760px; margin: var(--space-6) 0 var(--space-8) 58px; color: var(--muted-foreground); font-size: 15px; line-height: 25px; }
+.docs-code { overflow: hidden; margin-left: 58px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--gray-1000); color: #f5f5f5; }
+.docs-code > div { display: flex; justify-content: space-between; border-bottom: 1px solid #ffffff20; padding: var(--space-3) var(--space-4); color: #b5b5b5; font-size: 11px; }
+.docs-code pre { max-height: 520px; margin: 0; overflow: auto; padding: var(--space-6); font-size: 13px; line-height: 22px; }
+.docs-note { display: grid; grid-template-columns: 180px 1fr; gap: var(--space-6); margin: var(--space-6) 0 0 58px; border-left: 2px solid var(--blue-700); background: var(--blue-100); padding: var(--space-4); }
+.docs-note p { margin: 0; font-size: 13px; line-height: 20px; }
+.docs-limits ul { margin: var(--space-8) 0 0 58px; padding: 0; list-style: none; }
+.docs-limits li { max-width: 780px; border-top: 1px solid var(--border); padding: var(--space-4) 0; color: var(--muted-foreground); font-size: 14px; line-height: 22px; }
+.docs-cta { min-height: 280px; display: flex; align-items: center; justify-content: space-between; gap: var(--space-8); background: var(--background-200); padding: var(--space-16) clamp(32px, 7vw, 104px); }
+
+/* Auditability and accessibility */
+.compatibility-note strong { color: var(--foreground); }
+.compatibility-note a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+.control-provenance { margin: var(--space-3) 0 0; color: var(--muted-foreground); font-size: 12px; line-height: 18px; }
+.trace-source { display: inline-flex; width: fit-content; margin-top: var(--space-1); border: 1px solid var(--border); border-radius: 999px; padding: 1px 6px; color: var(--muted-foreground); font-size: 11px; line-height: 16px; }
+.trace-source.source-webmcp { border-color: #cae7ff; background: var(--blue-100); color: var(--blue-900); }
+.field-header-actions { display: flex; align-items: center; gap: var(--space-4); }
+.field-controls { display: flex; border-left: 1px solid var(--border); padding-left: var(--space-3); }
+.field-controls .geist-button { width: 32px; height: 32px; min-height: 32px; }
+.field-controls svg { width: 14px; }
+.multiverse-plane { min-width: 940px; height: 430px; transition: width 180ms ease-out; }
+.multiverse-plane svg { width: 100% !important; }
+.invariant-active code, .capability-row code, .trace-marker, .expense-facts code, .finding-callout span, .replay-step > span, .rift-node small, .multiverse-field .node-label { font-size: 11px; }
+.trace-version, .trace-event code, .results-header code, .minimized-sequence code, .replay-step code, .header-webmcp code, .registry-signal span, .capability-live, .rift-header code, .rift-node code, .rift-sequence, .rift-finding strong, .rift-finding > code, .semantic-delta span, .field-axis text, .multiverse-field .node-detail, .merge-capsule text, .multiverse-field-footer p { font-size: 10px; line-height: 15px; }
+.not-found { min-height: 100vh; display: grid; place-items: center; align-content: center; gap: var(--space-4); padding: var(--space-6); text-align: center; }
+.not-found > svg { width: 48px; height: 48px; padding: 13px; border: 1px solid var(--border-strong); border-radius: 999px; }
+.not-found h1 { margin: 0; font-size: clamp(44px, 7vw, 72px); line-height: 1; letter-spacing: -.055em; }
+.not-found p { margin: 0 0 var(--space-4); color: var(--muted-foreground); }
+
+@media (max-width: 1320px) and (min-width: 861px) {
+  .instrument-frame { grid-template-columns: var(--rail-width) minmax(0, 1fr); }
+  .capability-rail { display: none; }
+}
+
+@media (max-width: 860px) {
+  .capability-rail { display: block; border-top: 1px solid var(--border-strong); border-left: 0; }
+  .capability-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 var(--space-6); }
+  .landing-nav-actions a:first-child { display: none; }
+  .landing-statement { min-height: 360px; padding: var(--space-16) var(--space-4); }
+  .landing-footer { grid-template-columns: 1fr auto; }
+  .landing-footer p { display: none; }
+  .docs-page > main { display: block; }
+  .docs-index { position: static; width: 100%; height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+  .docs-index nav { display: flex; flex-wrap: wrap; }
+  .docs-hero, .docs-section, .docs-cta { padding-inline: var(--space-4); }
+}
+@media (max-width: 540px) {
+  .landing-nav-actions a[aria-label="Paradox on GitHub"] { display: none; }
+  .hero-actions { align-items: flex-start; }
+  .hero-copy .hero-proof { margin-top: var(--space-6); }
+  .hero-proof span + span::before { display: none; }
+  .landing-statement h2 { font-size: 36px; }
+  .landing-footer { display: block; }
+  .landing-footer nav { margin-top: var(--space-6); }
+  .docs-header nav a:not(:last-child) { display: none; }
+  .docs-section > div:first-child { grid-template-columns: 28px 1fr; }
+  .docs-section > p, .docs-code, .docs-note, .docs-limits ul { margin-left: 0; }
+  .docs-note { grid-template-columns: 1fr; }
+  .docs-cta { align-items: stretch; flex-direction: column; }
+  .capability-list { grid-template-columns: 1fr; }
+  .field-header-actions { width: 100%; justify-content: space-between; }
+}

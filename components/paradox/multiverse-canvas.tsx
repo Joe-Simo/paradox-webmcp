@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { hierarchy, tree } from "d3-hierarchy";
+import { Minus, Plus, RotateCcw } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import { Button } from "@/components/ui/button";
 import type { ExplorationResult, RepresentativeBranch, TraceStep } from "@/paradox/explorer/types";
 
 type VisualNode = {
@@ -47,6 +50,7 @@ function branchNode(branch: RepresentativeBranch, index: number): VisualNode {
 
 export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
   const reduceMotion = useReducedMotion();
+  const [zoom, setZoom] = useState(1);
   const failing = run.representativeBranches.find((branch) => !branch.safe);
   const safe = run.representativeBranches.filter((branch) => branch.safe).slice(0, 2);
   const branches = [...(failing ? [failing] : []), ...safe];
@@ -64,10 +68,18 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
     <figure className="multiverse-field" aria-labelledby="multiverse-title multiverse-description">
       <figcaption className="multiverse-field-header">
         <div><span>Temporal field</span><strong id="multiverse-title">Representative computed schedules</strong></div>
-        <div className="field-run-coordinate"><span>{run.schedulesExplored.toLocaleString()} explored</span><code>{run.id}</code></div>
+        <div className="field-header-actions">
+          <div className="field-run-coordinate"><span>{run.schedulesExplored.toLocaleString()} explored</span><code>{run.id}</code></div>
+          <div className="field-controls" aria-label="Multiverse zoom controls">
+            <Button type="button" variant="tertiary" size="icon" aria-label="Zoom out" title="Zoom out" disabled={zoom <= 0.8} onClick={() => setZoom((value) => Math.max(0.8, value - 0.2))}><Minus aria-hidden="true" /></Button>
+            <Button type="button" variant="tertiary" size="icon" aria-label="Reset zoom" title="Reset zoom" onClick={() => setZoom(1)}><RotateCcw aria-hidden="true" /></Button>
+            <Button type="button" variant="tertiary" size="icon" aria-label="Zoom in" title="Zoom in" disabled={zoom >= 1.4} onClick={() => setZoom((value) => Math.min(1.4, value + 0.2))}><Plus aria-hidden="true" /></Button>
+          </div>
+        </div>
       </figcaption>
       <p id="multiverse-description" className="sr-only">Equivalent schedules merge. The shortest counterexample remains fully expanded in red while representative safe schedules remain visible.</p>
       <div className="multiverse-canvas" tabIndex={0} role="group" aria-label="Scrollable semantic schedule visualization">
+        <div className="multiverse-plane" style={{ width: `${1080 * zoom}px` }}>
         <svg viewBox="0 0 1080 430" role="img" aria-hidden="true">
           <defs>
             <linearGradient id="counterexample-signal" x1="0" x2="1">
@@ -112,11 +124,16 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
             <text x="955" y="394" textAnchor="middle">{run.equivalentBranchesMerged} equivalent branches merged</text>
           </motion.g>
         </svg>
+        </div>
       </div>
       <div className="multiverse-field-footer">
-        <div className="canvas-legend"><span><i className="legend-agent" aria-hidden="true" />Agent</span><span><i className="legend-human" aria-hidden="true" />Human</span><span><i className="legend-danger" aria-hidden="true" />Verified counterexample</span></div>
+        <div className="canvas-legend"><span><i className="legend-agent" aria-hidden="true" />Agent</span><span><i className="legend-human" aria-hidden="true" />Human</span><span><i className="legend-danger" aria-hidden="true" />Invariant violation</span></div>
         <p><strong>{run.representativeBranches.length}</strong> representative paths remain expanded; every count above comes from the deterministic explorer.</p>
       </div>
+      <section className="sr-only" aria-label="Structured schedule timeline">
+        <h2>Representative schedule timeline</h2>
+        {run.representativeBranches.map((branch) => <article key={branch.scheduleId}><h3>{branch.safe ? "Safe schedule" : "Invariant-violating schedule"} {branch.scheduleId}</h3><ol>{branch.trace.map((step) => <li key={step.id}>{step.actor}: {displayStep(step)}. State hash {step.stateHash}. {step.outcome ? `Outcome ${step.outcome}.` : ""}</li>)}</ol></article>)}
+      </section>
     </figure>
   );
 }

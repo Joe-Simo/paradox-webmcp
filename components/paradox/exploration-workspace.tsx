@@ -70,7 +70,7 @@ export function ExplorationWorkspace() {
         <section className="empty-canvas">
           <div className="empty-orbit"><span /><span /><span /></div>
           <h2>Time is still folded.</h2>
-          <p>Run the explorer to make every valid ordering visible.</p>
+          <p>Run the explorer to reveal the bounded ordering space and its representative paths.</p>
         </section>
       )}
       {notice && <p role="alert" aria-live="polite" className="inline-notice lab-notice">{notice}</p>}

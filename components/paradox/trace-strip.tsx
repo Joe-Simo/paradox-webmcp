@@ -13,6 +13,12 @@ const actionLabel = {
   reset_lab: "Reset lab",
 } as const;
 
+const sourceLabel = {
+  webmcp: "WebMCP",
+  local_control: "Local control",
+  system: "System",
+} as const;
+
 export function TraceStrip() {
   const reduceMotion = useReducedMotion();
   const events = useParadoxStore((state) => state.session.events);
@@ -25,13 +31,17 @@ export function TraceStrip() {
           <li className="trace-empty">Semantic events will appear here as humans and agents operate the fixture.</li>
         ) : visible.map((event, index) => {
           const token = typeof event.metadata.reviewToken === "string" ? ` · ${event.metadata.reviewToken}` : "";
-          const details = `Reads: ${event.reads.join(", ") || "none"}. Writes: ${event.writes.join(", ") || "none"}.${token}`;
+          const source = typeof event.metadata.invocationSource === "string" && event.metadata.invocationSource in sourceLabel
+            ? event.metadata.invocationSource as keyof typeof sourceLabel
+            : "system";
+          const details = `Invocation: ${sourceLabel[source]}. Reads: ${event.reads.join(", ") || "none"}. Writes: ${event.writes.join(", ") || "none"}.${token}`;
           return (
             <Tooltip key={event.id} content={details}>
               <motion.li initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }} className={`trace-event actor-${event.actor}`} tabIndex={0}>
                 <span className="trace-marker">{actorLabel[event.actor]}{index + 1}</span>
                 <div>
                   <strong>{actionLabel[event.action]}</strong>
+                  <span className={`trace-source source-${source}`}>{sourceLabel[source]}</span>
                   <span className="trace-version">v{event.preVersion ?? "—"} → v{event.postVersion ?? "—"} · t{event.logicalTime}</span>
                   <code>{event.preStateHash} → {event.postStateHash}</code>
                   <span className="sr-only">{details}</span>

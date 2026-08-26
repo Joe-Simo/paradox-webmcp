@@ -1,6 +1,7 @@
 export type GuardMode = "unsafe" | "versioned";
 export type ExpenseStatus = "pending" | "approved" | "rejected";
 export type Actor = "human" | "agent" | "system";
+export type InvocationSource = "webmcp" | "local_control" | "system";
 
 export type Expense = {
   id: string;

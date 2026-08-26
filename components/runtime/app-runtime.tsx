@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { paradoxStore, useParadoxStore } from "@/stores/paradox-store";
 import { hydrateWorkspace } from "@/stores/services";
 import { toolsForSurface } from "@/webmcp/registry";
+import { activateToolSurface } from "@/sdk";
 import "@/webmcp/types";
 
 function surfaceFor(pathname: string) {
@@ -34,30 +35,18 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const controller = new AbortController();
-    let active = true;
-    const refresh = async () => {
-      const registered = await context.getTools();
-      if (active) paradoxStore.setState({ capabilities: registered.map((tool) => tool.name), webmcpSupported: true, webmcpError: null });
-    };
-    const onToolChange = () => void refresh();
-    context.addEventListener("toolchange", onToolChange);
-    void Promise.all(toolsForSurface(surfaceFor(pathname)).map((tool) => context.registerTool(tool, { signal: controller.signal })))
-      .then(refresh)
-      .catch((error: unknown) => {
-        if (!active || controller.signal.aborted) return;
+    return activateToolSurface({
+      context,
+      tools: toolsForSurface(surfaceFor(pathname)),
+      onToolsChanged: (registered) => paradoxStore.setState({ capabilities: registered.map((tool) => tool.name), webmcpSupported: true, webmcpError: null }),
+      onError: (error) => {
         paradoxStore.setState({
           capabilities: [],
           webmcpSupported: true,
           webmcpError: error instanceof Error ? error.message : "WebMCP tool registration failed.",
         });
-      });
-
-    return () => {
-      active = false;
-      controller.abort();
-      context.removeEventListener("toolchange", onToolChange);
-    };
+      },
+    });
   }, [pathname, hydrated, guardMode, findingId]);
 
   return (

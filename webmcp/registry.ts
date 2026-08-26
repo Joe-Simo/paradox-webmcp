@@ -68,7 +68,7 @@ function ledgerTools(): WebMCPTool[] {
         additionalProperties: false,
       },
       annotations: { readOnlyHint: true },
-    }, async (input) => resultPayload(await inspectExpenseService(inspectExpenseInput.parse(input).expenseId))),
+    }, async (input) => resultPayload(await inspectExpenseService(inspectExpenseInput.parse(input).expenseId, "webmcp"))),
     executable({
       name: "approve_reviewed_expense",
       title: "Approve reviewed expense",
@@ -87,7 +87,7 @@ function ledgerTools(): WebMCPTool[] {
       annotations: { readOnlyHint: false },
     }, async (input) => {
       const parsed = approveExpenseInput.parse(input);
-      return resultPayload(await approveExpenseService(parsed.reviewToken, parsed.expectedVersion));
+      return resultPayload(await approveExpenseService(parsed.reviewToken, parsed.expectedVersion, "webmcp"));
     }),
   ];
 }
@@ -197,7 +197,7 @@ function findingTools(): WebMCPTool[] {
     }, async (input) => {
       const { findingId } = findingInput.parse(input);
       if (paradoxStore.getState().finding?.id !== findingId) return { ok: false, code: "FINDING_NOT_FOUND" };
-      return applyVersionGuardService();
+      return applyVersionGuardService("webmcp");
     }),
   ];
 }

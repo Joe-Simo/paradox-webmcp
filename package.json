@@ -1,14 +1,26 @@
 {
   "name": "paradox-webmcp",
   "version": "0.1.0",
-  "private": true,
+  "type": "module",
   "license": "AGPL-3.0-only",
+  "main": "./dist/sdk/index.js",
+  "types": "./dist/sdk/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/sdk/index.d.ts",
+      "import": "./dist/sdk/index.js"
+    }
+  },
+  "files": ["dist/sdk", "LICENSE", "README.md"],
+  "publishConfig": { "access": "public" },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "build:sdk": "tsc -p tsconfig.sdk.json",
+    "prepare": "bun run build:sdk",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

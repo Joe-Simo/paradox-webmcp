@@ -1,7 +1,9 @@
 import { canonicalHash } from "./hash";
+import { createSemanticEvent } from "@/sdk";
 import type {
   DomainResult,
   Expense,
+  InvocationSource,
   LabSession,
   SemanticAction,
   SemanticEvent,
@@ -68,8 +70,9 @@ function nextEvent(
   reads: string[],
   writes: string[],
   metadata: SemanticEvent["metadata"],
+  invocationSource: InvocationSource,
 ): SemanticEvent {
-  return {
+  return createSemanticEvent({
     id: `evt_${String(after.logicalTime).padStart(3, "0")}`,
     actor,
     action,
@@ -82,7 +85,8 @@ function nextEvent(
     postVersion: after.ledger.expenses[expense.id]?.version,
     logicalTime: after.logicalTime,
     metadata,
-  };
+    invocationSource,
+  });
 }
 
 function advanced(session: LabSession): LabSession {
@@ -94,7 +98,7 @@ function advanced(session: LabSession): LabSession {
   };
 }
 
-export function inspectExpense(session: LabSession, expenseId: string): DomainResult<{
+export function inspectExpense(session: LabSession, expenseId: string, invocationSource: InvocationSource = "system"): DomainResult<{
   reviewToken: string;
   expenseId: string;
   amountCents: number;
@@ -134,7 +138,7 @@ export function inspectExpense(session: LabSession, expenseId: string): DomainRe
     reviewToken: tokenId,
     inspectedAmountCents: expense.amountCents,
     inspectedVersion: expense.version,
-  });
+  }, invocationSource);
   after = { ...after, events: [...after.events, event] };
   return {
     ok: true,
@@ -151,7 +155,7 @@ export function inspectExpense(session: LabSession, expenseId: string): DomainRe
   };
 }
 
-export function editExpenseAmount(session: LabSession, expenseId: string, amountCents: number): DomainResult<{
+export function editExpenseAmount(session: LabSession, expenseId: string, amountCents: number, invocationSource: InvocationSource = "system"): DomainResult<{
   expenseId: string;
   previousAmountCents: number;
   amountCents: number;
@@ -175,7 +179,7 @@ export function editExpenseAmount(session: LabSession, expenseId: string, amount
   ], [`expense:${expenseId}:amountCents`, `expense:${expenseId}:version`], {
     previousAmountCents: expense.amountCents,
     amountCents,
-  });
+  }, invocationSource);
   after = { ...after, events: [...after.events, event] };
   return { ok: true, data: { expenseId, previousAmountCents: expense.amountCents, amountCents, version: updated.version }, session: after, event };
 }
@@ -184,6 +188,7 @@ export function approveReviewedExpense(
   session: LabSession,
   reviewToken: string,
   expectedVersion?: number,
+  invocationSource: InvocationSource = "system",
 ): DomainResult<{ expenseId: string; amountCents: number; version: number; status: "approved" }> {
   const token = session.reviewTokens[reviewToken];
   if (!token) return { ok: false, error: { code: "REVIEW_NOT_FOUND", message: "Review token not found." }, session };
@@ -201,7 +206,7 @@ export function approveReviewedExpense(
     const event = nextEvent(session, after, "agent", "approve_reviewed_expense", expense, [
       `reviewToken:${reviewToken}`,
       `expense:${expense.id}:version`,
-    ], [], { outcome: "STATE_CHANGED", expectedVersion: expectedVersion ?? null, currentVersion: expense.version });
+    ], [], { outcome: "STATE_CHANGED", expectedVersion: expectedVersion ?? null, currentVersion: expense.version }, invocationSource);
     after = {
       ...after,
       events: [...after.events, event],
@@ -236,7 +241,7 @@ export function approveReviewedExpense(
     reviewedAmountCents: token.inspectedAmountCents,
     committedVersion: approved.version,
     committedAmountCents: approved.amountCents,
-  });
+  }, invocationSource);
   after = {
     ...after,
     events: [...after.events, event],
@@ -253,11 +258,11 @@ export function approveReviewedExpense(
   return { ok: true, data: { expenseId: expense.id, amountCents: approved.amountCents, version: approved.version, status: "approved" }, session: after, event };
 }
 
-export function applyVersionGuard(session: LabSession): LabSession {
+export function applyVersionGuard(session: LabSession, invocationSource: InvocationSource = "system"): LabSession {
   if (session.ledger.guardMode === "versioned") return session;
   let after = advanced(session);
   after = { ...after, ledger: { ...after.ledger, guardMode: "versioned" } };
   const expense = after.ledger.expenses["481"];
-  const event = nextEvent(session, after, "system", "apply_version_guard", expense, ["ledger:guardMode"], ["ledger:guardMode"], { guardMode: "versioned" });
+  const event = nextEvent(session, after, "system", "apply_version_guard", expense, ["ledger:guardMode"], ["ledger:guardMode"], { guardMode: "versioned" }, invocationSource);
   return { ...after, events: [...after.events, event] };
 }

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "incremental": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": false,
+    "outDir": "dist/sdk",
+    "rootDir": "sdk",
+    "sourceMap": true,
+    "types": []
+  },
+  "include": ["sdk/**/*.ts"],
+  "exclude": ["node_modules", "tests"]
+}

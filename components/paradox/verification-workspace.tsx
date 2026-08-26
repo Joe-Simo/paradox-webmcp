@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, CircleStop, LoaderCircle, RotateCw } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, CircleAlert, CircleStop, LoaderCircle, RotateCw } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { verifyRepairService } from "@/stores/services";
 
@@ -18,15 +19,23 @@ export function VerificationWorkspace() {
   const notice = useParadoxStore((state) => state.notice);
   const reduceMotion = useReducedMotion();
 
+  if (!hydrated) {
+    return <main id="main-content" className="missing-state" tabIndex={-1} aria-busy="true"><LoaderCircle className="animate-spin" aria-hidden="true" /><h1>Restoring Verification</h1><p>Loading the stored counterexample and runtime strategy.</p></main>;
+  }
+
+  if (!finding || guardMode !== "versioned") {
+    return <main id="main-content" className="missing-state" tabIndex={-1}><CircleAlert aria-hidden="true" /><h1>Verification Unavailable</h1><p>Compute a counterexample and apply its version guard before replaying the repair.</p><Link className={buttonVariants()} href="/lab/expense-approval">Return to Exploration <ArrowRight aria-hidden="true" /></Link></main>;
+  }
+
   return (
     <main id="main-content" className="verification-page" tabIndex={-1}>
       <header className="verification-heading">
         <span className="section-label">Same path. New semantics.</span>
         <h1>The dangerous future<br />{" "}meets the guard.</h1>
         <p>Paradox first replays the exact stored counterexample, then reopens the complete bounded state space.</p>
-        <Button size="lg" onClick={() => void verifyRepairService().catch(() => undefined)} disabled={!hydrated || exploring || guardMode !== "versioned" || !finding}>
+        <Button size="lg" onClick={() => void verifyRepairService().catch(() => undefined)} disabled={exploring}>
           {exploring ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <RotateCw className="size-4" aria-hidden="true" />}
-          {exploring ? `Re-exploring… ${progress}` : "Verify Repair"}
+          {exploring ? `Re-exploring… ${progress}` : verification ? "Run Verification Again" : "Verify Repair"}
         </Button>
       </header>
 

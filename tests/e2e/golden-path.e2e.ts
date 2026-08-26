@@ -57,9 +57,19 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("presents a computed product claim and installable integration path", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: /Explore every future/ })).toBeVisible();
+  await expect(page.getByText("36 schedules", { exact: true })).toBeVisible();
+  await page.getByRole("banner").getByRole("link", { name: "Docs" }).click();
+  await expect(page.getByRole("heading", { name: /Make human-agent time executable/ })).toBeVisible();
+  await expect(page.getByText("bun add github:Joe-Simo/paradox-webmcp", { exact: true })).toBeVisible();
+});
+
 test("records, explores, repairs, and verifies the golden race", async ({ page }) => {
   await page.goto("/lab/expense-approval/ledger");
   await page.getByRole("button", { name: "Inspect expense" }).click();
+  await expect(page.getByText("Local control", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("review_expense_481_v7", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Edit amount" }).click();
   await page.getByLabel("Amount (USD)").fill("23999");
@@ -85,6 +95,7 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
   const inspection = await executeTool(page, "inspect_expense", { expenseId: "481" });
   expect(inspection).toMatchObject({ ok: true, reviewToken: "review_expense_481_v7", version: 7 });
   expect(inspection).not.toHaveProperty("session");
+  await expect(page.getByText("WebMCP", { exact: true }).first()).toBeVisible();
 
   await page.getByRole("button", { name: "Edit amount" }).click();
   await page.getByLabel("Amount (USD)").fill("23999");
@@ -119,6 +130,11 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
     counterexamples: 0,
   });
   await expect(page.getByText("Counterexample eliminated within the explored model.")).toBeVisible();
+});
+
+test("guards the verification route until a repair exists", async ({ page }) => {
+  await page.goto("/lab/expense-approval/verified");
+  await expect(page.getByRole("heading", { name: "Verification Unavailable" })).toBeVisible();
 });
 
 test("has no serious accessibility violations across the complete product story", async ({ page }) => {
