@@ -58,29 +58,65 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
     children: branches.map(branchNode),
   };
   const root = hierarchy(rootData);
-  const layout = tree<VisualNode>().size([270, 620])(root);
+  const layout = tree<VisualNode>().size([250, 760])(root);
 
   return (
-    <div className="multiverse-canvas" aria-label="Computed future state graph">
-      <svg viewBox="0 0 920 410" role="img" aria-labelledby="multiverse-title multiverse-description">
-        <title id="multiverse-title">Explored human-agent futures</title>
-        <desc id="multiverse-description">Equivalent schedules merge. Counterexample paths are red and safe paths are neutral.</desc>
-        <g transform="translate(66,38)">
-          {layout.links().map((link, index) => {
-            const danger = !link.target.data.safe;
-            const path = `M ${link.source.y} ${link.source.x} C ${(link.source.y + link.target.y) / 2} ${link.source.x}, ${(link.source.y + link.target.y) / 2} ${link.target.x}, ${link.target.y} ${link.target.x}`;
-            return <motion.path key={`${link.target.data.id}-${index}`} d={path} className={danger ? "branch-danger" : "branch-safe"} initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: 0.42, delay: reduceMotion ? 0 : index * 0.025 }} />;
-          })}
-          {layout.descendants().map((node) => (
-            <g key={node.data.id} transform={`translate(${node.y},${node.x})`}>
-              <circle r={node.depth === 0 ? 9 : 7} className={!node.data.safe ? "node-danger" : node.data.actor === "human" ? "node-human" : node.data.actor === "agent" ? "node-agent" : "node-system"} />
-              <text x={13} y={-3} className="node-label">{node.data.label}</text>
-              <text x={13} y={12} className="node-detail">{node.data.detail}</text>
-            </g>
-          ))}
-        </g>
-      </svg>
-      <div className="canvas-legend"><span><i className="legend-agent" aria-hidden="true" />Agent</span><span><i className="legend-human" aria-hidden="true" />Human</span><span><i className="legend-danger" aria-hidden="true" />Invariant violation</span></div>
-    </div>
+    <figure className="multiverse-field" aria-labelledby="multiverse-title multiverse-description">
+      <figcaption className="multiverse-field-header">
+        <div><span>Temporal field</span><strong id="multiverse-title">Representative computed schedules</strong></div>
+        <div className="field-run-coordinate"><span>{run.schedulesExplored.toLocaleString()} explored</span><code>{run.id}</code></div>
+      </figcaption>
+      <p id="multiverse-description" className="sr-only">Equivalent schedules merge. The shortest counterexample remains fully expanded in red while representative safe schedules remain visible.</p>
+      <div className="multiverse-canvas" tabIndex={0} role="group" aria-label="Scrollable semantic schedule visualization">
+        <svg viewBox="0 0 1080 430" role="img" aria-hidden="true">
+          <defs>
+            <linearGradient id="counterexample-signal" x1="0" x2="1">
+              <stop offset="0" stopColor="#ffb1b3" />
+              <stop offset="0.55" stopColor="#fc0035" />
+              <stop offset="1" stopColor="#d8001b" />
+            </linearGradient>
+          </defs>
+          <g className="field-grid">
+            {[64, 254, 444, 634, 824].map((x, index) => <line key={x} x1={x} x2={x} y1="58" y2="382" data-major={index === 0 || index === 4 ? "true" : undefined} />)}
+            {[100, 225, 350].map((y) => <line key={y} x1="42" x2="1038" y1={y} y2={y} />)}
+          </g>
+          <g className="field-axis">
+            <text x="64" y="36">t0 · origin</text>
+            <text x="254" y="36">schedule</text>
+            <text x="444" y="36">inspect</text>
+            <text x="634" y="36">mutate</text>
+            <text x="824" y="36">commit</text>
+          </g>
+          <g transform="translate(64,100)">
+            {layout.links().map((link, index) => {
+              const danger = !link.target.data.safe;
+              const path = `M ${link.source.y} ${link.source.x} C ${(link.source.y + link.target.y) / 2} ${link.source.x}, ${(link.source.y + link.target.y) / 2} ${link.target.x}, ${link.target.y} ${link.target.x}`;
+              return <motion.path key={`${link.target.data.id}-${index}`} d={path} className={danger ? "branch-danger" : "branch-safe"} initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: danger ? 0.58 : 0.42, delay: reduceMotion ? 0 : index * 0.035, ease: [0.65, 0, 0.35, 1] }} />;
+            })}
+            {layout.descendants().map((node, index) => {
+              const className = !node.data.safe ? "node-danger" : node.data.actor === "human" ? "node-human" : node.data.actor === "agent" ? "node-agent" : "node-system";
+              const systemShape = node.data.actor === "system" || (!node.data.actor && node.depth > 0);
+              return (
+                <motion.g key={node.data.id} transform={`translate(${node.y},${node.x})`} initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.28, delay: reduceMotion ? 0 : 0.08 + index * 0.035 }}>
+                  {systemShape
+                    ? <rect x={node.depth === 1 ? -7 : -6} y={node.depth === 1 ? -7 : -6} width={node.depth === 1 ? 14 : 12} height={node.depth === 1 ? 14 : 12} transform="rotate(45)" className={className} />
+                    : <circle r={node.depth === 0 ? 9 : 7} className={className} />}
+                  <text x={15} y={-4} className="node-label">{node.data.label}</text>
+                  <text x={15} y={12} className="node-detail">{node.data.detail}</text>
+                </motion.g>
+              );
+            })}
+          </g>
+          <motion.g className="merge-capsule" initial={reduceMotion ? false : { opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: reduceMotion ? 0 : 0.68, duration: 0.32 }}>
+            <rect x="872" y="374" width="166" height="32" rx="16" />
+            <text x="955" y="394" textAnchor="middle">{run.equivalentBranchesMerged} equivalent branches merged</text>
+          </motion.g>
+        </svg>
+      </div>
+      <div className="multiverse-field-footer">
+        <div className="canvas-legend"><span><i className="legend-agent" aria-hidden="true" />Agent</span><span><i className="legend-human" aria-hidden="true" />Human</span><span><i className="legend-danger" aria-hidden="true" />Verified counterexample</span></div>
+        <p><strong>{run.representativeBranches.length}</strong> representative paths remain expanded; every count above comes from the deterministic explorer.</p>
+      </div>
+    </figure>
   );
 }

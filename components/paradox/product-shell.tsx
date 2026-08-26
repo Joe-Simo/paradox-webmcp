@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { RotateCcw } from "lucide-react";
+import { Radio, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { resetLabService } from "@/stores/services";
@@ -15,12 +15,19 @@ const navigation = [
 export function ProductShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
   const hydrated = useParadoxStore((state) => state.hydrated);
+  const webmcpSupported = useParadoxStore((state) => state.webmcpSupported);
+  const capabilities = useParadoxStore((state) => state.capabilities);
   return (
     <div className="product-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="product-header">
         <Link href="/" className="wordmark" aria-label="Paradox home" translate="no">Paradox</Link>
         <span className="header-thesis">The correctness lab for the human-agent web</span>
+        <span className={`header-webmcp ${hydrated && webmcpSupported ? "is-live" : ""}`} role="status">
+          <Radio aria-hidden="true" />
+          <span>modelContext</span>
+          <code>{!hydrated ? "connecting" : webmcpSupported ? `${capabilities.length} tools` : "fallback"}</code>
+        </span>
         <nav aria-label="Primary navigation" className="mode-nav">
           {navigation.map((item) => (
             <Link key={item.href} href={item.href} aria-current={pathname === item.href || (item.label === "Explore" && !pathname.endsWith("/ledger")) ? "page" : undefined}>

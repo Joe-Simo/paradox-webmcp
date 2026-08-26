@@ -18,6 +18,12 @@ async function executeTool(page: import("@playwright/test").Page, name: string, 
   return JSON.parse(serialized) as ToolResult;
 }
 
+async function expectNoSeriousViolations(page: import("@playwright/test").Page) {
+  const results = await new AxeBuilder({ page }).analyze();
+  const serious = results.violations.filter((violation) => violation.impact === "serious" || violation.impact === "critical");
+  expect(serious).toEqual([]);
+}
+
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     type Tool = {
@@ -87,7 +93,7 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
   expect(approval).toMatchObject({ ok: true, amountCents: 2_399_900, version: 8, status: "approved" });
   expect(approval).not.toHaveProperty("session");
 
-  await page.goto("/lab/expense-approval");
+  await page.getByRole("link", { name: /Explore Futures/i }).click();
   await expect.poll(() => toolNames(page)).toEqual(["inspect_lab", "explore_futures", "reset_lab"]);
   const exploration = await executeTool(page, "explore_futures", { maxNodes: 50_000 });
   expect(exploration.ok).toBe(true);
@@ -115,9 +121,27 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
   await expect(page.getByText("Counterexample eliminated within the explored model.")).toBeVisible();
 });
 
-test("has no serious accessibility violations on the primary Ledger surface", async ({ page }) => {
+test("has no serious accessibility violations across the complete product story", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.goto("/");
+  await expectNoSeriousViolations(page);
+
   await page.goto("/lab/expense-approval/ledger");
-  const results = await new AxeBuilder({ page }).analyze();
-  const serious = results.violations.filter((violation) => violation.impact === "serious" || violation.impact === "critical");
-  expect(serious).toEqual([]);
+  await expectNoSeriousViolations(page);
+  await page.getByRole("button", { name: "Inspect expense" }).click();
+  await expect(page.getByText("review_expense_481_v7", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Edit amount" }).click();
+  await page.getByRole("button", { name: "Commit change" }).click();
+  await page.getByRole("button", { name: "Complete review" }).click();
+  await expect(page.getByText("approved", { exact: true }).first()).toBeVisible();
+
+  await page.getByRole("link", { name: /Explore Futures/i }).click();
+  await page.getByRole("button", { name: "Explore futures" }).click();
+  await expectNoSeriousViolations(page);
+  await page.getByRole("link", { name: /Focus Counterexample/i }).click();
+  await expectNoSeriousViolations(page);
+  await page.getByRole("button", { name: /Apply Version Guard/i }).click();
+  await expectNoSeriousViolations(page);
+  await page.getByRole("button", { name: "Verify repair" }).click();
+  await expectNoSeriousViolations(page);
 });

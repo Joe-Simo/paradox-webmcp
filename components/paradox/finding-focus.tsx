@@ -59,7 +59,7 @@ export function FindingFocus({ findingId }: { findingId: string }) {
         <div className="repair-copy"><span className="section-label">Constrained repair</span><h2>Require the version the agent actually inspected.</h2><p>Paradox changes this instrumented lab’s runtime strategy. It does not claim arbitrary source rewriting.</p></div>
         <div className="repair-code">
           <div className="code-block-header"><span><Braces aria-hidden="true" />guarded-approval.ts</span><span>TypeScript</span></div>
-          <pre aria-label="Version guard implementation"><code>{`if (expense.version !== expectedVersion) {
+          <pre aria-label="Version guard implementation" tabIndex={0}><code>{`if (expense.version !== expectedVersion) {
   return {
     ok: false,
     code: "STATE_CHANGED",

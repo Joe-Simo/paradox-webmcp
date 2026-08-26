@@ -22,7 +22,7 @@ export function ExplorationWorkspace() {
   if (finding && session.ledger.guardMode === "versioned") return <VerificationWorkspace />;
 
   return (
-      <main id="main-content" className="lab-grid" tabIndex={-1}>
+      <main id="main-content" className={`lab-grid ${run ? "lab-grid-has-run" : ""}`} tabIndex={-1}>
       <section className="lab-heading">
         <div>
           <span className="section-label">Bounded semantic exploration</span>

@@ -22,6 +22,9 @@ export function ExpenseFixture() {
   const [amount, setAmount] = useState("23999");
   const [editing, setEditing] = useState(false);
   const reduceMotion = useReducedMotion();
+  const hasDiverged = Boolean(token && token.inspectedVersion !== expense.version);
+  const isViolation = hasDiverged && expense.status === "approved";
+  const amountDelta = token ? expense.amountCents - token.inspectedAmountCents : 0;
 
   const saveAmount = async () => {
     const cents = Math.round(Number(amount) * 100);
@@ -42,7 +45,7 @@ export function ExpenseFixture() {
         <p>Ledger is the live domain inside Paradox. Human controls and WebMCP tools operate the same versioned state.</p>
       </div>
 
-      <motion.section layout={!reduceMotion} className="expense-specimen" aria-labelledby="expense-title">
+      <motion.section layout={!reduceMotion} className={`expense-specimen${hasDiverged ? " has-diverged" : ""}${isViolation ? " is-violation" : ""}`} aria-labelledby="expense-title">
         <div className="expense-meta">
           <span>Expense request</span>
           <Badge>v{expense.version}</Badge>
@@ -55,6 +58,13 @@ export function ExpenseFixture() {
           <Badge tone={expense.status === "approved" ? "green" : expense.status === "rejected" ? "red" : "amber"}>{expense.status}</Badge>
         </div>
         <motion.div layout={!reduceMotion} className="expense-amount">{money.format(expense.amountCents / 100)}</motion.div>
+        {token && hasDiverged && (
+          <motion.div className={`semantic-delta${isViolation ? " is-violation" : ""}`} initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} aria-live="polite">
+            <div><span>Agent reviewed</span><strong>{money.format(token.inspectedAmountCents / 100)} · v{token.inspectedVersion}</strong></div>
+            <div className="semantic-delta-axis" aria-hidden="true"><span /><code>+{money.format(amountDelta / 100)} · Δv{expense.version - token.inspectedVersion}</code><span /></div>
+            <div><span>Canonical state</span><strong>{money.format(expense.amountCents / 100)} · v{expense.version}</strong></div>
+          </motion.div>
+        )}
         <div className="expense-facts">
           <div><span>Current version</span><code>{expense.version}</code></div>
           <div><span>Policy limit</span><code>{money.format(session.ledger.policyLimitCents / 100)}</code></div>
@@ -62,7 +72,7 @@ export function ExpenseFixture() {
         </div>
         <Separator />
         <div className="expense-actions">
-          <Button onClick={() => void inspectExpenseService(expense.id)} disabled={!hydrated || expense.status !== "pending"}>
+          <Button variant={token ? "secondary" : "default"} onClick={() => void inspectExpenseService(expense.id)} disabled={!hydrated || expense.status !== "pending"}>
             <Bot className="size-4" aria-hidden="true" /> Inspect Expense
           </Button>
           <Dialog open={editing} onOpenChange={setEditing}>
@@ -79,7 +89,7 @@ export function ExpenseFixture() {
               <div className="dialog-actions"><Button variant="secondary" onClick={() => setEditing(false)}>Cancel</Button><Button onClick={() => void saveAmount()} disabled={!hydrated}>Commit Change</Button></div>
             </DialogContent>
           </Dialog>
-          <Button variant={token ? "error" : "secondary"} onClick={() => void approve()} disabled={!hydrated || !token || expense.status !== "pending"}>
+          <Button variant={token ? "default" : "secondary"} onClick={() => void approve()} disabled={!hydrated || !token || expense.status !== "pending"}>
             <ShieldAlert className="size-4" aria-hidden="true" /> Complete Review
           </Button>
         </div>

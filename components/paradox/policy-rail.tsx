@@ -4,8 +4,12 @@ import { CircleCheck, GitMerge, Shield, TriangleAlert } from "lucide-react";
 import { useParadoxStore } from "@/stores/paradox-store";
 
 export function PolicyRail() {
+  const session = useParadoxStore((state) => state.session);
   const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
   const finding = useParadoxStore((state) => state.finding);
+  const expense = session.ledger.expenses["481"];
+  const observedViolation = expense.status === "approved" && expense.approvedFromReviewVersion !== expense.version;
+  const invariantFailed = guardMode === "unsafe" && Boolean(finding || observedViolation);
   return (
     <aside className="policy-rail" aria-label="Policy and invariant context">
       <section>
@@ -21,8 +25,8 @@ export function PolicyRail() {
       </section>
       <section className="invariant-section">
         <h2>Invariant</h2>
-        <div className={finding && guardMode === "unsafe" ? "invariant-active" : "invariant-idle"}>
-          {finding && guardMode === "unsafe" ? <TriangleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
+        <div className={invariantFailed ? "invariant-active" : "invariant-idle"}>
+          {invariantFailed ? <TriangleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
           <div>
             <strong>Reviewed state = committed state</strong>
             <code>current.version === reviewed.version</code>

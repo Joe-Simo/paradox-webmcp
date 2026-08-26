@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { MotionConfig } from "motion/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { paradoxStore, useParadoxStore } from "@/stores/paradox-store";
 import { hydrateWorkspace } from "@/stores/services";
@@ -59,5 +60,9 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
     };
   }, [pathname, hydrated, guardMode, findingId]);
 
-  return <TooltipProvider delayDuration={150} skipDelayDuration={0}>{children}</TooltipProvider>;
+  return (
+    <MotionConfig reducedMotion="user" transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}>
+      <TooltipProvider delayDuration={150} skipDelayDuration={0}>{children}</TooltipProvider>
+    </MotionConfig>
+  );
 }

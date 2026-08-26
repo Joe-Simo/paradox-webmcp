@@ -30,7 +30,8 @@ export function VerificationWorkspace() {
         </Button>
       </header>
 
-      <section className="replay-track" aria-label="Exact counterexample replay">
+      <section className={`replay-track${verification?.verified ? " replay-track-verified" : ""}`} aria-label="Exact counterexample replay">
+        <motion.div className="replay-path-sweep" aria-hidden="true" initial={reduceMotion ? false : { scaleX: 0 }} animate={{ scaleX: verification ? 1 : 0 }} transition={{ duration: reduceMotion ? 0 : 0.72, ease: [0.65, 0, 0.35, 1] }} />
         <div className="replay-step actor-agent"><span>A1</span><strong>Inspect v{finding?.believed.version ?? "—"}</strong><code>{finding ? money.format(finding.believed.amountCents / 100) : "Awaiting finding"}</code></div>
         <div className="replay-line" />
         <div className="replay-step actor-human"><span>H1</span><strong>Edit to v{finding?.changed.version ?? "—"}</strong><code>{finding ? money.format(finding.changed.amountCents / 100) : "Awaiting finding"}</code></div>
