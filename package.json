@@ -20,7 +20,6 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "build:sdk": "tsc -p tsconfig.sdk.json",
-    "prepare": "bun run build:sdk",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
