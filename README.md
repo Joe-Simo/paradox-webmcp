@@ -10,14 +10,14 @@ The challenge scenario is real: an agent inspects expense 481 at `$2,399 · v7`,
 
 ## WebMCP tools
 
-Paradox uses one route-aware `document.modelContext` registry. The active tool surface changes with the product state:
+Paradox uses one `document.modelContext` registry. The active tool surface changes with product state—even when an agent stays on the same route:
 
 - Fixture: `inspect_expense`, `approve_reviewed_expense`
 - Exploration: `inspect_lab`, `explore_futures`, `reset_lab`
 - Finding: `inspect_counterexample`, `apply_version_guard`, `reset_lab`
 - Verification: `verify_repair`, `reset_lab`
 
-Every callback reads the current Zustand state, invokes the same domain services as the human interface, and persists its result to IndexedDB. Abort controllers remove tools that are no longer valid for the current route.
+Every callback reads the current Zustand state, invokes the same domain services as the human interface, and persists its result to IndexedDB. Tool outputs are intentionally compact, agent cancellation terminates active exploration Workers, and AbortControllers remove capabilities as soon as they become invalid.
 
 ## How it works
 
@@ -28,6 +28,17 @@ Every callback reads the current Zustand state, invokes the same domain services
 5. The first failing path becomes a persisted counterexample.
 6. Guarded commit semantics compare the current expense version with the inspected version.
 7. Exact replay and full bounded exploration report separate computed results.
+
+## Measured golden model
+
+These values are computed by the engine and asserted by the browser flow; they are not presentation constants.
+
+| Model | Schedules | Unique states | Equivalent branches merged | Counterexamples |
+| --- | ---: | ---: | ---: | ---: |
+| Unsafe approval | 36 | 36 | 11 | 27 |
+| Version-guarded approval | 36 | 34 | 10 | 0 |
+
+The unsafe counterexample contains nine semantic microsteps. Delta minimization proves that three domain operations are essential: `inspect_expense → edit_expense_amount → approve_reviewed_expense`.
 
 ## Run locally
 
@@ -55,6 +66,7 @@ bun run build
 - The demonstrated repair is a semantic version guard, not general source synthesis.
 - Zero counterexamples means none survived the explored model, not that the application is universally safe.
 - No model API participates in scheduling, hashing, invariant evaluation, or verification.
+- Paradox is a live WebMCP website, not a PWA, browser extension, or persistent MCP server. Its tools exist only while the page is open in a supported agent browser.
 
 ## License
 

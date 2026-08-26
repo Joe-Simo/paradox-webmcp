@@ -6,17 +6,20 @@ import { Button } from "@/components/ui/button";
 import { MultiverseCanvas } from "./multiverse-canvas";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { exploreFuturesService } from "@/stores/services";
+import { hasRecordedRace } from "@/domain/ledger/model";
+import { VerificationWorkspace } from "./verification-workspace";
 
 export function ExplorationWorkspace() {
   const hydrated = useParadoxStore((state) => state.hydrated);
   const run = useParadoxStore((state) => state.run);
-  const events = useParadoxStore((state) => state.session.events);
   const exploring = useParadoxStore((state) => state.exploring);
   const progress = useParadoxStore((state) => state.progress);
   const notice = useParadoxStore((state) => state.notice);
-  const completeTrace = events.some((event) => event.action === "inspect_expense")
-    && events.some((event) => event.action === "edit_expense_amount")
-    && events.some((event) => event.action === "approve_reviewed_expense");
+  const session = useParadoxStore((state) => state.session);
+  const finding = useParadoxStore((state) => state.finding);
+  const completeTrace = hasRecordedRace(session);
+
+  if (finding && session.ledger.guardMode === "versioned") return <VerificationWorkspace />;
 
   return (
     <main className="lab-grid">
@@ -27,7 +30,7 @@ export function ExplorationWorkspace() {
         </div>
         <div className="lab-action">
           <p>Paradox interleaves the recorded human and agent operations, merges equivalent states, and evaluates each commit.</p>
-          <Button size="lg" onClick={() => void exploreFuturesService()} disabled={!hydrated || exploring}>
+          <Button size="lg" onClick={() => void exploreFuturesService().catch(() => undefined)} disabled={!hydrated || exploring || !completeTrace}>
             {exploring ? <LoaderCircle className="size-4 animate-spin" /> : <ScanSearch className="size-4" />}
             {exploring ? `Exploring · ${progress} states` : "Explore futures"}
           </Button>
@@ -58,7 +61,7 @@ export function ExplorationWorkspace() {
           {run.finding && (
             <section className="finding-callout">
               <div className="finding-symbol"><GitMerge /></div>
-              <div><span>Shortest computed failure</span><strong>{run.finding.semanticSequence.join(" → ")}</strong><p>{run.finding.violation.explanation}</p></div>
+              <div><span>Shortest computed failure · {run.finding.minimization.originalMicroSteps} → {run.finding.minimization.retainedSemanticSteps} steps</span><strong>{run.finding.semanticSequence.join(" → ")}</strong><p>{run.finding.violation.explanation}</p></div>
               <Link className="button-link danger-link" href={`/lab/expense-approval/finding/${run.finding.id}`}>Focus counterexample <ArrowRight /></Link>
             </section>
           )}

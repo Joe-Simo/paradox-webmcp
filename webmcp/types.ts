@@ -12,6 +12,7 @@ export type RegisteredWebMCPTool = { name: string; description: string };
 export type ModelContext = EventTarget & {
   registerTool(tool: WebMCPTool, options?: { signal?: AbortSignal }): Promise<void>;
   getTools(): Promise<RegisteredWebMCPTool[]>;
+  executeTool(tool: RegisteredWebMCPTool, input?: object, options?: { signal?: AbortSignal }): Promise<string>;
 };
 
 declare global {

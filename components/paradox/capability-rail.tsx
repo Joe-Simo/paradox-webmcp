@@ -17,6 +17,7 @@ const descriptions: Record<string, string> = {
 export function CapabilityRail() {
   const capabilities = useParadoxStore((state) => state.capabilities);
   const supported = useParadoxStore((state) => state.webmcpSupported);
+  const registryError = useParadoxStore((state) => state.webmcpError);
   return (
     <aside className="capability-rail" aria-label="Available WebMCP capabilities">
       <div className="rail-heading">
@@ -27,6 +28,12 @@ export function CapabilityRail() {
         <div className="compatibility-note">
           <Braces className="size-4" />
           <p>WebMCP is unavailable in this browser. Human controls remain active.</p>
+        </div>
+      )}
+      {registryError && (
+        <div className="compatibility-note" role="alert">
+          <Braces className="size-4" />
+          <p>Registry error: {registryError}</p>
         </div>
       )}
       <div className="capability-list">

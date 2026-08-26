@@ -151,7 +151,9 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
 .actor-human .trace-marker { color: var(--human); background: var(--human-pale); }
 .actor-system .trace-marker { color: var(--ink); border-radius: 2px; transform: rotate(45deg); }
 .trace-event strong { display: block; margin-top: 2px; font-size: 12px; }
+.trace-version { display: block; margin-top: 4px; color: var(--muted); font-family: var(--font-geist-mono); font-size: 9px; }
 .trace-event code { display: block; margin-top: 8px; color: var(--muted); font-size: 9px; }
+.trace-event:focus-visible { border-radius: 3px; outline: 2px solid var(--focus); outline-offset: 4px; }
 .trace-empty { align-self: center; color: var(--muted); font-size: 13px; }
 
 .ledger-grid { padding: 34px 36px 28px; display: grid; grid-template-columns: minmax(180px,.65fr) minmax(400px,1.5fr) minmax(180px,.65fr); grid-template-rows: 1fr auto; gap: 24px; min-width: 0; }
@@ -278,6 +280,14 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
 .invariant-failure span { display: block; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
 .invariant-failure strong { display: block; margin-top: 6px; font-family: var(--font-geist-mono); font-size: 13px; }
 .invariant-failure p { margin: 4px 0 0; color: var(--ink); font-size: 12px; }
+.minimized-sequence { display: grid; grid-template-columns: .8fr 1.2fr; gap: 28px; margin: 38px 0; padding: 24px 0; border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+.minimized-sequence h2 { max-width: 420px; margin: 8px 0 0; font-family: "Iowan Old Style", Georgia, serif; font-size: 26px; font-weight: 400; line-height: 1.15; }
+.minimized-sequence ol { display: grid; margin: 0; padding: 0; list-style: none; }
+.minimized-sequence li { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.minimized-sequence li:last-child { border-bottom: 0; }
+.minimized-sequence li > span { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid var(--line-strong); border-radius: 50%; font-family: var(--font-geist-mono); font-size: 9px; }
+.minimized-sequence strong { font-size: 11px; }
+.minimized-sequence code { color: var(--muted); font-size: 9px; }
 .repair-panel { display: grid; grid-template-columns: 1fr 1.2fr auto; align-items: center; gap: 28px; margin-top: 40px; }
 .repair-copy h2 { margin: 10px 0; font-family: "Iowan Old Style", Georgia, serif; font-size: 30px; font-weight: 400; line-height: 1.1; }
 .repair-copy p { max-width: 360px; color: var(--muted); font-size: 12px; line-height: 1.55; }
@@ -309,6 +319,11 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
 .verification-metrics div + div { border-left: 1px solid var(--line); }
 .verification-metrics span { display: block; color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
 .verification-metrics strong { display: block; margin-top: 8px; font-family: var(--font-geist-mono); font-size: 17px; }
+.verification-failure { display: grid; grid-template-columns: 52px 1fr; gap: 20px; margin-top: 40px; padding: 22px; border: 1px solid var(--danger); color: var(--danger); }
+.verification-failure > svg { width: 38px; }
+.verification-failure span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.verification-failure h2 { margin: 6px 0; font-family: "Iowan Old Style", Georgia, serif; font-size: 30px; font-weight: 400; }
+.verification-failure p { margin: 0; color: var(--ink); font-size: 12px; }
 
 .landing-page { min-height: 100vh; padding: 0 4vw 40px; }
 .landing-nav { height: 86px; display: grid; grid-template-columns: 220px 1fr auto; align-items: center; border-bottom: 1px solid var(--line-strong); }
@@ -375,6 +390,7 @@ code, pre { font-family: var(--font-geist-mono), monospace; }
   .temporal-planes { grid-template-columns: 1fr; }
   .plane + .plane { border-left: 0; border-top: 1px solid var(--line); }
   .repair-panel { grid-template-columns: 1fr; }
+  .minimized-sequence { grid-template-columns: 1fr; }
   .repair-panel > button { grid-column: 1; justify-self: start; }
   .verification-heading { display: block; }
   .verification-heading button { margin-top: 18px; }

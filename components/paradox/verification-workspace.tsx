@@ -6,12 +6,16 @@ import { Button } from "@/components/ui/button";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { verifyRepairService } from "@/stores/services";
 
+const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
 export function VerificationWorkspace() {
   const hydrated = useParadoxStore((state) => state.hydrated);
   const verification = useParadoxStore((state) => state.verification);
   const exploring = useParadoxStore((state) => state.exploring);
   const progress = useParadoxStore((state) => state.progress);
   const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
+  const finding = useParadoxStore((state) => state.finding);
+  const notice = useParadoxStore((state) => state.notice);
 
   return (
     <main className="verification-page">
@@ -19,25 +23,25 @@ export function VerificationWorkspace() {
         <span className="section-label">Same path. New semantics.</span>
         <h1>The dangerous future<br />meets the guard.</h1>
         <p>Paradox first replays the exact stored counterexample, then reopens the complete bounded state space.</p>
-        <Button size="lg" onClick={() => void verifyRepairService()} disabled={!hydrated || exploring || guardMode !== "versioned"}>
+        <Button size="lg" onClick={() => void verifyRepairService().catch(() => undefined)} disabled={!hydrated || exploring || guardMode !== "versioned" || !finding}>
           {exploring ? <LoaderCircle className="size-4 animate-spin" /> : <RotateCw className="size-4" />}
           {exploring ? `Re-exploring · ${progress}` : "Verify repair"}
         </Button>
       </header>
 
       <section className="replay-track" aria-label="Exact counterexample replay">
-        <div className="replay-step actor-agent"><span>A1</span><strong>Inspect v7</strong><code>$2,399</code></div>
+        <div className="replay-step actor-agent"><span>A1</span><strong>Inspect v{finding?.believed.version ?? "—"}</strong><code>{finding ? money.format(finding.believed.amountCents / 100) : "Awaiting finding"}</code></div>
         <div className="replay-line" />
-        <div className="replay-step actor-human"><span>H1</span><strong>Edit to v8</strong><code>$23,999</code></div>
+        <div className="replay-step actor-human"><span>H1</span><strong>Edit to v{finding?.changed.version ?? "—"}</strong><code>{finding ? money.format(finding.changed.amountCents / 100) : "Awaiting finding"}</code></div>
         <div className="replay-line" />
-        <div className="replay-step actor-agent"><span>A2</span><strong>Approve expecting v7</strong><code>review_expense_481_v7</code></div>
+        <div className="replay-step actor-agent"><span>A2</span><strong>Approve expecting v{finding?.believed.version ?? "—"}</strong><code>{finding ? `review_expense_481_v${finding.believed.version}` : "Awaiting finding"}</code></div>
         <motion.div className="guard-stop" animate={verification ? { scale: [0.92, 1.06, 1] } : {}}>
           <CircleStop />
           <div><span>Semantic guard</span><strong>{verification ? verification.exactReplay.code : "Awaiting replay"}</strong></div>
         </motion.div>
       </section>
 
-      {verification && (
+      {verification?.verified && (
         <section className="verification-result">
           <div className="verification-statement"><Check /><div><span>Computed result</span><h2>Counterexample eliminated within the explored model.</h2><p>No claim of universal safety is made.</p></div></div>
           <div className="verification-metrics">
@@ -48,6 +52,13 @@ export function VerificationWorkspace() {
           </div>
         </section>
       )}
+      {verification && !verification.verified && (
+        <section className="verification-failure" role="alert">
+          <CircleStop />
+          <div><span>Verification failed</span><h2>The counterexample still survives this bounded model.</h2><p>Exact replay: {verification.exactReplay.code}. Surviving counterexamples: {verification.exploration.counterexamples}.</p></div>
+        </section>
+      )}
+      {notice && <p role="alert" className="inline-notice">{notice}</p>}
     </main>
   );
 }

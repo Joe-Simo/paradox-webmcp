@@ -52,6 +52,13 @@ export function sessionHash(session: LabSession): string {
   return canonicalHash(modelSnapshot(session));
 }
 
+export function hasRecordedRace(session: LabSession): boolean {
+  const inspectIndex = session.events.findIndex((event) => event.action === "inspect_expense");
+  const editIndex = session.events.findIndex((event, index) => index > inspectIndex && event.action === "edit_expense_amount");
+  const approveIndex = session.events.findIndex((event, index) => index > editIndex && event.action === "approve_reviewed_expense");
+  return inspectIndex >= 0 && editIndex > inspectIndex && approveIndex > editIndex;
+}
+
 function nextEvent(
   before: LabSession,
   after: LabSession,

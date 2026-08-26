@@ -146,29 +146,103 @@ function violation(state: MachineState): InvariantViolation | null {
   return null;
 }
 
-function semanticSequence(trace: TraceStep[]) {
-  const has = (operation: Operation) => trace.some((step) => step.operation === operation);
-  return [
-    ...(has("inspect") ? ["inspect_expense" as const] : []),
-    ...(has("edit") ? ["edit_expense_amount" as const] : []),
-    ...(has("approve") ? ["approve_reviewed_expense" as const] : []),
-  ];
+const actionFor = {
+  inspect: "inspect_expense",
+  edit: "edit_expense_amount",
+  approve: "approve_reviewed_expense",
+} as const;
+
+function replayTrace(initial: MachineState, trace: TraceStep[]) {
+  let state = initial;
+  for (const step of trace) {
+    if (!enabled(state).includes(step.operation)) continue;
+    state = applyStep(state, step.operation);
+  }
+  return state;
 }
 
-function createFinding(state: MachineState, trace: TraceStep[], found: InvariantViolation): CounterexampleFinding {
+function milestone(step: TraceStep) {
+  return step.phase === "create review token"
+    || step.phase === "commit amount change"
+    || step.phase === "commit mutation"
+    || step.outcome === "STATE_CHANGED";
+}
+
+function minimizeTrace(initial: MachineState, trace: TraceStep[], invariantId: InvariantViolation["invariantId"]) {
+  let retained = [...new Set(trace.filter(milestone).map((step) => step.operation))];
+  for (const candidate of [...retained]) {
+    const withoutCandidate = retained.filter((operation) => operation !== candidate);
+    const replayed = replayTrace(initial, trace.filter((step) => withoutCandidate.includes(step.operation)));
+    if (violation(replayed)?.invariantId === invariantId) retained = withoutCandidate;
+  }
+
+  const minimizedTrace = trace
+    .filter((step) => milestone(step) && retained.includes(step.operation))
+    .map((step) => ({
+      stepId: step.id,
+      actor: step.actor,
+      action: actionFor[step.operation],
+      stateHash: step.stateHash,
+      amountCents: step.amountCents,
+      version: step.version,
+    }));
+  return {
+    minimizedTrace,
+    semanticSequence: minimizedTrace.map((step) => step.action),
+    minimization: {
+      originalMicroSteps: trace.length,
+      retainedSemanticSteps: minimizedTrace.length,
+      removedMicroSteps: trace.length - minimizedTrace.length,
+    },
+  };
+}
+
+function createFinding(initial: MachineState, state: MachineState, trace: TraceStep[], found: InvariantViolation): CounterexampleFinding {
   const scheduleId = `schedule_${canonicalHash(trace.map(({ operation, phase }) => ({ operation, phase })))}`;
   const token = state.token ?? { amountCents: 239_900, version: 7 };
   const editStep = [...trace].reverse().find((step) => step.operation === "edit" && step.version !== token.version);
+  const minimized = minimizeTrace(initial, trace, found.invariantId);
   return {
     id: `finding_${canonicalHash({ scheduleId, invariantId: found.invariantId })}`,
     scheduleId,
     trace,
-    semanticSequence: semanticSequence(trace),
+    ...minimized,
     violation: found,
     believed: token,
     changed: { amountCents: editStep?.amountCents ?? state.expense.amountCents, version: editStep?.version ?? state.expense.version },
     committed: { amountCents: state.expense.amountCents, version: state.expense.version },
   };
+}
+
+const operationAccess: Record<Operation, { reads: Set<string>; writes: Set<string> }> = {
+  inspect: { reads: new Set(["expense:amount", "expense:version"]), writes: new Set(["review-token"]) },
+  edit: { reads: new Set(["expense:amount", "expense:version"]), writes: new Set(["expense:amount", "expense:version"]) },
+  approve: { reads: new Set(["review-token", "expense:amount", "expense:version"]), writes: new Set(["expense:status"]) },
+};
+
+function intersects(first: Set<string>, second: Set<string>) {
+  for (const value of first) if (second.has(value)) return true;
+  return false;
+}
+
+function operationsConflict(first: Operation, second: Operation) {
+  const a = operationAccess[first];
+  const b = operationAccess[second];
+  return intersects(a.writes, b.reads) || intersects(a.writes, b.writes) || intersects(a.reads, b.writes);
+}
+
+function reducedEnabled(state: MachineState) {
+  const operations = enabled(state);
+  const selected: Operation[] = [];
+  let reductions = 0;
+  for (const operation of operations) {
+    if (selected.some((earlier) => !operationsConflict(earlier, operation))) {
+      reductions += 1;
+    } else {
+      selected.push(operation);
+    }
+  }
+  return { operations: selected, reductions };
 }
 
 export function exploreSession(
@@ -183,6 +257,7 @@ export function exploreSession(
   let visitedCount = 0;
   let schedulesExplored = 0;
   let equivalentBranchesMerged = 0;
+  let partialOrderReductions = 0;
   let counterexamples = 0;
   let finding: CounterexampleFinding | null = null;
   const representatives: RepresentativeBranch[] = [];
@@ -202,20 +277,26 @@ export function exploreSession(
         const found = violation(node.state);
         if (found) {
           counterexamples += node.ways;
-          finding ??= createFinding(node.state, node.trace, found);
+          finding ??= createFinding(initial, node.state, node.trace, found);
         }
-        if (representatives.length < 5) {
-          representatives.push({
-            scheduleId: `schedule_${canonicalHash(node.trace.map(({ operation, phase }) => ({ operation, phase })))}`,
-            safe: !found,
-            trace: node.trace,
-            finalStateHash: machineHash(node.state),
-          });
+        const representative = {
+          scheduleId: `schedule_${canonicalHash(node.trace.map(({ operation, phase }) => ({ operation, phase })))}`,
+          safe: !found,
+          trace: node.trace,
+          finalStateHash: machineHash(node.state),
+        };
+        if (found && !representatives.some((branch) => !branch.safe)) {
+          if (representatives.length >= 5) representatives.pop();
+          representatives.unshift(representative);
+        } else if (!found && representatives.length < 5) {
+          representatives.push(representative);
         }
         continue;
       }
 
-      for (const operation of enabled(node.state)) {
+      const reduced = reducedEnabled(node.state);
+      partialOrderReductions += reduced.reductions;
+      for (const operation of reduced.operations) {
         const state = applyStep(node.state, operation);
         const hash = machineHash(state);
         const trace = [...node.trace, traceStep(node.state, state, operation, node.trace.length + 1)];
@@ -232,6 +313,7 @@ export function exploreSession(
     if (!complete) break;
     layer = nextLayer;
   }
+  onProgress?.(visitedCount);
 
   return {
     id: `run_${canonicalHash({ sessionId: session.id, guardMode, schedulesExplored, counterexamples })}`,
@@ -242,7 +324,7 @@ export function exploreSession(
     schedulesExplored,
     uniqueStatesReached: visited.size,
     equivalentBranchesMerged,
-    partialOrderReductions: 0,
+    partialOrderReductions,
     counterexamples,
     representativeBranches: representatives,
     finding,

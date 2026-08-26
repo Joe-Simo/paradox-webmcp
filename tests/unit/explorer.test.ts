@@ -26,6 +26,14 @@ describe("bounded interleaving explorer", () => {
     ]);
     expect(result.finding?.believed).toEqual({ amountCents: 239_900, version: 7 });
     expect(result.finding?.committed).toEqual({ amountCents: 2_399_900, version: 8 });
+    expect(result.finding?.minimization).toEqual({
+      originalMicroSteps: 9,
+      retainedSemanticSteps: 3,
+      removedMicroSteps: 6,
+    });
+    expect(result.finding?.minimizedTrace.map((step) => step.action)).toEqual(result.finding?.semanticSequence);
+    expect(result.representativeBranches.some((branch) => !branch.safe)).toBe(true);
+    expect(result.partialOrderReductions).toBe(0);
   });
 
   it("is deterministic", () => {
@@ -41,5 +49,11 @@ describe("bounded interleaving explorer", () => {
     expect(report.exploration.complete).toBe(true);
     expect(report.exploration.counterexamples).toBe(0);
     expect(report.verified).toBe(true);
+  });
+
+  it("reports an incomplete result when the configured state bound is reached", () => {
+    const result = exploreSession(recordedSession(), "unsafe", 2);
+    expect(result.complete).toBe(false);
+    expect(result.status).toBe("incomplete_bound");
   });
 });

@@ -16,6 +16,7 @@ export type ParadoxState = {
   progress: number;
   capabilities: string[];
   webmcpSupported: boolean;
+  webmcpError: string | null;
   notice: string | null;
 };
 
@@ -29,6 +30,7 @@ export const paradoxStore = createStore<ParadoxState>(() => ({
   progress: 0,
   capabilities: [],
   webmcpSupported: false,
+  webmcpError: null,
   notice: null,
 }));
 

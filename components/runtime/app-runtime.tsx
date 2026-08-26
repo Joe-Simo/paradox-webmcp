@@ -29,7 +29,7 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
     if (!hydrated) return;
     const context = document.modelContext;
     if (!context) {
-      paradoxStore.setState({ webmcpSupported: false, capabilities: [] });
+      paradoxStore.setState({ webmcpSupported: false, webmcpError: null, capabilities: [] });
       return;
     }
 
@@ -37,11 +37,20 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
     let active = true;
     const refresh = async () => {
       const registered = await context.getTools();
-      if (active) paradoxStore.setState({ capabilities: registered.map((tool) => tool.name), webmcpSupported: true });
+      if (active) paradoxStore.setState({ capabilities: registered.map((tool) => tool.name), webmcpSupported: true, webmcpError: null });
     };
     const onToolChange = () => void refresh();
     context.addEventListener("toolchange", onToolChange);
-    void Promise.all(toolsForSurface(surfaceFor(pathname)).map((tool) => context.registerTool(tool, { signal: controller.signal }))).then(refresh);
+    void Promise.all(toolsForSurface(surfaceFor(pathname)).map((tool) => context.registerTool(tool, { signal: controller.signal })))
+      .then(refresh)
+      .catch((error: unknown) => {
+        if (!active || controller.signal.aborted) return;
+        paradoxStore.setState({
+          capabilities: [],
+          webmcpSupported: true,
+          webmcpError: error instanceof Error ? error.message : "WebMCP tool registration failed.",
+        });
+      });
 
     return () => {
       active = false;

@@ -2,22 +2,26 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowRight, Braces, CircleAlert, LoaderCircle } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { applyVersionGuardService } from "@/stores/services";
+import { VerificationWorkspace } from "./verification-workspace";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-export function FindingFocus() {
+export function FindingFocus({ findingId }: { findingId: string }) {
   const router = useRouter();
   const hydrated = useParadoxStore((state) => state.hydrated);
   const finding = useParadoxStore((state) => state.finding);
+  const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
   if (!hydrated) {
     return <main className="missing-state" aria-busy="true"><LoaderCircle className="animate-spin" /><h1>Restoring the finding</h1><p>Loading its exact semantic trace.</p></main>;
   }
-  if (!finding) {
-    return <main className="missing-state"><CircleAlert /><h1>No computed finding</h1><p>Explore the recorded session before opening this route.</p></main>;
+  if (!finding || finding.id !== findingId) {
+    return <main className="missing-state"><CircleAlert /><h1>Finding unavailable</h1><p>This URL does not match the active computed counterexample.</p><Link className="button-link" href="/lab/expense-approval">Return to exploration <ArrowRight /></Link></main>;
   }
+  if (guardMode === "versioned") return <VerificationWorkspace />;
 
   const apply = async () => {
     await applyVersionGuardService();
@@ -40,6 +44,17 @@ export function FindingFocus() {
         <CircleAlert />
         <div><span>Invariant violated</span><strong>currentExpense.version === reviewedExpense.version</strong><p>{finding.violation.title}</p></div>
       </section>
+      <section className="minimized-sequence" aria-labelledby="minimized-title">
+        <div>
+          <span className="section-label">Automatic minimization</span>
+          <h2 id="minimized-title">{finding.minimization.originalMicroSteps} machine steps reduced to {finding.minimization.retainedSemanticSteps} essential operations.</h2>
+        </div>
+        <ol>
+          {finding.minimizedTrace.map((step, index) => (
+            <li key={step.stepId}><span>{index + 1}</span><strong>{step.action}</strong><code>{step.stateHash}</code></li>
+          ))}
+        </ol>
+      </section>
       <section className="repair-panel">
         <div className="repair-copy"><span className="section-label">Constrained repair</span><h2>Require the version the agent actually inspected.</h2><p>Paradox changes this instrumented lab’s runtime strategy. It does not claim arbitrary source rewriting.</p></div>
         <pre><Braces aria-hidden="true" /><code>{`if (expense.version !== expectedVersion) {
@@ -49,7 +64,7 @@ export function FindingFocus() {
     message: "The expense changed after inspection."
   };
 }`}</code></pre>
-        <Button size="lg" onClick={() => void apply()}>Apply version guard <ArrowRight className="size-4" /></Button>
+        <Button size="lg" onClick={() => void apply().catch(() => undefined)}>Apply version guard <ArrowRight className="size-4" /></Button>
       </section>
     </main>
   );

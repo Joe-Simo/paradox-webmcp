@@ -29,7 +29,20 @@ export type CounterexampleFinding = {
   id: string;
   scheduleId: string;
   trace: TraceStep[];
+  minimizedTrace: Array<{
+    stepId: string;
+    actor: Actor;
+    action: "inspect_expense" | "edit_expense_amount" | "approve_reviewed_expense";
+    stateHash: string;
+    amountCents: number;
+    version: number;
+  }>;
   semanticSequence: Array<"inspect_expense" | "edit_expense_amount" | "approve_reviewed_expense">;
+  minimization: {
+    originalMicroSteps: number;
+    retainedSemanticSteps: number;
+    removedMicroSteps: number;
+  };
   violation: InvariantViolation;
   believed: { amountCents: number; version: number };
   changed: { amountCents: number; version: number };
