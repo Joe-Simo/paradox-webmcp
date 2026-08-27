@@ -25,32 +25,32 @@ export default function HomePage() {
           <Observatory preview={preview} />
         </main>
       </div>
-      <section className="landing-acts" aria-labelledby="acts-title">
+      <section id="how-it-works" className="landing-acts" aria-labelledby="acts-title">
         <span className="section-label">How it works</span>
         <h2 id="acts-title">Four acts, sixty seconds.</h2>
         <div className="acts-grid">
           <article>
             <span className="act-index">01</span>
             <h3>Record</h3>
-            <p>Play both operators: inspect as the agent from ChatGPT, change the amount as the human, then complete the stale review. Every semantic operation is recorded.</p>
+            <p>Play the race above yourself: inspect as the agent from ChatGPT, change the amount as the human, then complete the stale review. Every semantic operation is recorded.</p>
             <p className="act-tools"><code>inspect_expense</code><code>approve_reviewed_expense</code></p>
           </article>
           <article>
             <span className="act-index">02</span>
             <h3>Explore</h3>
-            <p>A bounded model checker interleaves the recorded human and agent operations, merges equivalent states, and evaluates every commit against business invariants.</p>
+            <p>Paradox then tries every ordering of the recorded actions — a bounded model checker — and evaluates each committed state against rules that must always hold, like approved amount = reviewed amount.</p>
             <p className="act-tools"><code>explore_futures</code></p>
           </article>
           <article>
             <span className="act-index">03</span>
             <h3>Repair</h3>
-            <p>The failing schedule is minimized to three essential operations, then a semantic version guard is applied to the approval implementation.</p>
+            <p>The failing ordering is minimized to three essential operations, then a semantic version guard is applied to the approval implementation.</p>
             <p className="act-tools"><code>inspect_counterexample</code><code>apply_version_guard</code></p>
           </article>
           <article>
             <span className="act-index">04</span>
             <h3>Verify</h3>
-            <p>The exact counterexample replays as blocked with <code>STATE_CHANGED</code>, and the full bounded state space re-explores to zero counterexamples.</p>
+            <p>The counterexample — the shortest failing sequence — replays as blocked with <code>STATE_CHANGED</code>, and the full bounded space re-explores to zero counterexamples.</p>
             <p className="act-tools"><code>verify_repair</code></p>
           </article>
         </div>

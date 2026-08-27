@@ -26,7 +26,7 @@ export function ExplorationWorkspace() {
       <section className="lab-heading">
         <div>
           <span className="section-label">Bounded semantic exploration</span>
-          <h1>Explore every future<br />{" "}before your users do.</h1>
+          <h1>Unfold every<br />{" "}ordering of the race.</h1>
         </div>
         <div className="lab-action">
           <p>Paradox interleaves the recorded human and agent operations, merges equivalent states, and evaluates each commit.</p>

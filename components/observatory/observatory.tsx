@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import { buttonVariants } from "@/components/ui/button";
 import { ObservatoryCanvas } from "@/components/observatory/observatory-canvas";
 import type { GoldenPreview } from "@/paradox/explorer/golden-preview";
+
+const AUTOPLAY_STEP_MS = 2600;
 
 const steps = ["Inspect", "Change", "Approve", "Commit"] as const;
 
@@ -26,7 +29,36 @@ const lensByPhase = [
 ] as const;
 
 export function Observatory({ preview }: { preview: GoldenPreview }) {
-  const [phase, setPhase] = useState(3);
+  const reduceMotion = useReducedMotion();
+  const [phase, setPhase] = useState(0);
+  const interacted = useRef(false);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      if (!interacted.current) setPhase(3);
+      return;
+    }
+    const timer = setInterval(() => {
+      if (interacted.current) {
+        clearInterval(timer);
+        return;
+      }
+      setPhase((current) => {
+        if (current >= 3) {
+          clearInterval(timer);
+          return current;
+        }
+        return current + 1;
+      });
+    }, AUTOPLAY_STEP_MS);
+    return () => clearInterval(timer);
+  }, [reduceMotion]);
+
+  const selectPhase = (index: number) => {
+    interacted.current = true;
+    setPhase(index);
+  };
+
   const isViolation = phase >= 3;
   const believed = money.format(preview.believed.amountCents / 100);
   const changed = money.format(preview.changed.amountCents / 100);
@@ -43,23 +75,24 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
       <div className="observatory-hero">
         <div className="hero-copy">
           <h1>Explore every future<br />{" "}before your users do.</h1>
-          <p>A ChatGPT agent and a human share one live app. Paradox finds the races between them.</p>
+          <p>An agent read {believed}. A human changed it to {changed}. The agent approved it anyway. Paradox finds these races — and proves the fix.</p>
           <div className="hero-actions">
             <Link className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger">Run the race <ArrowRight aria-hidden="true" /></Link>
-            <Link className="hero-text-link" href="/docs">How it works</Link>
+            <a className="hero-text-link" href="#how-it-works">How it works</a>
           </div>
         </div>
       </div>
       <div className="observatory-steps">
-        <div className="observatory-steps-row" role="group" aria-label="Counterexample steps">
+        <span className="obs-strip-label">The race</span>
+        <div className="observatory-steps-row" role="group" aria-label="The race, step by step">
           {steps.map((label, index) => (
             <button
               key={label}
               type="button"
               className="obs-step"
               aria-pressed={phase === index}
-              onClick={() => setPhase(index)}
-              onFocus={() => setPhase(index)}
+              onClick={() => selectPhase(index)}
+              onFocus={() => selectPhase(index)}
             >
               <small aria-hidden="true">0{index + 1}</small>
               <span>{label}</span>

@@ -79,7 +79,7 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
       </figcaption>
       <p id="multiverse-description" className="sr-only">Equivalent schedules merge. The shortest counterexample remains fully expanded in red while representative safe schedules remain visible.</p>
       <div className="multiverse-canvas" tabIndex={0} role="group" aria-label="Scrollable semantic schedule visualization">
-        <div className="multiverse-plane" style={{ width: `${1080 * zoom}px` }}>
+        <div className="multiverse-plane" style={{ width: `${zoom * 100}%` }}>
         <svg viewBox="0 0 1080 430" role="img" aria-hidden="true">
           <defs>
             <linearGradient id="counterexample-signal" x1="0" x2="1">

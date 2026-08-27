@@ -65,7 +65,7 @@ export function CapabilityRail() {
       <div className={`registry-signal ${supported ? "is-live" : ""}`}>
         <div className="registry-orbit" aria-hidden="true"><Radio /></div>
         <div><span>Active surface</span><strong>{surfaceName(pathname)}</strong></div>
-        <code>{capabilities.length.toString().padStart(2, "0")}</code>
+        <div className="registry-count"><code>{capabilities.length.toString().padStart(2, "0")}</code><span>tools</span></div>
       </div>
       {!supported && (
         <div className="compatibility-note" role="status">
@@ -86,7 +86,7 @@ export function CapabilityRail() {
           <div className="capability-row" key={name}>
             <div className="capability-icon" aria-hidden="true"><Icon /></div>
             <div>
-              <code>{name}</code>
+              <code>{name.replaceAll("_", "_​")}</code>
               <p>{descriptions[name] ?? "Active structured capability."}</p>
             </div>
             <span className="capability-live" aria-label="Registered">live</span>
