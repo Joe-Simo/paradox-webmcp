@@ -37,7 +37,7 @@ export function TraceStrip() {
           const details = `Invocation: ${sourceLabel[source]}. Reads: ${event.reads.join(", ") || "none"}. Writes: ${event.writes.join(", ") || "none"}.${token}`;
           return (
             <Tooltip key={event.id} content={details}>
-              <motion.li initial={reduceMotion ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.18 }} className={`trace-event actor-${event.actor}`} tabIndex={0}>
+              <motion.li initial={reduceMotion ? false : { y: 8 }} animate={{ y: 0 }} transition={{ duration: 0.18 }} className={`trace-event actor-${event.actor}`} tabIndex={0}>
                 <span className="trace-marker">{actorLabel[event.actor]}{index + 1}</span>
                 <div>
                   <strong>{actionLabel[event.action]}</strong>

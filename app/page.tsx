@@ -21,11 +21,11 @@ export default function HomePage() {
       <main id="main-content" className="landing-main" tabIndex={-1}>
         <section className="landing-hero">
           <div className="hero-copy">
-            <span className="section-label">WebMCP correctness lab / Human + Agent / One live state</span>
+            <span className="section-label">Model checking / Human + Agent / One live state</span>
             <h1>Explore every future<br />{" "}before your users do.</h1>
-            <p>Paradox finds the invalid states created when a human and a WebMCP agent operate the same application at the same time.</p>
+            <p>Humans and agents now share one live application. Paradox explores their interleavings and finds the shortest path to an invalid state.</p>
             <div className="hero-actions">
-              <Link className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger">Run the WebMCP race <ArrowRight aria-hidden="true" /></Link>
+              <Link className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger">Run the race <ArrowRight aria-hidden="true" /></Link>
               <Link className="hero-text-link" href="/docs">How it works</Link>
             </div>
             <p className="hero-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>

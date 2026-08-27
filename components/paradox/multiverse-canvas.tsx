@@ -103,13 +103,13 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
             {layout.links().map((link, index) => {
               const danger = !link.target.data.safe;
               const path = `M ${link.source.y} ${link.source.x} C ${(link.source.y + link.target.y) / 2} ${link.source.x}, ${(link.source.y + link.target.y) / 2} ${link.target.x}, ${link.target.y} ${link.target.x}`;
-              return <motion.path key={`${link.target.data.id}-${index}`} d={path} className={danger ? "branch-danger" : "branch-safe"} initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 1 }} transition={{ duration: danger ? 0.58 : 0.42, delay: reduceMotion ? 0 : index * 0.035, ease: [0.65, 0, 0.35, 1] }} />;
+              return <motion.path key={`${link.target.data.id}-${index}`} d={path} className={danger ? "branch-danger" : "branch-safe"} initial={reduceMotion ? false : { pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: danger ? 0.58 : 0.42, delay: reduceMotion ? 0 : index * 0.035, ease: [0.65, 0, 0.35, 1] }} />;
             })}
-            {layout.descendants().map((node, index) => {
+            {layout.descendants().map((node) => {
               const className = !node.data.safe ? "node-danger" : node.data.actor === "human" ? "node-human" : node.data.actor === "agent" ? "node-agent" : "node-system";
               const systemShape = node.data.actor === "system" || (!node.data.actor && node.depth > 0);
               return (
-                <motion.g key={node.data.id} transform={`translate(${node.y},${node.x})`} initial={reduceMotion ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.28, delay: reduceMotion ? 0 : 0.08 + index * 0.035 }}>
+                <motion.g key={node.data.id} transform={`translate(${node.y},${node.x})`} initial={false} animate={{ opacity: 1 }}>
                   {systemShape
                     ? <rect x={node.depth === 1 ? -7 : -6} y={node.depth === 1 ? -7 : -6} width={node.depth === 1 ? 14 : 12} height={node.depth === 1 ? 14 : 12} transform="rotate(45)" className={className} />
                     : <circle r={node.depth === 0 ? 9 : 7} className={className} />}
@@ -119,7 +119,7 @@ export function MultiverseCanvas({ run }: { run: ExplorationResult }) {
               );
             })}
           </g>
-          <motion.g className="merge-capsule" initial={reduceMotion ? false : { opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: reduceMotion ? 0 : 0.68, duration: 0.32 }}>
+          <motion.g className="merge-capsule" initial={reduceMotion ? false : { x: 12 }} animate={{ x: 0 }} transition={{ delay: reduceMotion ? 0 : 0.68, duration: 0.32 }}>
             <rect x="872" y="374" width="166" height="32" rx="16" />
             <text x="955" y="394" textAnchor="middle">{run.equivalentBranchesMerged} equivalent branches merged</text>
           </motion.g>
