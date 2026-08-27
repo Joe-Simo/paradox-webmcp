@@ -4,10 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "motion/react";
 import type { LensRenderer, LensState } from "./lens-renderer";
 
-export function ObservatoryCanvas({ divergence, violation }: LensState) {
+type ObservatoryCanvasProps = LensState & {
+  onReady?: (drive: (state: LensState) => void) => void;
+};
+
+export function ObservatoryCanvas({ divergence, violation, onReady }: ObservatoryCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererRef = useRef<LensRenderer | null>(null);
   const stateRef = useRef<LensState>({ divergence, violation });
+  const onReadyRef = useRef(onReady);
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
   const [live, setLive] = useState(false);
   const reduceMotion = useReducedMotion() ?? false;
 
@@ -29,7 +37,9 @@ export function ObservatoryCanvas({ divergence, violation }: LensState) {
       rendererRef.current = renderer;
       renderer.setState(stateRef.current);
       void renderer.ready.then((ok) => {
-        if (!cancelled && ok) setLive(true);
+        if (cancelled || !ok) return;
+        setLive(true);
+        onReadyRef.current?.((state) => rendererRef.current?.setState(state));
       });
     });
 

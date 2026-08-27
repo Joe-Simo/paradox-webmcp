@@ -70,7 +70,7 @@ Claude Code later drove the observatory redesign: the full-bleed vgpu gravitatio
 - **One real WebMCP product:** Ledger and Paradox are connected surfaces of the same application and the same stateful correctness workflow.
 - **Real human-agent race:** the unsafe approval implementation genuinely commits a human-modified expense from a stale agent review.
 - **Dynamic tools:** capabilities are registered and removed as the workflow changes rather than being simulated in the interface.
-- **A physics-true signature visual:** the landing is a cinematic relativistic black hole in WebGPU (vgpu's baked G-buffer pipeline): the frame stays monochrome through Inspect, Change, and Approve, and the violated invariant at Commit is the only color that ever enters the universe. A static deep-field fallback covers browsers without WebGPU, and reduced motion renders one still frame.
+- **A physics-true signature visual:** the landing is a cinematic relativistic black hole in WebGPU (vgpu's baked G-buffer pipeline): the frame stays monochrome until the race commits its violation — the only color that ever enters the universe — and the scroll journey through the four acts drains it back out until Verify returns the frame to monochrome. A static deep-field fallback covers browsers without WebGPU, and reduced motion renders one still frame.
 - **Four-act spine:** Record → Explore → Repair → Verify is persistent product navigation; locked acts state exactly how to unlock them.
 - **Semantic recording:** events contain actors, actions, logical time, versions, read/write sets, review tokens, and pre/post state hashes.
 - **Bounded breadth-first exploration:** the engine searches valid schedules and naturally prioritizes short counterexamples.

@@ -25,40 +25,10 @@ export default function HomePage() {
           <Observatory preview={preview} />
         </main>
       </div>
-      <section id="how-it-works" className="landing-acts" aria-labelledby="acts-title">
-        <span className="section-label">How it works</span>
-        <h2 id="acts-title">Four acts, sixty seconds.</h2>
-        <div className="acts-grid">
-          <article>
-            <span className="act-index">01</span>
-            <h3>Record</h3>
-            <p>Play the race above yourself: inspect as the agent from ChatGPT, change the amount as the human, then complete the stale review. Every semantic operation is recorded.</p>
-            <p className="act-tools"><code>inspect_expense</code><code>approve_reviewed_expense</code></p>
-          </article>
-          <article>
-            <span className="act-index">02</span>
-            <h3>Explore</h3>
-            <p>Paradox then tries every ordering of the recorded actions — a bounded model checker — and evaluates each committed state against rules that must always hold, like approved amount = reviewed amount.</p>
-            <p className="act-tools"><code>explore_futures</code></p>
-          </article>
-          <article>
-            <span className="act-index">03</span>
-            <h3>Repair</h3>
-            <p>The failing ordering is minimized to three essential operations, then a semantic version guard is applied to the approval implementation.</p>
-            <p className="act-tools"><code>inspect_counterexample</code><code>apply_version_guard</code></p>
-          </article>
-          <article>
-            <span className="act-index">04</span>
-            <h3>Verify</h3>
-            <p>The counterexample — the shortest failing sequence — replays as blocked with <code>STATE_CHANGED</code>, and the full bounded space re-explores to zero counterexamples.</p>
-            <p className="act-tools"><code>verify_repair</code></p>
-          </article>
-        </div>
-        <p className="hero-proof acts-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
-      </section>
       <section className="landing-statement" aria-labelledby="statement-title">
         <span className="section-label">Why Paradox</span>
         <h2 id="statement-title">Traditional tests check the human or the agent.<br />Paradox checks them together.</h2>
+        <p className="hero-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
         <Link href="/docs">Install the instrumentation <ArrowRight aria-hidden="true" /></Link>
       </section>
       <footer className="landing-footer">
