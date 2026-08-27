@@ -23,12 +23,13 @@ export function RaceVignette({ phase, preview, reduce }: { phase: number; previe
 
   return (
     <div className={`race-vignette${approved ? " is-violated" : hasChanged ? " has-changed" : ""}`} aria-hidden="true">
-      <div className="vignette-chrome"><i /><span>Ledger — expense 481</span><code>live demo</code></div>
+      <div className="vignette-chrome"><i /><span>Expense approvals</span><code>live demo</code></div>
       <div className="vignette-body">
         <div className="vignette-row">
-          <span>MacBook Pro</span>
+          <span>Expense request — Maya Chen</span>
           <span className={`vignette-status${approved ? " is-approved" : ""}`}>{approved ? "Approved" : "Pending"}</span>
         </div>
+        <div className="vignette-item">MacBook Pro</div>
         <div className="vignette-amount">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.strong
