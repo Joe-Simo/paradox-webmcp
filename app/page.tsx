@@ -28,7 +28,7 @@ export default function HomePage() {
       <section className="landing-statement" aria-labelledby="statement-title">
         <span className="section-label">Why you need this</span>
         <h2 id="statement-title">Traditional tests check the human or the agent.<br />Paradox checks them together.</h2>
-        <p className="statement-sub">The same race ships in carts, bookings, refunds, and permission grants — anywhere an agent&rsquo;s read and a human&rsquo;s change bracket the same commit. The guard is a pattern you can ship today: write-tools carry the version they believed.</p>
+        <p className="statement-sub">The same race ships in carts, bookings, refunds, and permissions. The fix is a tool contract: writes carry the version they believed.</p>
         <p className="hero-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
         <Link href="/docs">Install the instrumentation <ArrowRight aria-hidden="true" /></Link>
       </section>

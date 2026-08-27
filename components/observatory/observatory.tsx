@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { buttonVariants } from "@/components/ui/button";
 import { ObservatoryCanvas } from "@/components/observatory/observatory-canvas";
+import { RaceVignette } from "@/components/observatory/race-vignette";
 import type { LensState } from "@/components/observatory/lens-renderer";
 import type { GoldenPreview } from "@/paradox/explorer/golden-preview";
 
@@ -117,14 +118,14 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
     {
       act: "First — what is WebMCP?",
       title: "Your site just got a second user.",
-      body: "WebMCP lets a website hand an AI agent real tools — structured actions instead of clicks. This page's tools are live right now: from ChatGPT, an agent can inspect and approve this demo's expense while a human edits it from the screen. Two operators. One live state. A new class of bug.",
+      body: "WebMCP gives AI agents real tools on your site — the tool calls you just watched. This page's registry is live right now.",
       datum: "document.modelContext.registerTool(…) — live on this page",
       tools: [],
     },
     {
       act: "Act 01 — Record",
       title: "The race is real.",
-      body: `Play it yourself: inspect as the agent from ChatGPT, change the amount as the human, then complete the stale review. Every semantic operation is recorded.`,
+      body: `That race is replayable — drive both operators yourself, from ChatGPT or the page. Every operation is recorded.`,
       thesis: "Every operator followed the rules. The system still broke its own.",
       datum: `${believed} · v${preview.believed.version} → ${changed} · v${preview.changed.version}`,
       tools: ["inspect_expense", "approve_reviewed_expense"],
@@ -132,21 +133,21 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
     {
       act: "Act 02 — Explore",
       title: "Every ordering, explored.",
-      body: "Paradox then tries every ordering of the recorded actions — a bounded model checker — and evaluates each committed state against rules that must always hold, like approved amount = reviewed amount.",
+      body: "Paradox tries every ordering of the recorded actions and checks each outcome against one rule: approved = reviewed.",
       datum: `${preview.schedulesExplored} schedules · ${preview.counterexamples} counterexamples`,
       tools: ["explore_futures"],
     },
     {
       act: "Act 03 — Repair",
       title: "The guard goes in.",
-      body: "The failing ordering is minimized to three essential operations, then a semantic version guard is applied to the approval implementation.",
+      body: "The shortest failure is isolated, and a version guard goes into the approval tool.",
       datum: "9 microsteps → 3 essential operations",
       tools: ["inspect_counterexample", "apply_version_guard"],
     },
     {
       act: "Act 04 — Verify",
       title: "The color leaves the universe.",
-      body: "The counterexample — the shortest failing sequence — replays as blocked with STATE_CHANGED, and the full bounded space re-explores to zero counterexamples.",
+      body: "The same failing sequence replays as blocked. Nothing survives re-exploration.",
       datum: "STATE_CHANGED · 0 counterexamples survive",
       tools: ["verify_repair"],
     },
@@ -247,7 +248,9 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
           <div className="hero-copy">
             <motion.span className="section-label" {...reveal(0.04)}>The correctness lab for WebMCP apps</motion.span>
             <motion.h1 {...reveal(0.1)}>Explore every future<br />{" "}before your users do.</motion.h1>
-            <motion.p {...reveal(0.32)}>An agent read {believed}. A human changed it to {changed}. The agent approved it anyway. Paradox finds these races — and proves the fix.</motion.p>
+            <motion.div {...reveal(0.3)}>
+              <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
+            </motion.div>
             <motion.div className="hero-actions" {...reveal(0.5)}>
               <GravityLink className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger" onClick={exitToLab} reduce={reduceMotion}>
                 Run the race <ArrowRight aria-hidden="true" />
@@ -274,10 +277,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
               </button>
             ))}
           </div>
-          <p className={`obs-status ${phase >= 3 ? "is-violated" : ""}`} aria-live="polite">
-            {phaseStatus[phase]}
-            <span className="sr-only"> {phaseAnnouncements[phase]}</span>
-          </p>
+          <p className="sr-only" aria-live="polite">{phaseStatus[phase]}. {phaseAnnouncements[phase]}</p>
         </motion.div>
       </div>
 

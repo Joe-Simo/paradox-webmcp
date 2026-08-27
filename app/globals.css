@@ -587,7 +587,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: var(--space-2) var(--space-6);
   min-height: 64px;
@@ -608,6 +608,26 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .scene-card .act-tools { margin-top: var(--space-4); }
 .lab-iris { position: fixed; inset: 0; z-index: 90; background: var(--night-bg); }
 .gravity-well { display: inline-flex; }
+.race-vignette { width: min(430px, 100%); margin: var(--space-6) 0 var(--space-2); overflow: hidden; border: 1px solid var(--night-line); border-radius: 12px; background: rgba(6, 9, 17, 0.68); backdrop-filter: blur(12px); transition: border-color 260ms ease-out; }
+.race-vignette.has-changed { border-color: rgba(255, 197, 67, 0.35); }
+.race-vignette.is-violated { border-color: rgba(255, 77, 94, 0.5); }
+.vignette-chrome { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--night-line); padding: 7px 12px; color: var(--night-muted); font-family: var(--font-geist-mono), monospace; font-size: 9px; letter-spacing: 0.07em; text-transform: uppercase; }
+.vignette-chrome i { width: 7px; height: 7px; border-radius: var(--radius-full); background: rgba(255, 255, 255, 0.22); }
+.vignette-chrome code { margin-left: auto; font-size: 8px; color: var(--gray-700); }
+.vignette-body { padding: 10px 14px 12px; }
+.vignette-row { display: flex; align-items: center; justify-content: space-between; color: var(--night-muted); font-size: 12px; line-height: 18px; }
+.vignette-status { border: 1px solid rgba(255, 194, 102, 0.42); border-radius: var(--radius-full); background: var(--amber-100); color: var(--amber-900); padding: 0 8px; font-size: 10px; line-height: 16px; }
+.vignette-status.is-approved { border-color: rgba(74, 197, 122, 0.42); background: var(--green-100); color: var(--green-900); }
+.vignette-amount { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 10px; }
+.vignette-amount strong { color: var(--night-ink); font-size: 34px; font-weight: 600; line-height: 1; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.vignette-amount code { color: var(--night-muted); font-size: 11px; }
+.vignette-events { display: grid; gap: 5px; }
+.vignette-chip { display: flex; width: fit-content; max-width: 100%; align-items: center; gap: 7px; border: 1px solid; border-radius: 8px; padding: 3px 9px; }
+.vignette-chip svg { width: 12px; height: 12px; flex: none; }
+.vignette-chip code { overflow: hidden; font-size: 10.5px; line-height: 16px; letter-spacing: -0.01em; text-overflow: ellipsis; white-space: nowrap; }
+.vignette-chip.is-agent { border-color: rgba(98, 160, 255, 0.4); background: var(--blue-100); color: var(--blue-1000); }
+.vignette-chip.is-human { border-color: rgba(255, 194, 102, 0.42); background: var(--amber-100); color: var(--amber-1000); }
+.vignette-chip.is-danger { border-color: rgba(255, 77, 94, 0.5); background: var(--red-100); color: var(--red-1000); font-weight: 600; }
 .obs-step-dot { width: 6px; height: 6px; flex: none; border-radius: var(--radius-full); background: rgba(242, 245, 252, 0.32); transition: background-color 150ms ease-out, box-shadow 150ms ease-out; }
 .obs-step:hover .obs-step-dot, .obs-step[aria-pressed="true"] .obs-step-dot { background: #f2f5fc; box-shadow: 0 0 10px rgba(242, 245, 252, 0.7); }
 .obs-step-dot.is-violation { background: rgba(255, 77, 94, 0.4); }
@@ -671,7 +691,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
   .replay-line { width: 1px; height: 28px; justify-self: center; }
   .guard-stop { grid-column: 1; justify-self: stretch; margin: 0; }
   .landing-nav { padding: 0 var(--space-4); }
-  .observatory-hero { align-items: flex-start; padding: calc(var(--header-height) + var(--space-8)) var(--space-4) 42vh; }
+  .observatory-hero { align-items: flex-start; padding: calc(var(--header-height) + var(--space-6)) var(--space-4) 22vh; }
   .journey-scene { min-height: 88svh; padding: var(--space-8) var(--space-4); }
   .scene-card h2 { font-size: clamp(26px, 7vw, 34px); }
   .hero-copy h1 { font-size: clamp(46px, 11vw, 60px); }
