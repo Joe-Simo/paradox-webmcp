@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Braces, GitBranch, Radio, RotateCcw, ScanSearch, ShieldCheck } from "lucide-react";
+import { Braces, GitBranch, RotateCcw, ScanSearch, ShieldCheck } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useParadoxStore } from "@/stores/paradox-store";
@@ -58,19 +58,13 @@ export function CapabilityRail() {
     <aside className="capability-rail" aria-label="Available WebMCP capabilities">
       <div className="rail-heading">
         <span>WebMCP capabilities</span>
-        <Badge tone={supported ? "green" : "gray"}>{!hydrated ? "Connecting" : supported ? "Registry live" : "Client needed"}</Badge>
+        <Badge tone={supported ? "green" : "gray"}>{!hydrated ? "Connecting" : supported ? `Live · ${surfaceName(pathname)}` : "No agent"}</Badge>
       </div>
-      <p className="rail-plain">The structured tools this page registers for agents right now. The set changes as the workflow advances.</p>
       <p className="sr-only" aria-live="polite">{changeStamp > 0 ? `Tool surface changed: ${capabilities.length} tools registered.` : ""}</p>
-      <div className={`registry-signal ${supported ? "is-live" : ""}`}>
-        <div className="registry-orbit" aria-hidden="true"><Radio /></div>
-        <div><span>Active surface</span><strong>{surfaceName(pathname)}</strong></div>
-        <div className="registry-count"><code>{capabilities.length.toString().padStart(2, "0")}</code><span>tools</span></div>
-      </div>
       {!supported && (
         <div className="compatibility-note" role="status">
           <Braces className="size-4" aria-hidden="true" />
-          <p><strong>WebMCP client not detected.</strong> Open this page in a supported agent browser to invoke registered tools. Local controls replay the same domain services. <Link href="/docs#webmcp-client">Setup details</Link></p>
+          <p>No agent connected — these tools wait for a WebMCP browser. The buttons work everywhere. <Link href="/docs#webmcp-client">Setup</Link></p>
         </div>
       )}
       {registryError && (

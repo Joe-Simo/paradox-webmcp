@@ -14,8 +14,9 @@ export function WebmcpPill() {
       title="A ChatGPT agent can operate this page through its registered WebMCP tools. The tool set changes as the workflow advances."
     >
       <Radio aria-hidden="true" />
-      <span>{webmcpSupported ? "WebMCP client" : "local controls"}</span>
-      <code>{!hydrated ? "connecting" : webmcpSupported ? `${capabilities.length} tools` : "no registry"}</code>
+      {webmcpSupported
+        ? <><span>Agent tools</span><code>{!hydrated ? "…" : capabilities.length}</code></>
+        : <span>{!hydrated ? "connecting" : "No agent connected"}</span>}
     </span>
   );
 }

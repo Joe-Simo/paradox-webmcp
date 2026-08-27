@@ -17,13 +17,19 @@ const DB_NAME = "paradox-correctness-lab";
 const ACTIVE_SESSION_ID = "expense-approval-golden";
 
 function database() {
-  return openDB<ParadoxDB>(DB_NAME, 2, {
-    upgrade(db) {
+  return openDB<ParadoxDB>(DB_NAME, 3, {
+    upgrade(db, oldVersion, _newVersion, transaction) {
       if (!db.objectStoreNames.contains("sessions")) db.createObjectStore("sessions");
       if (!db.objectStoreNames.contains("runs")) db.createObjectStore("runs");
       if (!db.objectStoreNames.contains("findings")) db.createObjectStore("findings");
       if (!db.objectStoreNames.contains("verifications")) db.createObjectStore("verifications");
       if (!db.objectStoreNames.contains("workspace")) db.createObjectStore("workspace");
+      // Demo data only: discard sessions persisted before the current fixture.
+      if (oldVersion > 0 && oldVersion < 3) {
+        for (const store of ["sessions", "runs", "findings", "verifications", "workspace"] as const) {
+          if (db.objectStoreNames.contains(store)) void transaction.objectStore(store).clear();
+        }
+      }
     },
   });
 }

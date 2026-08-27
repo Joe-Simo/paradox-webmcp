@@ -40,9 +40,12 @@ export function ExpenseFixture() {
   return (
     <main id="main-content" className="ledger-grid" tabIndex={-1}>
       <div className="ledger-context">
-        <span className="section-label">Instrumented fixture / Expense 481</span>
         <h1>One expense.<br />{" "}Two operators.</h1>
-        <p>Inspect as the agent, change the amount as the human, then complete the stale review. Paradox records every semantic operation from both operators.</p>
+        <ol className="race-steps">
+          <li><span>1</span>Inspect as the agent</li>
+          <li><span>2</span>Change the amount as the human</li>
+          <li><span>3</span>Complete the stale review</li>
+        </ol>
       </div>
 
       <motion.section layout={!reduceMotion} className={`expense-specimen${hasDiverged ? " has-diverged" : ""}${isViolation ? " is-violation" : ""}`} aria-labelledby="expense-title">
@@ -93,22 +96,19 @@ export function ExpenseFixture() {
             <ShieldAlert className="size-4" aria-hidden="true" /> Complete Review
           </Button>
         </div>
-        <p className="control-provenance">These evaluation controls call the same instrumented services as WebMCP and are recorded as <code>local_control</code>.</p>
         {notice && <p role="status" aria-live="polite" className="inline-notice">{notice}</p>}
       </motion.section>
 
-      <aside className="review-belief" aria-label="Agent review state">
-        <span className="section-label">Agent belief</span>
-        {token ? (
-          <>
-            <div className="belief-ring"><Bot aria-hidden="true" /><span>{money.format(token.inspectedAmountCents / 100)}</span><code>v{token.inspectedVersion}</code></div>
-            <p>{token.inspectedAmountCents < session.ledger.policyLimitCents ? "Below policy at inspection." : "Above policy at inspection."}</p>
-          </>
-        ) : <p className="muted-copy">No review exists. Inspect the expense from ChatGPT or the shared control.</p>}
-      </aside>
+      {token && (
+        <aside className="review-belief" aria-label="Agent review state">
+          <span className="section-label">Agent belief</span>
+          <div className="belief-ring"><Bot aria-hidden="true" /><span>{money.format(token.inspectedAmountCents / 100)}</span><code>v{token.inspectedVersion}</code></div>
+          <p>{token.inspectedAmountCents < session.ledger.policyLimitCents ? "Below policy at inspection." : "Above policy at inspection."}</p>
+        </aside>
+      )}
 
       <div className="explore-cta">
-        <div><span>When the trace contains inspect, edit, and approve</span><strong>Ask Paradox which future failed.</strong></div>
+        <strong>Ask Paradox which future failed.</strong>
         <Link href="/lab/expense-approval" className={buttonVariants({ variant: "secondary" })}>Explore Futures <ArrowRight aria-hidden="true" /></Link>
       </div>
     </main>
