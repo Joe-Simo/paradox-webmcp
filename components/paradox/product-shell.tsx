@@ -4,10 +4,28 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Check, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ObservatoryCanvas } from "@/components/observatory/observatory-canvas";
 import { WebmcpPill } from "@/components/paradox/webmcp-pill";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { resetLabService } from "@/stores/services";
 import { hasRecordedRace } from "@/domain/ledger/model";
+
+// The lab lives in the same universe as the landing: the disk answers the
+// visitor's own actions — calm until the race, crimson at the violation,
+// monochrome again once the guard is verified.
+function cosmosFor(state: {
+  diverged: boolean;
+  violated: boolean;
+  hasFinding: boolean;
+  guarded: boolean;
+  verified: boolean;
+}) {
+  if (state.verified) return { divergence: 0.2, violation: 0 };
+  if (state.guarded) return { divergence: 0.55, violation: 0.25 };
+  if (state.violated || state.hasFinding) return { divergence: 1, violation: 1 };
+  if (state.diverged) return { divergence: 0.6, violation: 0 };
+  return { divergence: 0.15, violation: 0 };
+}
 
 export function ProductShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
@@ -16,6 +34,16 @@ export function ProductShell({ children }: { children: React.ReactNode }) {
   const finding = useParadoxStore((state) => state.finding);
   const verification = useParadoxStore((state) => state.verification);
   const guarded = session.ledger.guardMode === "versioned";
+
+  const expense = session.ledger.expenses["481"];
+  const token = session.activeReviewTokenId ? session.reviewTokens[session.activeReviewTokenId] : null;
+  const cosmos = cosmosFor({
+    diverged: Boolean(token && token.inspectedVersion !== expense.version),
+    violated: expense.status === "approved" && expense.approvedFromReviewVersion !== expense.version,
+    hasFinding: Boolean(finding),
+    guarded,
+    verified: Boolean(verification?.verified),
+  });
 
   const acts = [
     {
@@ -58,6 +86,9 @@ export function ProductShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="product-shell">
+      <div className="lab-cosmos" aria-hidden="true">
+        <ObservatoryCanvas divergence={cosmos.divergence} violation={cosmos.violation} />
+      </div>
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="product-header">
         <Link href="/" className="wordmark" aria-label="Paradox home" translate="no">Paradox</Link>
