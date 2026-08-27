@@ -11,7 +11,6 @@ export default function HomePage() {
       <div className="observatory-shell">
         <header className="landing-nav">
           <span className="wordmark" translate="no">Paradox</span>
-          <span>The correctness lab for the human-agent web</span>
           <div className="landing-nav-actions">
             <Link href="/docs">Docs</Link>
             <a href="https://github.com/Joe-Simo/paradox-webmcp" aria-label="Paradox on GitHub" title="GitHub" target="_blank" rel="noreferrer"><Github aria-hidden="true" /></a>
@@ -51,6 +50,7 @@ export default function HomePage() {
             <p className="act-tools"><code>verify_repair</code></p>
           </article>
         </div>
+        <p className="hero-proof acts-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
       </section>
       <section className="landing-statement" aria-labelledby="statement-title">
         <span className="section-label">Why Paradox</span>

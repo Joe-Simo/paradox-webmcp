@@ -70,7 +70,7 @@ Claude Code later drove the observatory redesign: the full-bleed vgpu gravitatio
 - **One real WebMCP product:** Ledger and Paradox are connected surfaces of the same application and the same stateful correctness workflow.
 - **Real human-agent race:** the unsafe approval implementation genuinely commits a human-modified expense from a stale agent review.
 - **Dynamic tools:** capabilities are registered and removed as the workflow changes rather than being simulated in the interface.
-- **A physics-true signature visual:** the landing is a full-bleed WebGPU observatory built with vgpu — a gravitational lens bends a field of versioned state-light, so observed state versus real state becomes literal bent light, and the Einstein ring flares as the stale approval crosses it. A static deep-field fallback covers browsers without WebGPU, and reduced motion freezes the lens to a single frame.
+- **A physics-true signature visual:** the landing is a cinematic relativistic black hole in WebGPU (vgpu's baked G-buffer pipeline): the frame stays monochrome through Inspect, Change, and Approve, and the violated invariant at Commit is the only color that ever enters the universe. A static deep-field fallback covers browsers without WebGPU, and reduced motion renders one still frame.
 - **Four-act spine:** Record → Explore → Repair → Verify is persistent product navigation; locked acts state exactly how to unlock them.
 - **Semantic recording:** events contain actors, actions, logical time, versions, read/write sets, review tokens, and pre/post state hashes.
 - **Bounded breadth-first exploration:** the engine searches valid schedules and naturally prioritizes short counterexamples.
@@ -94,7 +94,7 @@ Paradox is a single-origin Next.js 16 application deployed on Vercel.
 - Tailwind CSS v4 and customized shadcn/ui primitives
 - Geist Sans and Geist Mono
 - Motion for causal transitions
-- vgpu (WebGPU) for the observatory lens, with a no-WebGPU static fallback
+- vgpu (WebGPU) for the baked black-hole hero, with a no-WebGPU static fallback
 - Zustand for active state
 - IndexedDB via `idb` for local session persistence
 
@@ -183,7 +183,7 @@ The locked recording target is 2 minutes 45 seconds and will show the live seque
 
 The following upload-ready PNGs were captured from the public production build at 1440×900 or as clean content-surface crops:
 
-1. **Observatory landing at the unsafe commit:** [`docs/submission-assets/01-paradox-landing.png`](docs/submission-assets/01-paradox-landing.png) — the WebGPU gravitational lens with the Einstein ring flaring as the stale approval crosses it.
+1. **Observatory landing at the unsafe commit:** [`docs/submission-assets/01-paradox-landing.png`](docs/submission-assets/01-paradox-landing.png) — the WebGPU black hole at the Commit act, crimson flooding an otherwise monochrome frame.
 2. **Ledger inspection:** [`docs/submission-assets/02-ledger-inspected.png`](docs/submission-assets/02-ledger-inspected.png) — $2,399/v7 with the agent review token.
 3. **Unsafe commit:** [`docs/submission-assets/03-ledger-unsafe-commit.png`](docs/submission-assets/03-ledger-unsafe-commit.png) — $23,999/v8 approved while the agent belief remains $2,399/v7.
 4. **Hero / project thumbnail:** [`docs/submission-assets/04-multiverse-finding.png`](docs/submission-assets/04-multiverse-finding.png) — the computed $23,999/v8 counterexample branch, metrics, and shortest failure.

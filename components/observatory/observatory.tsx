@@ -16,12 +16,7 @@ const phaseAnnouncements = [
   "System commits the version 8 expense at 23,999 dollars. The reviewed-version invariant is violated.",
 ] as const;
 
-const phaseStatus = [
-  "The agent inspects $2,399 · v7",
-  "The human changes it to $23,999 · v8",
-  "The agent approves from its stale v7 review",
-  "$23,999 committed from a v7 review — invariant violated",
-] as const;
+const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
 const lensByPhase = [
   { divergence: 0.1, violation: 0 },
@@ -33,6 +28,14 @@ const lensByPhase = [
 export function Observatory({ preview }: { preview: GoldenPreview }) {
   const [phase, setPhase] = useState(3);
   const isViolation = phase >= 3;
+  const believed = money.format(preview.believed.amountCents / 100);
+  const changed = money.format(preview.changed.amountCents / 100);
+  const phaseStatus = [
+    `The agent inspects ${believed} · v${preview.believed.version}`,
+    `The human changes it to ${changed} · v${preview.changed.version}`,
+    `The agent approves from its stale v${preview.believed.version} review`,
+    `${changed} committed from a v${preview.believed.version} review — invariant violated`,
+  ] as const;
 
   return (
     <>
@@ -40,7 +43,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
       <div className="observatory-hero">
         <div className="hero-copy">
           <h1>Explore every future<br />{" "}before your users do.</h1>
-          <p>A ChatGPT agent and a human operate one live app. Paradox explores every ordering of their actions and finds the race that corrupts state.</p>
+          <p>A ChatGPT agent and a human share one live app. Paradox finds the races between them.</p>
           <div className="hero-actions">
             <Link className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger">Run the race <ArrowRight aria-hidden="true" /></Link>
             <Link className="hero-text-link" href="/docs">How it works</Link>
@@ -67,7 +70,6 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
           {phaseStatus[phase]}
           <span className="sr-only"> {phaseAnnouncements[phase]}</span>
         </p>
-        <p className="hero-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
       </div>
     </>
   );

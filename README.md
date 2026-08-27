@@ -43,7 +43,7 @@ Every callback reads the current Zustand state, invokes the same domain services
 
 ## The observatory
 
-The landing page is a full-bleed WebGPU observatory built with [vgpu](https://vgpu.sh) (MIT, Vercel Labs): a point-mass gravitational lens bends a field of versioned state-light, so what the observer sees is not where reality is — the same divergence the stale-review race exploits. Stepping the four semantic acts drives the lens mass, and the Einstein ring flares red at the unsafe commit while the stale approval crosses it. Without WebGPU the page falls back to a static deep field; the product is fully usable either way, and the canvas pauses when offscreen and freezes to a single frame under reduced motion.
+The landing page is a cinematic relativistic black hole rendered in WebGPU, adapted from the optimized [vgpu](https://vgpu.sh) hero pipeline (MIT, Vercel Labs): geodesics are baked once into a G-buffer, so each frame only shades the Keplerian accretion disk and lensed star field before a three-scale HDR bloom. The frame stays monochrome through Inspect, Change, and Approve — the violation at Commit is the only color that ever enters the universe, and the four step buttons drive it. Performance discipline is inherited from the example: DPR-1 rendering, a paced 60fps loop that pauses offscreen and on hidden tabs, and re-bakes only on resize. Without WebGPU the page falls back to a static deep field; under reduced motion it renders a single still frame.
 
 ## Measured golden model
 

@@ -1,140 +1,205 @@
-import { clock, effect, frame, frameLoop, init, sampler, surface, target, type Clock, type Effect, type Frame, type FrameLoopHandle, type Gpu, type Surface, type Target } from "vgpu";
-import { blurWgsl, brightPassWgsl, compositeWgsl, sceneWgsl } from "./black-hole-shaders";
+// Browser lifecycle for the baked black-hole pipeline, ported from the vgpu
+// optimized example (MIT, Vercel Labs). Paradox adds two semantic drives —
+// divergence and violation — plus a static single-frame branch for reduced
+// motion, and resolves readiness as a boolean so the page can keep its
+// deep-field fallback when WebGPU is unavailable.
+
+import { frame, init, surface as createSurface, type Frame, type Gpu, type Surface } from "vgpu";
+
+import {
+  createEffects,
+  createTargets,
+  destroyTargets,
+  prewarm,
+  renderChain,
+  setBakeUniforms,
+  setBindings,
+  setPostUniforms,
+  setShadeUniforms,
+  type Effects,
+  type Targets,
+} from "./pipeline";
+import { defaultHeroSettings } from "./settings";
 
 export type LensState = { divergence: number; violation: number };
 
 export type LensRenderer = {
   ready: Promise<boolean>;
   setState(state: LensState): void;
-  setPointer(x: number, y: number): void;
-  start(): void;
-  stop(): void;
   dispose(): void;
 };
 
+const SCENE_YAW_TAU_S = 0.325;
+const MAX_FRAME_DT_S = 0.1;
+const TARGET_FPS = 60;
+const FRAME_PACING_EPSILON_MS = 2;
+const MIN_FRAME_INTERVAL_MS = 1000 / TARGET_FPS - FRAME_PACING_EPSILON_MS;
+const MOBILE_QUERY = "(max-width: 767px)";
 const STATIC_TIME = 26.0;
-const CLEAR = [0, 0, 0, 1] as const;
-const BLURS = [
-  { direction: [1, 0], radius: 1 },
-  { direction: [0, 1], radius: 1 },
-  { direction: [1, 0], radius: 2.4 },
-  { direction: [0, 1], radius: 2.4 },
-] as const;
-
-type Effects = {
-  scene: Effect;
-  bright: Effect;
-  blur: Effect[];
-  composite: Effect;
-};
-
-type Targets = {
-  scene: Target;
-  bloom: readonly [Target, Target];
-};
-
-function createTargets(gpu: Gpu, size: readonly [number, number]): Targets {
-  const height = Math.min(360, size[1]);
-  const bloom: [number, number] = [Math.max(1, Math.round((height * size[0]) / size[1])), height];
-  let scene: Target | undefined;
-  let bloomA: Target | undefined;
-  try {
-    scene = target(gpu, { size, format: "rgba16float" });
-    bloomA = target(gpu, { size: bloom, format: "rgba16float" });
-    return { scene, bloom: [bloomA, target(gpu, { size: bloom, format: "rgba16float" })] as const };
-  } catch (error) {
-    destroy(bloomA);
-    destroy(scene);
-    throw error;
-  }
-}
-
-function destroyTargets(targets: Targets): void {
-  destroy(targets.bloom[1]);
-  destroy(targets.bloom[0]);
-  destroy(targets.scene);
-}
-
-function destroy(color: Target | undefined): void {
-  (color as { destroy?: () => void } | undefined)?.destroy?.();
-}
-
-function setBindings(effects: Effects, targets: Targets): void {
-  effects.scene.set({ params: { resolution: targets.scene.size } });
-  effects.bright.set({ src: targets.scene });
-  effects.blur.forEach((blur, i) =>
-    blur.set({ src: targets.bloom[i % 2], blur: { texelSize: targets.bloom[i % 2].texelSize } }),
-  );
-  effects.composite.set({ scene: targets.scene, bloom: targets.bloom[0] });
-}
 
 export function createLensRenderer(canvas: HTMLCanvasElement, animate: boolean): LensRenderer {
+  const settings = defaultHeroSettings();
+  const desktopLayout = {
+    centerX: settings.centerX,
+    centerY: settings.centerY,
+    cameraRoll: settings.cameraRoll,
+    mouseYaw: settings.mouseYaw,
+    centerFade: settings.centerFade,
+  };
+  const mobileQuery = window.matchMedia(MOBILE_QUERY);
+  const applyResponsiveLayout = () => {
+    Object.assign(
+      settings,
+      mobileQuery.matches
+        ? { centerX: 0, centerY: -0.1, cameraRoll: -0.16, mouseYaw: 0, centerFade: 1 }
+        : desktopLayout,
+    );
+  };
+  applyResponsiveLayout();
+  const bloomScale = Math.min(Math.max(window.devicePixelRatio, 1), 2) / 2;
+  settings.bloom.radius *= bloomScale;
+  settings.bloom.strength *= bloomScale;
+
   let disposed = false;
   let gpu: Gpu | undefined;
   let canvasSurface: Surface | undefined;
   let effects: Effects | undefined;
   let targets: Targets | undefined;
-  let gpuClock: Clock | undefined;
-  let loop: FrameLoopHandle | undefined;
-  let running = false;
+  let loop: { stop(): void } | undefined;
   let observer: ResizeObserver | undefined;
+  let intersection: IntersectionObserver | undefined;
+  let documentVisible = typeof document === "undefined" ? true : !document.hidden;
+  let canvasIntersecting = true;
+
+  let started = false;
+  let animationTime = 0;
+  let lastFrameAt: number | undefined;
   let resizeFrame = 0;
-  let pendingSize: { width: number; height: number; dpr: number } | undefined;
+  let pendingSize: { width: number; height: number } | undefined;
+  let forceBake = true;
+  let pointerXNormalized = 0;
+  let currentSceneYaw = 0;
+  let lastYawAt: number | undefined;
 
   const state: LensState = { divergence: 0, violation: 0 };
   const current: LensState = { divergence: 0, violation: 0 };
-  const pointerTarget = { yaw: 0, pitch: 0.07 };
-  const pointer = { yaw: 0, pitch: 0.07 };
 
-  const wide = () => (canvasSurface ? canvasSurface.size[0] / Math.max(canvasSurface.size[1], 1) > 1.05 : true);
+  const onLayoutChange = () => {
+    applyResponsiveLayout();
+    forceBake = true;
+    if (!animate) renderOnce();
+  };
+  mobileQuery.addEventListener("change", onLayoutChange);
 
-  const applyUniforms = (time: number) => {
-    if (!effects) return;
-    effects.scene.set({
-      params: {
-        center: wide() ? [0.52, 0.02] : [0.0, 0.34],
-        pointer: [pointer.yaw, pointer.pitch],
-        time,
-        divergence: current.divergence,
-        violation: current.violation,
-      },
-    });
+  const onPointerMove = (event: PointerEvent) => {
+    if (event.pointerType !== "mouse") return;
+    const width = Math.max(window.innerWidth, 1);
+    pointerXNormalized = Math.min(1, Math.max(-1, (event.clientX / width) * 2 - 1));
+  };
+  const recenterPointer = () => {
+    pointerXNormalized = 0;
+  };
+  const onPointerOut = (event: PointerEvent) => {
+    if (event.relatedTarget === null) recenterPointer();
+  };
+  const onVisibilityChange = () => {
+    if (document.hidden) recenterPointer();
+    documentVisible = !document.hidden;
+    reconcileLoop();
   };
 
-  const renderChain = (activeFrame: Frame) => {
-    if (!effects || !targets || !canvasSurface) return;
-    const chain = { effects, targets, output: canvasSurface };
-    activeFrame.pass({ target: chain.targets.scene, clear: CLEAR }, (pass) => pass.draw(chain.effects.scene));
-    activeFrame.pass({ target: chain.targets.bloom[0], clear: CLEAR }, (pass) => pass.draw(chain.effects.bright));
-    chain.effects.blur.forEach((blur, i) => {
-      activeFrame.pass({ target: chain.targets.bloom[(i + 1) % 2], clear: CLEAR }, (pass) => pass.draw(blur));
-    });
-    activeFrame.pass({ target: chain.output, clear: CLEAR }, (pass) => pass.draw(chain.effects.composite));
+  function reconcileLoop(): void {
+    if (!started || !gpu || !animate) return;
+    const shouldRun = !disposed && documentVisible && canvasIntersecting;
+    if (shouldRun === Boolean(loop)) return;
+    if (shouldRun) {
+      lastFrameAt = undefined;
+      lastYawAt = undefined;
+      loop = startPacedLoop(gpu);
+    } else {
+      loop?.stop();
+      loop = undefined;
+    }
+  }
+
+  function startPacedLoop(activeGpu: Gpu): { stop(): void } {
+    let stopped = false;
+    let lastPresentedAt: number | undefined;
+    const tick = (timestamp: number): void => {
+      if (stopped) return;
+      if (lastPresentedAt === undefined || timestamp - lastPresentedAt >= MIN_FRAME_INTERVAL_MS) {
+        lastPresentedAt = timestamp;
+        try {
+          frame(activeGpu, renderFrame);
+        } catch {
+          stopped = true;
+          return;
+        }
+      }
+      if (!stopped) frameHandle = requestAnimationFrame(tick);
+    };
+    let frameHandle = requestAnimationFrame(tick);
+    return {
+      stop(): void {
+        stopped = true;
+        cancelAnimationFrame(frameHandle);
+      },
+    };
+  }
+
+  const advanceAnimationTime = (now: number): number => {
+    animationTime += lastFrameAt === undefined ? 0 : Math.max(0, (now - lastFrameAt) / 1000);
+    lastFrameAt = now;
+    return animationTime;
+  };
+
+  const advanceSceneYaw = (now: number): number => {
+    if (settings.mouseYaw <= 0) {
+      currentSceneYaw = 0;
+      lastYawAt = now;
+      return 0;
+    }
+    const dt = lastYawAt === undefined ? 0 : Math.min(Math.max((now - lastYawAt) / 1000, 0), MAX_FRAME_DT_S);
+    lastYawAt = now;
+    const target = pointerXNormalized * Math.max(0, settings.mouseYaw);
+    currentSceneYaw += (target - currentSceneYaw) * (1 - Math.exp(-dt / SCENE_YAW_TAU_S));
+    return currentSceneYaw;
+  };
+
+  const renderFrame = (activeFrame: Frame): void => {
+    if (disposed || !effects || !targets || !canvasSurface) return;
+    const now = clockMs();
+    const runBake = forceBake;
+    forceBake = false;
+    if (runBake) setBakeUniforms(effects, targets, settings);
+    current.divergence += (state.divergence - current.divergence) * 0.05;
+    current.violation += (state.violation - current.violation) * 0.055;
+    setShadeUniforms(
+      effects,
+      targets,
+      settings,
+      advanceAnimationTime(now),
+      advanceSceneYaw(now),
+      current.divergence,
+      current.violation,
+    );
+    renderChain(activeFrame, effects, targets, canvasSurface, runBake);
   };
 
   const renderOnce = () => {
     if (disposed || !gpu || !effects || !targets || !canvasSurface) return;
-    applyUniforms(STATIC_TIME);
-    frame(gpu, (f) => renderChain(f));
-  };
-
-  const startLoop = () => {
-    if (disposed || !animate || running || !gpu || !effects || !canvasSurface) return;
-    running = true;
-    loop = frameLoop(gpu, (f) => {
-      current.divergence += (state.divergence - current.divergence) * 0.045;
-      current.violation += (state.violation - current.violation) * 0.05;
-      pointer.yaw += (pointerTarget.yaw - pointer.yaw) * 0.045;
-      pointer.pitch += (pointerTarget.pitch - pointer.pitch) * 0.045;
-      applyUniforms(gpuClock?.time ?? 0);
-      renderChain(f);
-    });
-  };
-
-  const stopLoop = () => {
-    running = false;
-    loop?.stop();
-    loop = undefined;
+    const staticEffects = effects;
+    const staticTargets = targets;
+    const output = canvasSurface;
+    const runBake = forceBake;
+    forceBake = false;
+    if (runBake) setBakeUniforms(staticEffects, staticTargets, settings);
+    setShadeUniforms(staticEffects, staticTargets, settings, STATIC_TIME, 0, current.divergence, current.violation);
+    try {
+      frame(gpu, (f) => renderChain(f, staticEffects, staticTargets, output, runBake));
+    } catch {
+      // A lost device leaves the static fallback in place.
+    }
   };
 
   const applyResize = () => {
@@ -143,31 +208,50 @@ export function createLensRenderer(canvas: HTMLCanvasElement, animate: boolean):
     pendingSize = undefined;
     if (disposed || !size || !gpu || !effects || !targets) return;
     try {
-      const next = createTargets(gpu, [
-        Math.max(1, Math.round(size.width * size.dpr)),
-        Math.max(1, Math.round(size.height * size.dpr)),
-      ]);
+      const previousTargets = targets;
+      const nextTargets = createTargets(gpu, [Math.max(1, Math.round(size.width)), Math.max(1, Math.round(size.height))]);
       try {
-        setBindings(effects, next);
+        setBindings(effects, nextTargets);
+        setPostUniforms(effects, nextTargets, settings);
       } catch (error) {
-        destroyTargets(next);
+        destroyTargets(nextTargets);
         throw error;
       }
-      const previous = targets;
-      targets = next;
-      destroyTargets(previous);
+      targets = nextTargets;
+      destroyTargets(previousTargets);
+      forceBake = true;
       if (!animate) renderOnce();
     } catch {
-      stopLoop();
+      loop?.stop();
+      loop = undefined;
     }
   };
 
-  const measure = () => {
-    if (disposed) return;
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width <= 0 || rect.height <= 0) return;
-    pendingSize = { width: rect.width, height: rect.height, dpr: Math.min(1.5, Math.max(1, window.devicePixelRatio || 1)) };
+  const resize = (size: { width: number; height: number }) => {
+    if (disposed || size.width <= 0 || size.height <= 0) return;
+    pendingSize = size;
     if (!resizeFrame) resizeFrame = requestAnimationFrame(applyResize);
+  };
+
+  const measure = () => {
+    resize({ width: canvas.clientWidth, height: canvas.clientHeight });
+  };
+
+  const dispose = () => {
+    if (disposed) return;
+    disposed = true;
+    loop?.stop();
+    if (resizeFrame) cancelAnimationFrame(resizeFrame);
+    observer?.disconnect();
+    intersection?.disconnect();
+    if (typeof window !== "undefined") {
+      mobileQuery.removeEventListener("change", onLayoutChange);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerout", onPointerOut);
+      window.removeEventListener("blur", recenterPointer);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    }
+    gpu?.dispose();
   };
 
   const initialize = async (): Promise<boolean> => {
@@ -176,34 +260,35 @@ export function createLensRenderer(canvas: HTMLCanvasElement, animate: boolean):
       nextGpu.dispose();
       return false;
     }
-    const activeGpu = nextGpu;
-    gpu = activeGpu;
-    canvasSurface = surface(activeGpu, canvas, { dpr: [1, 1.5] });
-    const samp = sampler(activeGpu, { minFilter: "linear", magFilter: "linear" });
-    effects = {
-      scene: effect(activeGpu, sceneWgsl, {
-        set: {
-          params: {
-            resolution: canvasSurface.size,
-            center: [0.52, 0.02],
-            pointer: [pointer.yaw, pointer.pitch],
-            time: STATIC_TIME,
-            divergence: 0,
-            violation: 0,
-          },
-        },
-      }),
-      bright: effect(activeGpu, brightPassWgsl, { set: { samp } }),
-      blur: BLURS.map((blur) => effect(activeGpu, blurWgsl, { set: { samp, blur } })),
-      composite: effect(activeGpu, compositeWgsl, { set: { samp } }),
-    };
-    targets = createTargets(activeGpu, canvasSurface.size);
+    gpu = nextGpu;
+    canvasSurface = createSurface(nextGpu, canvas, { dpr: 1 });
+    effects = createEffects(nextGpu);
+    targets = createTargets(nextGpu, canvasSurface.size);
     setBindings(effects, targets);
+    setPostUniforms(effects, targets, settings);
+    await prewarm(effects, targets, canvasSurface);
+    if (disposed) return false;
     observer = typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(measure);
     observer?.observe(canvas);
+    measure();
     if (animate) {
-      gpuClock = clock(activeGpu);
-      startLoop();
+      window.addEventListener("pointermove", onPointerMove, { passive: true });
+      window.addEventListener("pointerout", onPointerOut, { passive: true });
+      window.addEventListener("blur", recenterPointer);
+      document.addEventListener("visibilitychange", onVisibilityChange);
+      if (typeof IntersectionObserver !== "undefined") {
+        intersection = new IntersectionObserver(
+          (entries) => {
+            canvasIntersecting = entries[entries.length - 1]?.isIntersecting ?? canvasIntersecting;
+            reconcileLoop();
+          },
+          { threshold: 0 },
+        );
+        intersection.observe(canvas);
+      }
+      started = true;
+      documentVisible = !document.hidden;
+      reconcileLoop();
     } else {
       current.divergence = state.divergence;
       current.violation = state.violation;
@@ -212,7 +297,10 @@ export function createLensRenderer(canvas: HTMLCanvasElement, animate: boolean):
     return true;
   };
 
-  const ready = initialize().catch(() => false);
+  const ready = initialize().catch(() => {
+    if (!disposed) dispose();
+    return false;
+  });
 
   return {
     ready,
@@ -227,25 +315,10 @@ export function createLensRenderer(canvas: HTMLCanvasElement, animate: boolean):
         });
       }
     },
-    setPointer(x, y) {
-      pointerTarget.yaw = -x * 0.16;
-      pointerTarget.pitch = 0.07 + y * 0.1;
-    },
-    start() {
-      void ready.then((ok) => {
-        if (ok) startLoop();
-      });
-    },
-    stop() {
-      stopLoop();
-    },
-    dispose() {
-      if (disposed) return;
-      disposed = true;
-      if (resizeFrame) cancelAnimationFrame(resizeFrame);
-      observer?.disconnect();
-      stopLoop();
-      gpu?.dispose();
-    },
+    dispose,
   };
+}
+
+function clockMs(): number {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
 }
