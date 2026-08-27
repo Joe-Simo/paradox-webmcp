@@ -620,7 +620,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .race-vignette.is-violated { border-color: rgba(255, 77, 94, 0.5); }
 .vignette-chrome { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--night-line); padding: 7px 12px; color: var(--night-muted); font-family: var(--font-geist-mono), monospace; font-size: 9px; letter-spacing: 0.07em; text-transform: uppercase; }
 .vignette-chrome i { width: 7px; height: 7px; border-radius: var(--radius-full); background: rgba(255, 255, 255, 0.22); }
-.vignette-chrome code { margin-left: auto; font-size: 8px; color: var(--gray-700); }
+.vignette-chrome .vignette-example { margin-left: auto; border: 1px dashed rgba(255, 255, 255, 0.32); border-radius: var(--radius-full); padding: 1px 8px; color: var(--gray-900); font-size: 8px; letter-spacing: 0.09em; }
 .vignette-body { padding: 10px 14px 12px; }
 .vignette-row { display: flex; align-items: center; justify-content: space-between; color: var(--night-muted); font-size: 12px; line-height: 18px; }
 .vignette-status { border: 1px solid rgba(255, 194, 102, 0.42); border-radius: var(--radius-full); background: var(--amber-100); color: var(--amber-900); padding: 0 8px; font-size: 10px; line-height: 16px; }
