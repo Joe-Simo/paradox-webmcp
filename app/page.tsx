@@ -27,8 +27,8 @@ export default function HomePage() {
       </div>
       <section className="landing-statement" aria-labelledby="statement-title">
         <span className="section-label">Why you need this</span>
-        <h2 id="statement-title">Traditional tests check the human or the agent.<br />Paradox checks them together.</h2>
-        <p className="statement-sub">The same race ships in carts, bookings, refunds, and permissions. The fix is a tool contract: writes carry the version they believed.</p>
+        <h2 id="statement-title">Explore every future<br />before your users do.</h2>
+        <p className="statement-sub">Traditional tests check the human or the agent; Paradox checks them together. The same race ships in carts, bookings, refunds, and permissions — the fix is a tool contract: writes carry the version they believed.</p>
         <p className="hero-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
         <Link href="/docs">Install the instrumentation <ArrowRight aria-hidden="true" /></Link>
       </section>

@@ -597,7 +597,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
   backdrop-filter: blur(3px);
 }
 .journey-scenes { position: relative; z-index: 2; scroll-margin-top: 8svh; }
-.journey-scene { display: grid; min-height: 92svh; align-items: center; justify-items: start; padding: var(--space-10) clamp(32px, 5vw, 72px); }
+.journey-scene { display: grid; min-height: 74svh; align-items: center; justify-items: start; padding: var(--space-10) clamp(32px, 5vw, 72px); }
 .scene-card { max-width: 560px; border: 1px solid var(--night-line); border-radius: 16px; background: rgba(6, 9, 17, 0.62); padding: clamp(24px, 3vw, 40px); backdrop-filter: blur(12px); }
 .scene-card .act-index { display: block; margin-bottom: var(--space-3); }
 .scene-card h2 { margin: 0 0 var(--space-4); font-size: clamp(30px, 3.2vw, 44px); font-weight: 600; line-height: 1.02; letter-spacing: -0.045em; }
@@ -608,7 +608,14 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .scene-card .act-tools { margin-top: var(--space-4); }
 .lab-iris { position: fixed; inset: 0; z-index: 90; background: var(--night-bg); }
 .gravity-well { display: inline-flex; }
-.race-vignette { width: min(430px, 100%); margin: var(--space-6) 0 var(--space-2); overflow: hidden; border: 1px solid var(--night-line); border-radius: 12px; background: rgba(6, 9, 17, 0.68); backdrop-filter: blur(12px); transition: border-color 260ms ease-out; }
+.hero-note { margin: var(--space-2) 0 var(--space-4); color: var(--night-muted); font-size: 15px; line-height: 22px; }
+.install-line { display: inline-flex; align-items: center; gap: 4px; margin-bottom: var(--space-5, 20px); border: 1px solid var(--night-line-strong); border-radius: 10px; background: rgba(6, 9, 17, 0.7); padding: 4px 6px 4px 14px; backdrop-filter: blur(10px); }
+.install-line code { color: var(--gray-900); font-size: 12.5px; line-height: 20px; letter-spacing: -0.01em; user-select: all; }
+.install-line code span { color: var(--gray-700); }
+.install-line button { display: grid; width: 32px; height: 32px; place-items: center; border: 0; border-radius: 7px; background: transparent; color: var(--night-muted); cursor: pointer; }
+.install-line button:hover { background: rgba(255, 255, 255, 0.07); color: var(--night-ink); }
+.install-line button svg { width: 13px; height: 13px; }
+.race-vignette { width: min(430px, 100%); margin: var(--space-6) 0 0; overflow: hidden; border: 1px solid var(--night-line); border-radius: 12px; background: rgba(6, 9, 17, 0.68); backdrop-filter: blur(12px); transition: border-color 260ms ease-out; }
 .race-vignette.has-changed { border-color: rgba(255, 197, 67, 0.35); }
 .race-vignette.is-violated { border-color: rgba(255, 77, 94, 0.5); }
 .vignette-chrome { display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--night-line); padding: 7px 12px; color: var(--night-muted); font-family: var(--font-geist-mono), monospace; font-size: 9px; letter-spacing: 0.07em; text-transform: uppercase; }
@@ -692,7 +699,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
   .guard-stop { grid-column: 1; justify-self: stretch; margin: 0; }
   .landing-nav { padding: 0 var(--space-4); }
   .observatory-hero { align-items: flex-start; padding: calc(var(--header-height) + var(--space-6)) var(--space-4) 22vh; }
-  .journey-scene { min-height: 88svh; padding: var(--space-8) var(--space-4); }
+  .journey-scene { min-height: 70svh; padding: var(--space-8) var(--space-4); }
   .scene-card h2 { font-size: clamp(26px, 7vw, 34px); }
   .hero-copy h1 { font-size: clamp(46px, 11vw, 60px); }
   .observatory-steps { grid-template-columns: 1fr; padding-block: var(--space-3); }

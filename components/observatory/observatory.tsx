@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check, Copy } from "lucide-react";
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 import { buttonVariants } from "@/components/ui/button";
 import { ObservatoryCanvas } from "@/components/observatory/observatory-canvas";
@@ -57,6 +57,29 @@ function journeyState(progress: number): LensState {
     previous = anchor;
   }
   return journeyAnchors[journeyAnchors.length - 1].state;
+}
+
+const INSTALL_COMMAND = "bun add github:Joe-Simo/paradox-webmcp";
+
+function InstallLine() {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(INSTALL_COMMAND);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch {
+      // Clipboard unavailable; the command stays selectable.
+    }
+  };
+  return (
+    <div className="install-line">
+      <code><span aria-hidden="true">$ </span>{INSTALL_COMMAND}</code>
+      <button type="button" onClick={() => void copy()} aria-label={copied ? "Copied" : "Copy install command"}>
+        {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+      </button>
+    </div>
+  );
 }
 
 function GravityLink({ href, onClick, children, className, reduce }: {
@@ -118,7 +141,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
     {
       act: "First — what is WebMCP?",
       title: "Your site just got a second user.",
-      body: "WebMCP gives AI agents real tools on your site — the tool calls you just watched. This page's registry is live right now.",
+      body: "WebMCP gives agents real tools on your pages — those tool calls above are the new second user. This page's registry is live.",
       datum: "document.modelContext.registerTool(…) — live on this page",
       tools: [],
     },
@@ -246,14 +269,18 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
         </motion.div>
         <motion.div className="observatory-hero" style={reduceMotion ? undefined : { opacity: heroOpacity }}>
           <div className="hero-copy">
-            <motion.span className="section-label" {...reveal(0.04)}>The correctness lab for WebMCP apps</motion.span>
-            <motion.h1 {...reveal(0.1)}>Explore every future<br />{" "}before your users do.</motion.h1>
+            <motion.span className="section-label" {...reveal(0.04)}>Correctness testing for WebMCP apps</motion.span>
+            <motion.h1 {...reveal(0.1)}>Your AI agent will<br />{" "}approve the wrong thing.</motion.h1>
             <motion.div {...reveal(0.3)}>
               <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
             </motion.div>
-            <motion.div className="hero-actions" {...reveal(0.5)}>
+            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races — and proves the fix.</motion.p>
+            <motion.div {...reveal(0.5)}>
+              <InstallLine />
+            </motion.div>
+            <motion.div className="hero-actions" {...reveal(0.58)}>
               <GravityLink className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger" onClick={exitToLab} reduce={reduceMotion}>
-                Run the race <ArrowRight aria-hidden="true" />
+                Run the live demo <ArrowRight aria-hidden="true" />
               </GravityLink>
               <a className="hero-text-link" href="#how-it-works">How it works</a>
             </motion.div>
