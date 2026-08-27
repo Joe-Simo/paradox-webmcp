@@ -36,9 +36,9 @@ const lensByPhase = [
 // holds. Anchors are act positions along the scene scroll.
 const journeyAnchors: Array<{ at: number; state: LensState }> = [
   { at: 0, state: { divergence: 1, violation: 1 } },
-  { at: 0.28, state: { divergence: 1, violation: 1 } },
-  { at: 0.55, state: { divergence: 0.85, violation: 0.9 } },
-  { at: 0.78, state: { divergence: 0.6, violation: 0.28 } },
+  { at: 0.42, state: { divergence: 1, violation: 1 } },
+  { at: 0.62, state: { divergence: 0.85, violation: 0.9 } },
+  { at: 0.82, state: { divergence: 0.6, violation: 0.28 } },
   { at: 1, state: { divergence: 0.22, violation: 0 } },
 ];
 
@@ -114,6 +114,13 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
   ] as const;
 
   const scenes = [
+    {
+      act: "First — what is WebMCP?",
+      title: "Your site just got a second user.",
+      body: "WebMCP lets a website hand an AI agent real tools — structured actions instead of clicks. This page's tools are live right now: from ChatGPT, an agent can inspect and approve this demo's expense while a human edits it from the screen. Two operators. One live state. A new class of bug.",
+      datum: "document.modelContext.registerTool(…) — live on this page",
+      tools: [],
+    },
     {
       act: "Act 01 — Record",
       title: "The race is real.",
@@ -238,6 +245,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
         </motion.div>
         <motion.div className="observatory-hero" style={reduceMotion ? undefined : { opacity: heroOpacity }}>
           <div className="hero-copy">
+            <motion.span className="section-label" {...reveal(0.04)}>The correctness lab for WebMCP apps</motion.span>
             <motion.h1 {...reveal(0.1)}>Explore every future<br />{" "}before your users do.</motion.h1>
             <motion.p {...reveal(0.32)}>An agent read {believed}. A human changed it to {changed}. The agent approved it anyway. Paradox finds these races — and proves the fix.</motion.p>
             <motion.div className="hero-actions" {...reveal(0.5)}>
@@ -288,7 +296,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
               <p>{scene.body}</p>
               {"thesis" in scene && scene.thesis ? <p className="scene-thesis">{scene.thesis}</p> : null}
               <p className="scene-datum"><code>{scene.datum}</code></p>
-              <p className="act-tools">{scene.tools.map((tool) => <code key={tool}>{tool}</code>)}</p>
+              {scene.tools.length > 0 && <p className="act-tools">{scene.tools.map((tool) => <code key={tool}>{tool}</code>)}</p>}
             </motion.article>
           </section>
         ))}
