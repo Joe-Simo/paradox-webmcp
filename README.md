@@ -41,6 +41,10 @@ Every callback reads the current Zustand state, invokes the same domain services
 6. Guarded commit semantics compare the current expense version with the inspected version.
 7. Exact replay and full bounded exploration report separate computed results.
 
+## The observatory
+
+The landing page is a full-bleed WebGPU observatory built with [vgpu](https://vgpu.sh) (MIT, Vercel Labs): a point-mass gravitational lens bends a field of versioned state-light, so what the observer sees is not where reality is — the same divergence the stale-review race exploits. Stepping the four semantic acts drives the lens mass, and the Einstein ring flares red at the unsafe commit while the stale approval crosses it. Without WebGPU the page falls back to a static deep field; the product is fully usable either way, and the canvas pauses when offscreen and freezes to a single frame under reduced motion.
+
 ## Measured golden model
 
 These values are computed by the engine and asserted by the browser flow; they are not presentation constants.

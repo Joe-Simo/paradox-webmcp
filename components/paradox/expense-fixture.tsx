@@ -42,7 +42,7 @@ export function ExpenseFixture() {
       <div className="ledger-context">
         <span className="section-label">Instrumented fixture / Expense 481</span>
         <h1>One expense.<br />{" "}Two operators.</h1>
-        <p>Ledger is the live domain inside Paradox. Human controls and WebMCP tools operate the same versioned state.</p>
+        <p>Inspect as the agent, change the amount as the human, then complete the stale review. Paradox records every semantic operation from both operators.</p>
       </div>
 
       <motion.section layout={!reduceMotion} className={`expense-specimen${hasDiverged ? " has-diverged" : ""}${isViolation ? " is-violation" : ""}`} aria-labelledby="expense-title">

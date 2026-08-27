@@ -63,11 +63,15 @@ Codex was used as the primary engineering collaborator for product architecture,
 
 Codex also helped keep the central claim testable: it traced every displayed result back to engine data, exercised the complete human-agent flow in Playwright, and verified lint, strict TypeScript, unit and property tests, end-to-end tests, and the production build.
 
+Claude Code later drove the observatory redesign: the full-bleed vgpu gravitational-lens landing, the four-act navigation spine, the plain-language clarity pass across the lab, and a verification loop covering WebGPU, static-fallback, reduced-motion, and mobile branches plus the full automated suite.
+
 ## Key Features
 
 - **One real WebMCP product:** Ledger and Paradox are connected surfaces of the same application and the same stateful correctness workflow.
 - **Real human-agent race:** the unsafe approval implementation genuinely commits a human-modified expense from a stale agent review.
 - **Dynamic tools:** capabilities are registered and removed as the workflow changes rather than being simulated in the interface.
+- **A physics-true signature visual:** the landing is a full-bleed WebGPU observatory built with vgpu — a gravitational lens bends a field of versioned state-light, so observed state versus real state becomes literal bent light, and the Einstein ring flares as the stale approval crosses it. A static deep-field fallback covers browsers without WebGPU, and reduced motion freezes the lens to a single frame.
+- **Four-act spine:** Record → Explore → Repair → Verify is persistent product navigation; locked acts state exactly how to unlock them.
 - **Semantic recording:** events contain actors, actions, logical time, versions, read/write sets, review tokens, and pre/post state hashes.
 - **Bounded breadth-first exploration:** the engine searches valid schedules and naturally prioritizes short counterexamples.
 - **State deduplication:** canonically equivalent machine states merge while preserving accurate schedule multiplicity.
@@ -90,6 +94,7 @@ Paradox is a single-origin Next.js 16 application deployed on Vercel.
 - Tailwind CSS v4 and customized shadcn/ui primitives
 - Geist Sans and Geist Mono
 - Motion for causal transitions
+- vgpu (WebGPU) for the observatory lens, with a no-WebGPU static fallback
 - Zustand for active state
 - IndexedDB via `idb` for local session persistence
 
@@ -128,7 +133,7 @@ Only the tools valid for the current product state are registered. Registration 
 
 These values are computed by the engine and asserted by automated tests; they are not display constants.
 
-**Built with:** Next.js, React, TypeScript, WebMCP, Bun, Tailwind CSS, shadcn/ui, Motion, Zustand, Zod, D3, IndexedDB, Vitest, fast-check, Playwright, Vercel.
+**Built with:** Next.js, React, TypeScript, WebMCP, WebGPU, vgpu, Bun, Tailwind CSS, shadcn/ui, Motion, Zustand, Zod, D3, IndexedDB, Vitest, fast-check, Playwright, Vercel.
 
 ## Testing Instructions
 
@@ -178,7 +183,7 @@ The locked recording target is 2 minutes 45 seconds and will show the live seque
 
 The following upload-ready PNGs were captured from the public production build at 1440×900 or as clean content-surface crops:
 
-1. **Landing / alternate thumbnail:** [`docs/submission-assets/01-paradox-landing.png`](docs/submission-assets/01-paradox-landing.png)
+1. **Observatory landing at the unsafe commit:** [`docs/submission-assets/01-paradox-landing.png`](docs/submission-assets/01-paradox-landing.png) — the WebGPU gravitational lens with the Einstein ring flaring as the stale approval crosses it.
 2. **Ledger inspection:** [`docs/submission-assets/02-ledger-inspected.png`](docs/submission-assets/02-ledger-inspected.png) — $2,399/v7 with the agent review token.
 3. **Unsafe commit:** [`docs/submission-assets/03-ledger-unsafe-commit.png`](docs/submission-assets/03-ledger-unsafe-commit.png) — $23,999/v8 approved while the agent belief remains $2,399/v7.
 4. **Hero / project thumbnail:** [`docs/submission-assets/04-multiverse-finding.png`](docs/submission-assets/04-multiverse-finding.png) — the computed $23,999/v8 counterexample branch, metrics, and shortest failure.
@@ -222,7 +227,7 @@ The official form does **not** request a Codex session ID.
 | Testing instructions | Use the ten-step WebMCP workflow above | Ready |
 | Public repository | https://github.com/Joe-Simo/paradox-webmcp | Ready |
 | Tested agent/client | ChatGPT in-app browser for live WebMCP; Playwright Chromium for automated product and registry-lifecycle verification | Ready; recheck live before submission |
-| AI tools leveraged | Codex for architecture, implementation, testing, debugging, design refinement, deployment, and submission preparation; ChatGPT for product direction and live WebMCP agent operation/evaluation | Ready |
+| AI tools leveraged | Codex for architecture, implementation, testing, debugging, design refinement, deployment, and submission preparation; ChatGPT for product direction and live WebMCP agent operation/evaluation; Claude Code for the observatory redesign, the vgpu gravitational-lens implementation, and design verification | Ready |
 | Learning level | `[TODO — recommended: Significant]` | Required personal choice |
 | Career AI value | `[TODO — recommended: Yes]` | Required personal choice |
 | Public demo video | `[TODO — public YouTube URL]` | Required; intentionally last |

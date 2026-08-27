@@ -20,22 +20,22 @@ export function PolicyRail() {
         </div>
         <div className="policy-statement">
           <GitMerge aria-hidden="true" />
-          <div><strong>Human authority</strong><p>Edits become the canonical application state.</p></div>
+          <div><strong>Human edits win</strong><p>A human edit becomes the canonical state, whatever the agent believes.</p></div>
         </div>
       </section>
       <section className="invariant-section">
-        <h2>Invariant</h2>
+        <h2>Paradox checks</h2>
         <div className={invariantFailed ? "invariant-active" : "invariant-idle"}>
           {invariantFailed ? <TriangleAlert aria-hidden="true" /> : <CircleCheck aria-hidden="true" />}
           <div>
-            <strong>Reviewed state = committed state</strong>
+            <strong>Approved version = reviewed version</strong>
             <code>current.version === reviewed.version</code>
           </div>
         </div>
       </section>
       <section className="guard-section">
-        <h2>Runtime strategy</h2>
-        <span className={`guard-indicator ${guardMode}`}>{guardMode === "unsafe" ? "Unversioned approval" : "Version guard active"}</span>
+        <h2>Approval mode</h2>
+        <span className={`guard-indicator ${guardMode}`}>{guardMode === "unsafe" ? "Unsafe: approves without checking the version" : "Guarded: requires the inspected version"}</span>
       </section>
     </aside>
   );

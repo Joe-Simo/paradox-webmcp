@@ -34,7 +34,7 @@ export function TraceStrip() {
           const source = typeof event.metadata.invocationSource === "string" && event.metadata.invocationSource in sourceLabel
             ? event.metadata.invocationSource as keyof typeof sourceLabel
             : "system";
-          const details = `Invocation: ${sourceLabel[source]}. Reads: ${event.reads.join(", ") || "none"}. Writes: ${event.writes.join(", ") || "none"}.${token}`;
+          const details = `Invocation: ${sourceLabel[source]}. Reads: ${event.reads.join(", ") || "none"}. Writes: ${event.writes.join(", ") || "none"}.${token} State: ${event.preStateHash} → ${event.postStateHash}.`;
           return (
             <Tooltip key={event.id} content={details}>
               <motion.li initial={reduceMotion ? false : { y: 8 }} animate={{ y: 0 }} transition={{ duration: 0.18 }} className={`trace-event actor-${event.actor}`} tabIndex={0}>
@@ -43,7 +43,6 @@ export function TraceStrip() {
                   <strong>{actionLabel[event.action]}</strong>
                   <span className={`trace-source source-${source}`}>{sourceLabel[source]}</span>
                   <span className="trace-version">v{event.preVersion ?? "—"} → v{event.postVersion ?? "—"} · t{event.logicalTime}</span>
-                  <code>{event.preStateHash} → {event.postStateHash}</code>
                   <span className="sr-only">{details}</span>
                 </div>
               </motion.li>

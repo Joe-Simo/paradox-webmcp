@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Braces, GitBranch, Radio, RotateCcw, ScanSearch, ShieldCheck } from "lucide-react";
@@ -42,12 +43,25 @@ export function CapabilityRail() {
   const capabilities = useParadoxStore((state) => state.capabilities);
   const supported = useParadoxStore((state) => state.webmcpSupported);
   const registryError = useParadoxStore((state) => state.webmcpError);
+  const [changeStamp, setChangeStamp] = useState(0);
+  const previousTools = useRef<string>("");
+
+  useEffect(() => {
+    const signature = capabilities.join("|");
+    if (previousTools.current && signature && signature !== previousTools.current) {
+      setChangeStamp((stamp) => stamp + 1);
+    }
+    previousTools.current = signature;
+  }, [capabilities]);
+
   return (
     <aside className="capability-rail" aria-label="Available WebMCP capabilities">
       <div className="rail-heading">
         <span>WebMCP capabilities</span>
         <Badge tone={supported ? "green" : "gray"}>{!hydrated ? "Connecting" : supported ? "Registry live" : "Client needed"}</Badge>
       </div>
+      <p className="rail-plain">The structured tools this page registers for agents right now. The set changes as the workflow advances.</p>
+      <p className="sr-only" aria-live="polite">{changeStamp > 0 ? `Tool surface changed: ${capabilities.length} tools registered.` : ""}</p>
       <div className={`registry-signal ${supported ? "is-live" : ""}`}>
         <div className="registry-orbit" aria-hidden="true"><Radio /></div>
         <div><span>Active surface</span><strong>{surfaceName(pathname)}</strong></div>
@@ -65,7 +79,7 @@ export function CapabilityRail() {
           <p>Registry error: {registryError}</p>
         </div>
       )}
-      <div className="capability-list">
+      <div className="capability-list" key={changeStamp} data-changed={changeStamp > 0 || undefined}>
         {capabilities.map((name) => {
           const Icon = icons[name] ?? Braces;
           return (
