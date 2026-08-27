@@ -52,7 +52,7 @@ export function ExpenseFixture() {
         </div>
         <div className="expense-identity">
           <div>
-            <p>Maya Chen · Equipment</p>
+            <p>Maya Chen · Travel</p>
             <h2 id="expense-title">{expense.description}</h2>
           </div>
           <Badge tone={expense.status === "approved" ? "green" : expense.status === "rejected" ? "red" : "amber"}>{expense.status}</Badge>

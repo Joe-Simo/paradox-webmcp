@@ -16,7 +16,7 @@ export function PolicyRail() {
         <h2>Policy</h2>
         <div className="policy-statement">
           <Shield aria-hidden="true" />
-          <div><strong>$3,000 limit</strong><p>Equipment requests below the limit may be approved.</p></div>
+          <div><strong>$3,000 limit</strong><p>Travel expenses below the limit may be approved.</p></div>
         </div>
         <div className="policy-statement">
           <GitMerge aria-hidden="true" />

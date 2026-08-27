@@ -15,7 +15,7 @@ export function createInitialSession(id = "expense-approval-golden"): LabSession
   const expense: Expense = {
     id: "481",
     employeeName: "Maya Chen",
-    description: "MacBook Pro",
+    description: "Team offsite travel",
     category: "equipment",
     amountCents: 239_900,
     status: "pending",

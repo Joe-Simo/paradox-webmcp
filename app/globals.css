@@ -174,8 +174,8 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .geist-button-secondary:active:not(:disabled) { border-color: var(--gray-alpha-600); background: var(--gray-alpha-200); }
 .geist-button-tertiary { background: transparent; color: var(--gray-1000); }
 .geist-button-tertiary:hover:not(:disabled) { background: var(--gray-alpha-100); }
-.geist-button-error { background: var(--red-800); color: #ffffff; }
-.geist-button-error:hover:not(:disabled) { background: var(--red-900); }
+.geist-button-error { background: var(--red-800); color: #2a060c; }
+.geist-button-error:hover:not(:disabled) { background: var(--red-900); color: #2a060c; }
 .geist-button-medium { min-height: 40px; padding: 0 10px; }
 .geist-button-small { min-height: 32px; padding: 0 8px; }
 .geist-button-large { min-height: 48px; padding: 0 14px; font-size: 16px; line-height: 20px; }

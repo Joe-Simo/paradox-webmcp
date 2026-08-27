@@ -29,7 +29,7 @@ export function RaceVignette({ phase, preview, reduce }: { phase: number; previe
           <span>Expense request — Maya Chen</span>
           <span className={`vignette-status${approved ? " is-approved" : ""}`}>{approved ? "Approved" : "Pending"}</span>
         </div>
-        <div className="vignette-item">MacBook Pro</div>
+        <div className="vignette-item">Team offsite travel</div>
         <div className="vignette-amount">
           <AnimatePresence mode="popLayout" initial={false}>
             <motion.strong
