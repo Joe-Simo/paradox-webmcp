@@ -278,7 +278,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
                 <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
               </div>
             </motion.div>
-            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races in your app — and proves the fix.</motion.p>
+            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races and proves the fix — for developers shipping WebMCP tools. Run the demo below, or install it against your own app.</motion.p>
             <motion.div {...reveal(0.5)}>
               <InstallLine />
             </motion.div>
