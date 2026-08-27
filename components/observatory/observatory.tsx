@@ -272,9 +272,13 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
             <motion.span className="section-label" {...reveal(0.04)}>Correctness testing for WebMCP apps</motion.span>
             <motion.h1 {...reveal(0.1)}>Your AI agent will<br />{" "}approve the wrong thing.</motion.h1>
             <motion.div {...reveal(0.3)}>
-              <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
+              <div className="vignette-deck">
+                <div className="ghost-card is-left" aria-hidden="true"><div className="ghost-chrome"><i /><span>Refunds — order 1042</span></div><i className="ghost-bar" /><i className="ghost-bar is-short" /></div>
+                <div className="ghost-card is-right" aria-hidden="true"><div className="ghost-chrome"><i /><span>Bookings — room 12</span></div><i className="ghost-bar" /><i className="ghost-bar is-short" /></div>
+                <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
+              </div>
             </motion.div>
-            <motion.p className="hero-note" {...reveal(0.42)}>An example race. Paradox finds them in your app — and proves the fix.</motion.p>
+            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races in your app — and proves the fix.</motion.p>
             <motion.div {...reveal(0.5)}>
               <InstallLine />
             </motion.div>

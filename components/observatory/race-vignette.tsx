@@ -23,7 +23,7 @@ export function RaceVignette({ phase, preview, reduce }: { phase: number; previe
 
   return (
     <div className={`race-vignette${approved ? " is-violated" : hasChanged ? " has-changed" : ""}`} aria-hidden="true">
-      <div className="vignette-chrome"><i /><span>Your app — approvals</span><code className="vignette-example">example</code></div>
+      <div className="vignette-chrome"><i /><span>Approvals inbox</span></div>
       <div className="vignette-body">
         <div className="vignette-row">
           <span>Expense request — Maya Chen</span>
