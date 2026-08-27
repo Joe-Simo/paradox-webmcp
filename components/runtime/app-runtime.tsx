@@ -11,7 +11,7 @@ import { activateToolSurface } from "@/sdk";
 import "@/webmcp/types";
 
 function surfaceFor(pathname: string) {
-  if (pathname.includes("/ledger")) return "ledger" as const;
+  if (pathname === "/" || pathname.includes("/ledger")) return "ledger" as const;
   if (pathname.includes("/finding/")) return "finding" as const;
   if (pathname.endsWith("/verified")) return "verified" as const;
   return "lab" as const;

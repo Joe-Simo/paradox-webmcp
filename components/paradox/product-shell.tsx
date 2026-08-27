@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, Radio, RotateCcw } from "lucide-react";
+import { Check, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { WebmcpPill } from "@/components/paradox/webmcp-pill";
 import { useParadoxStore } from "@/stores/paradox-store";
 import { resetLabService } from "@/stores/services";
 import { hasRecordedRace } from "@/domain/ledger/model";
@@ -11,8 +12,6 @@ import { hasRecordedRace } from "@/domain/ledger/model";
 export function ProductShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
   const hydrated = useParadoxStore((state) => state.hydrated);
-  const webmcpSupported = useParadoxStore((state) => state.webmcpSupported);
-  const capabilities = useParadoxStore((state) => state.capabilities);
   const session = useParadoxStore((state) => state.session);
   const finding = useParadoxStore((state) => state.finding);
   const verification = useParadoxStore((state) => state.verification);
@@ -62,12 +61,8 @@ export function ProductShell({ children }: { children: React.ReactNode }) {
       <a className="skip-link" href="#main-content">Skip to content</a>
       <header className="product-header">
         <Link href="/" className="wordmark" aria-label="Paradox home" translate="no">Paradox</Link>
-        <span className="header-thesis">The correctness lab for the human-agent web</span>
-        <span className={`header-webmcp ${hydrated && webmcpSupported ? "is-live" : ""}`} role="status">
-          <Radio aria-hidden="true" />
-          <span>{webmcpSupported ? "WebMCP client" : "local controls"}</span>
-          <code>{!hydrated ? "connecting" : webmcpSupported ? `${capabilities.length} tools` : "no registry"}</code>
-        </span>
+        <span className="header-spacer" aria-hidden="true" />
+        <WebmcpPill />
         <nav aria-label="Lab acts" className="mode-nav">
           {acts.map((act) =>
             act.available && act.href ? (
