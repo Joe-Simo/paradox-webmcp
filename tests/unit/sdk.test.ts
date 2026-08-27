@@ -29,4 +29,23 @@ describe("installable Paradox instrumentation", () => {
     stop();
     expect(registered.size).toBe(0);
   });
+
+  it("supports early WebMCP clients without EventTarget or getTools", async () => {
+    const registered = new Map<string, StatefulWebMCPTool>();
+    const context = {
+      async registerTool(tool: StatefulWebMCPTool, options?: { signal?: AbortSignal }) {
+        registered.set(tool.name, tool);
+        options?.signal?.addEventListener("abort", () => registered.delete(tool.name), { once: true });
+      },
+    };
+    const onToolsChanged = vi.fn();
+    const tool: StatefulWebMCPTool = { name: "inspect_expense", description: "Inspect one pending expense.", inputSchema: { type: "object" }, async execute() { return JSON.stringify({ ok: true }); } };
+
+    const stop = activateToolSurface({ context, tools: [tool], onToolsChanged });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(onToolsChanged).toHaveBeenCalledWith([{ name: tool.name, description: tool.description }]);
+    stop();
+    expect(registered.size).toBe(0);
+  });
 });

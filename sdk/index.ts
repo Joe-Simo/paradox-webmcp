@@ -58,12 +58,14 @@ export type StatefulWebMCPTool = {
   description: string;
   inputSchema: Record<string, unknown>;
   annotations?: { readOnlyHint?: boolean; untrustedContentHint?: boolean };
-  execute(input: unknown, options: { signal: AbortSignal }): Promise<string>;
+  execute(input: unknown, options?: { signal?: AbortSignal }): Promise<string>;
 };
 
-export type ModelContextLike<TTool extends StatefulWebMCPTool = StatefulWebMCPTool> = EventTarget & {
+export type ModelContextLike<TTool extends StatefulWebMCPTool = StatefulWebMCPTool> = {
   registerTool(tool: TTool, options?: { signal?: AbortSignal }): Promise<void>;
-  getTools(): Promise<RegisteredTool[]>;
+  getTools?(): Promise<RegisteredTool[]>;
+  addEventListener?(type: "toolchange", listener: EventListenerOrEventListenerObject): void;
+  removeEventListener?(type: "toolchange", listener: EventListenerOrEventListenerObject): void;
 };
 
 export type ToolSurfaceOptions<TTool extends StatefulWebMCPTool> = {
@@ -77,12 +79,16 @@ export function activateToolSurface<TTool extends StatefulWebMCPTool>({ context,
   const controller = new AbortController();
   let active = true;
   const refresh = async () => {
-    const registered = await context.getTools();
+    const registered = typeof context.getTools === "function"
+      ? await context.getTools()
+      : tools.map(({ name, description }) => ({ name, description }));
     if (active) onToolsChanged?.(registered);
   };
   const onToolChange = () => void refresh().catch(onError);
+  const observesToolChanges = typeof context.addEventListener === "function"
+    && typeof context.removeEventListener === "function";
 
-  context.addEventListener("toolchange", onToolChange);
+  if (observesToolChanges) context.addEventListener?.("toolchange", onToolChange);
   void Promise.all(tools.map((tool) => context.registerTool(tool, { signal: controller.signal })))
     .then(refresh)
     .catch((error: unknown) => {
@@ -92,6 +98,6 @@ export function activateToolSurface<TTool extends StatefulWebMCPTool>({ context,
   return () => {
     active = false;
     controller.abort();
-    context.removeEventListener("toolchange", onToolChange);
+    if (observesToolChanges) context.removeEventListener?.("toolchange", onToolChange);
   };
 }

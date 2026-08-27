@@ -19,6 +19,15 @@ afterEach(() => {
 });
 
 describe("WebMCP registry", () => {
+  it("executes when the browser omits invocation options", async () => {
+    const inspect = toolsForSurface("lab").find((tool) => tool.name === "inspect_lab");
+    if (!inspect) throw new Error("inspect_lab missing");
+
+    const result = JSON.parse(await inspect.execute({}));
+
+    expect(result).toMatchObject({ ok: true, guardMode: "unsafe", eventCount: 0 });
+  });
+
   it("advances the active tool surface from exploration to repair to verification without navigation", () => {
     expect(toolsForSurface("lab").map((tool) => tool.name)).toEqual(["inspect_lab", "explore_futures", "reset_lab"]);
 

@@ -21,12 +21,17 @@ export function activateToolSurface({ context, tools, onToolsChanged, onError })
     const controller = new AbortController();
     let active = true;
     const refresh = async () => {
-        const registered = await context.getTools();
+        const registered = typeof context.getTools === "function"
+            ? await context.getTools()
+            : tools.map(({ name, description }) => ({ name, description }));
         if (active)
             onToolsChanged?.(registered);
     };
     const onToolChange = () => void refresh().catch(onError);
-    context.addEventListener("toolchange", onToolChange);
+    const observesToolChanges = typeof context.addEventListener === "function"
+        && typeof context.removeEventListener === "function";
+    if (observesToolChanges)
+        context.addEventListener?.("toolchange", onToolChange);
     void Promise.all(tools.map((tool) => context.registerTool(tool, { signal: controller.signal })))
         .then(refresh)
         .catch((error) => {
@@ -36,7 +41,8 @@ export function activateToolSurface({ context, tools, onToolsChanged, onError })
     return () => {
         active = false;
         controller.abort();
-        context.removeEventListener("toolchange", onToolChange);
+        if (observesToolChanges)
+            context.removeEventListener?.("toolchange", onToolChange);
     };
 }
 //# sourceMappingURL=index.js.map

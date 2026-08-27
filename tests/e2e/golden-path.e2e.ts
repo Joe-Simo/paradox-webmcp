@@ -29,30 +29,29 @@ test.beforeEach(async ({ page }) => {
     type Tool = {
       name: string;
       description: string;
-      execute: (input: unknown, options: { signal: AbortSignal }) => Promise<string>;
+      execute: (input: unknown, options?: { signal?: AbortSignal }) => Promise<string>;
     };
     const tools = new Map<string, Tool>();
-    const context = new class extends EventTarget {
+    const context = {
       async registerTool(tool: Tool, options?: { signal?: AbortSignal }) {
         if (tools.has(tool.name)) throw new DOMException("Tool already registered.", "InvalidStateError");
         tools.set(tool.name, tool);
         const remove = () => {
           if (tools.get(tool.name) !== tool) return;
           tools.delete(tool.name);
-          this.dispatchEvent(new Event("toolchange"));
         };
         options?.signal?.addEventListener("abort", remove, { once: true });
-        this.dispatchEvent(new Event("toolchange"));
-      }
+      },
       async getTools() {
         return [...tools.values()].map(({ name, description }) => ({ name, description }));
-      }
+      },
       async executeTool(registered: { name: string }, input: object = {}, options?: { signal?: AbortSignal }) {
         const tool = tools.get(registered.name);
         if (!tool) throw new DOMException("Tool is no longer registered.", "InvalidStateError");
-        return tool.execute(input, { signal: options?.signal ?? new AbortController().signal });
+        if (options?.signal?.aborted) throw new DOMException("Tool call cancelled.", "AbortError");
+        return tool.execute(input);
       }
-    }();
+    };
     Object.defineProperty(document, "modelContext", { configurable: true, value: context });
   });
 });

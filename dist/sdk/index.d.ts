@@ -58,15 +58,17 @@ export type StatefulWebMCPTool = {
         readOnlyHint?: boolean;
         untrustedContentHint?: boolean;
     };
-    execute(input: unknown, options: {
-        signal: AbortSignal;
+    execute(input: unknown, options?: {
+        signal?: AbortSignal;
     }): Promise<string>;
 };
-export type ModelContextLike<TTool extends StatefulWebMCPTool = StatefulWebMCPTool> = EventTarget & {
+export type ModelContextLike<TTool extends StatefulWebMCPTool = StatefulWebMCPTool> = {
     registerTool(tool: TTool, options?: {
         signal?: AbortSignal;
     }): Promise<void>;
-    getTools(): Promise<RegisteredTool[]>;
+    getTools?(): Promise<RegisteredTool[]>;
+    addEventListener?(type: "toolchange", listener: EventListenerOrEventListenerObject): void;
+    removeEventListener?(type: "toolchange", listener: EventListenerOrEventListenerObject): void;
 };
 export type ToolSurfaceOptions<TTool extends StatefulWebMCPTool> = {
     context: ModelContextLike<TTool>;

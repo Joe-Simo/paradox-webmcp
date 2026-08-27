@@ -4,7 +4,7 @@ export type WebMCPTool = {
   description: string;
   inputSchema: Record<string, unknown>;
   annotations?: { readOnlyHint?: boolean; untrustedContentHint?: boolean };
-  execute: (input: unknown, options: { signal: AbortSignal }) => Promise<string>;
+  execute: (input: unknown, options?: { signal?: AbortSignal }) => Promise<string>;
 };
 
 export type RegisteredWebMCPTool = { name: string; description: string };

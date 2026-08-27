@@ -39,8 +39,9 @@ function executable(tool: Omit<WebMCPTool, "execute">, execute: ToolExecute): We
     ...tool,
     execute: async (input, options) => {
       try {
-        if (options.signal.aborted) throw new DOMException("The operation was cancelled.", "AbortError");
-        return serialize(await execute(input, options));
+        const signal = options?.signal ?? new AbortController().signal;
+        if (signal.aborted) throw new DOMException("The operation was cancelled.", "AbortError");
+        return serialize(await execute(input, { signal }));
       } catch (error) {
         if (error instanceof z.ZodError) {
           return serialize({ ok: false, code: "INVALID_INPUT", message: error.issues[0]?.message ?? "Invalid tool input." });
