@@ -2,7 +2,7 @@
 
 **Explore every future before your users do.**
 
-[Live product](https://paradox-webmcp.vercel.app) · [Integration guide](https://paradox-webmcp.vercel.app/docs) · [Start the instrumented scenario](https://paradox-webmcp.vercel.app/lab/expense-approval/ledger)
+[Live product](https://www.paradoxwebmcp.com) · [Integration guide](https://www.paradoxwebmcp.com/docs) · [Start the instrumented scenario](https://www.paradoxwebmcp.com/lab/expense-approval/ledger)
 
 Paradox is a deterministic correctness lab for the human-agent web. It records semantic operations from an instrumented expense workflow, explores valid human-agent interleavings, finds invariant violations, produces a shortest replayable counterexample, applies a constrained version guard, and verifies the same model again.
 

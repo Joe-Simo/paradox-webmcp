@@ -4,7 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://paradox-webmcp.vercel.app"),
+  metadataBase: new URL("https://www.paradoxwebmcp.com"),
   title: {
     default: "Paradox — WebMCP Correctness Lab",
     template: "%s — Paradox",

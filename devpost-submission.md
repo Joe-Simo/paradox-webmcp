@@ -139,7 +139,7 @@ These values are computed by the engine and asserted by automated tests; they ar
 
 Paradox is a live WebMCP website, not a PWA, extension, downloadable package, or remote MCP server. Open it in ChatGPT's in-app browser or a Chrome build with WebMCP enabled. The same product is fully navigable by a human when WebMCP is unavailable, but agent tools require a supported client.
 
-1. Open the [instrumented Ledger scenario](https://paradox-webmcp.vercel.app/lab/expense-approval/ledger).
+1. Open the [instrumented Ledger scenario](https://www.paradoxwebmcp.com/lab/expense-approval/ledger).
 2. Ask the agent: **"Review expense 481 and tell me whether it is below the equipment limit."** It should invoke `inspect_expense` and return $2,399, version 7, below the $3,000 limit.
 3. In the human interface, choose **Edit amount**, enter `23999`, and commit the change. The expense becomes $23,999, version 8.
 4. Ask the agent: **"Complete the review you started."** It should invoke `approve_reviewed_expense`. The intentionally unsafe lab implementation approves $23,999.
@@ -165,7 +165,7 @@ bun run build
 
 ## Public Demo Link
 
-https://paradox-webmcp.vercel.app
+https://www.paradoxwebmcp.com
 
 ## Public Repository Link
 
@@ -223,7 +223,7 @@ The official form does **not** request a Codex session ID.
 | Organization name | Leave blank unless Submitter Type is Organization | Optional |
 | App Status | New | Ready |
 | Existing-app update | Not applicable | Ready |
-| Live app URL | https://paradox-webmcp.vercel.app | Ready |
+| Live app URL | https://www.paradoxwebmcp.com | Ready |
 | Testing instructions | Use the ten-step WebMCP workflow above | Ready |
 | Public repository | https://github.com/Joe-Simo/paradox-webmcp | Ready |
 | Tested agent/client | ChatGPT in-app browser for live WebMCP; Playwright Chromium for automated product and registry-lifecycle verification | Ready; recheck live before submission |

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const origin = "https://paradox-webmcp.vercel.app";
+const origin = "https://www.paradoxwebmcp.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
