@@ -602,6 +602,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .scene-card .act-index { display: block; margin-bottom: var(--space-3); }
 .scene-card h2 { margin: 0 0 var(--space-4); font-size: clamp(30px, 3.2vw, 44px); font-weight: 600; line-height: 1.02; letter-spacing: -0.045em; }
 .scene-card p { margin: 0; color: var(--night-muted); font-size: 15px; line-height: 24px; }
+.scene-thesis { margin: var(--space-4) 0 0; color: var(--night-ink); font-size: 16px; font-weight: 600; line-height: 24px; letter-spacing: -0.01em; }
 .scene-datum { margin-top: var(--space-4); }
 .scene-datum code { color: var(--gray-900); font-size: 12px; letter-spacing: 0.01em; }
 .scene-card .act-tools { margin-top: var(--space-4); }
@@ -870,7 +871,9 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .hero-proof span { display: inline-flex; align-items: center; gap: var(--space-2); }
 .hero-proof span + span::before { content: ""; width: 3px; height: 3px; border-radius: 999px; background: var(--gray-600); }
 .landing-statement { min-height: 420px; display: grid; align-content: center; justify-items: start; border-bottom: 1px solid var(--border-strong); padding: var(--space-24) clamp(32px, 7vw, 104px); }
-.landing-statement h2 { max-width: 980px; margin: var(--space-4) 0 var(--space-8); font-size: clamp(36px, 4.5vw, 58px); font-weight: 600; line-height: 1.08; letter-spacing: -0.052em; text-wrap: balance; }
+.landing-statement h2 { max-width: 980px; margin: var(--space-4) 0 var(--space-6); font-size: clamp(36px, 4.5vw, 58px); font-weight: 600; line-height: 1.08; letter-spacing: -0.052em; text-wrap: balance; }
+.statement-sub { max-width: 760px; margin: 0 0 var(--space-6); color: var(--night-muted); font-size: 16px; line-height: 26px; }
+.landing-statement .hero-proof { margin: 0 0 var(--space-8); }
 .landing-statement a { display: inline-flex; min-height: 44px; align-items: center; gap: var(--space-2); font-size: 14px; font-weight: 500; }
 .landing-footer { min-height: 112px; display: grid; grid-template-columns: 220px 1fr auto; align-items: center; gap: var(--space-6); border-top: 1px solid var(--border-strong); padding: var(--space-6); }
 .landing-footer p { margin: 0; color: var(--muted-foreground); font-size: 13px; }

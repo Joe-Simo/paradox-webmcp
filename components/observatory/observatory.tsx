@@ -118,6 +118,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
       act: "Act 01 — Record",
       title: "The race is real.",
       body: `Play it yourself: inspect as the agent from ChatGPT, change the amount as the human, then complete the stale review. Every semantic operation is recorded.`,
+      thesis: "Every operator followed the rules. The system still broke its own.",
       datum: `${believed} · v${preview.believed.version} → ${changed} · v${preview.changed.version}`,
       tools: ["inspect_expense", "approve_reviewed_expense"],
     },
@@ -285,6 +286,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
               <span className="act-index">{scene.act}</span>
               <h2>{scene.title}</h2>
               <p>{scene.body}</p>
+              {"thesis" in scene && scene.thesis ? <p className="scene-thesis">{scene.thesis}</p> : null}
               <p className="scene-datum"><code>{scene.datum}</code></p>
               <p className="act-tools">{scene.tools.map((tool) => <code key={tool}>{tool}</code>)}</p>
             </motion.article>

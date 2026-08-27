@@ -45,7 +45,8 @@ Paradox gives developers a concrete answer instead of an intermittent race repor
 - what the system committed;
 - which invariant failed;
 - the shortest sequence that reproduces the failure; and
-- whether the same sequence and the wider bounded model survive a proposed guard.
+- whether the same sequence and the wider bounded model survive a proposed guard; and
+- a shippable pattern: WebMCP write-tools that carry the version their belief was formed on and reject stale commits with `STATE_CHANGED` — the same race ships in carts, bookings, refunds, and permission grants.
 
 The immediate product is an executable correctness lab for an instrumented deterministic application. The larger category is model checking and temporal correctness testing for agent-native web software.
 
