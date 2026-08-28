@@ -48,6 +48,18 @@ The active tool surface changes with product state—even when an agent stays on
 
 Every callback reads the current Zustand state, invokes the same domain services as the human interface, and persists its result to IndexedDB. Tool outputs are intentionally compact, agent cancellation terminates active exploration Workers, and AbortControllers remove capabilities as soon as they become invalid.
 
+## Security posture
+
+The WebMCP spec's security considerations note that "there is no guarantee that a WebMCP tool's declared intent matches its actual behavior" — verifying actual tool behavior against business invariants is exactly the gap Paradox exists to close. The tool surface itself follows the spec's recommended mitigations:
+
+- **Validated inputs.** Every tool parses its input with zod before touching state; malformed or out-of-range arguments return structured `INVALID_INPUT` errors instead of executing.
+- **No injection surface in metadata.** Tool names, descriptions, and schemas are static author-written strings; no user or agent content ever flows into them.
+- **No untrusted content in results.** Tool outputs are structured fields — amounts, versions, ids, enum error codes. The only human-editable value in the model is a number, so no user-authored free text is ever echoed back to the agent.
+- **Least privilege via state-scoped surfaces.** Only the tools valid in the current product state are registered; write capabilities disappear the moment they become invalid.
+- **Honest annotations.** `readOnlyHint` reflects actual behavior (`inspect_expense` is marked as a write because it mints a review token).
+- **Guarded consequential writes.** After repair, the approval tool requires the version the agent's belief was formed on and refuses stale commits with `STATE_CHANGED` — belief-carrying writes as a concrete defense for consequential actions.
+- **Permissions-Policy.** The site ships `Permissions-Policy: tools=(self)`, the spec's policy gate.
+
 ## How it works
 
 1. Pure TypeScript commands operate the instrumented Ledger fixture and emit semantic events.
