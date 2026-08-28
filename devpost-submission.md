@@ -5,7 +5,7 @@ Nothing has been sent to Devpost.
 
 ## One-line Summary
 
-Paradox systematically explores the interleavings between human actions and WebMCP agent operations, finds invalid application states, produces the shortest replayable counterexample, and verifies whether a semantic guard eliminates the dangerous future.
+Paradox systematically explores the interleavings between human actions and WebMCP agent operations, finds invalid application states, produces the shortest replayable counterexample, and verifies whether a semantic guard eliminates the dangerous future. It is built for developers shipping WebMCP applications in which humans and agents can modify the same live state.
 
 **Tagline:** The correctness lab for the human-agent web.
 
@@ -204,7 +204,7 @@ Structure:
 - **1:20–1:55** — apply the version guard; replay the exact failure; `STATE_CHANGED`.
 - **1:55–2:15** — guarded re-exploration: zero surviving counterexamples.
 - **2:15–2:35** — the dynamic capability surface changing per act (2 → 3 → 4 tools) and the deterministic engine.
-- **2:35–2:45** — "Explore every future before your users do."
+- **2:35–2:45** — final frame holds the proof before the brand: "Exact replay: BLOCKED — STATE_CHANGED · Full exploration: 0 surviving counterexamples", then "Explore every future before your users do."
 
 Narration honesty rules: call the repair a **constrained semantic version guard** that is verified against this model — never "Paradox automatically fixes any race." Bounded claims only ("within the explored model"). No copyrighted music, no third-party logos in overlays.
 
@@ -240,6 +240,15 @@ Recommended Devpost order — problem → identity → technology → resolution
 - Paradox does not automatically infer arbitrary production state models or invariants.
 - The challenge version contains one complete expense-approval scenario.
 - WebMCP tools exist only while the site is open in a supported agent browser.
+
+## Final Release Checklist
+
+- [ ] Clean-room judge pass in the ChatGPT desktop in-app browser (fresh profile, logged out, full flow, tools appear/disappear per act, reset restores $2,399 · v7).
+- [ ] Same pass in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`.
+- [ ] Record and publish the video; paste the YouTube URL here and on the form.
+- [ ] Add a prominent "Watch the 2:45 demo" link near the top of README.md.
+- [ ] Tag the submitted state `webmcp-challenge-v1.0`, record the commit SHA, and confirm production serves that commit.
+- [ ] Submit before the final day if possible; freeze the repo, site, and Devpost entry during judging.
 
 ## TODO Official Form Fields
 
