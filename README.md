@@ -22,7 +22,24 @@ The SDK (dependency-free source) exports semantic events, deterministic invarian
 
 ## WebMCP tools
 
-Paradox uses one `document.modelContext` registry. The active tool surface changes with product state—even when an agent stays on the same route:
+Paradox registers real tools on the page's model context (`document.modelContext`, with a `navigator.modelContext` fallback). Under the hood every tool goes through the standard registration call:
+
+```ts
+document.modelContext.registerTool({
+  name: "inspect_expense",
+  description: "Inspect one pending expense and create a version-bound review token.",
+  inputSchema: {
+    type: "object",
+    properties: { expenseId: { type: "string", description: "Expense identifier. Defaults to 481." } },
+    additionalProperties: false,
+  },
+  execute: async (input) => JSON.stringify(await inspectExpenseService(parse(input).expenseId, "webmcp")),
+});
+```
+
+`activateToolSurface` (in `sdk/index.ts`) wraps exactly this call with an AbortController lifecycle, `toolchange` observation, and rollback on partial registration failure, so each product state exposes only the tools that are valid in it.
+
+The active tool surface changes with product state—even when an agent stays on the same route:
 
 - Fixture: `inspect_expense`, `approve_reviewed_expense`
 - Exploration: `inspect_lab`, `explore_futures`, `reset_lab`
@@ -63,7 +80,7 @@ bun install
 bun run dev
 ```
 
-Open `http://localhost:3000/lab/expense-approval/ledger` in a WebMCP-capable browser. In Chrome testing builds, enable the WebMCP testing flag and inspect registrations in DevTools → Application → WebMCP.
+Open `http://localhost:3000/lab/expense-approval/ledger` in a WebMCP-capable browser. In Chrome 149+, enable `chrome://flags/#enable-webmcp-testing` (or use the ChatGPT desktop app's in-app browser) and inspect registrations in DevTools → Application → WebMCP.
 
 ## Verification
 

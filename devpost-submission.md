@@ -141,7 +141,12 @@ These values are computed by the engine and the key values are asserted by autom
 
 ## Testing Instructions
 
-Paradox is a live WebMCP website, not a PWA, extension, downloadable package, or remote MCP server. Open it in ChatGPT's in-app browser or a Chrome build with WebMCP enabled. The same product is fully navigable by a human when WebMCP is unavailable, but agent tools require a supported client.
+Paradox is a live WebMCP website, not a PWA, extension, downloadable package, or remote MCP server. Open it in a WebMCP client:
+
+- **ChatGPT desktop app** — use the in-app browser (WebMCP is supported by default).
+- **Google Chrome 149+** — enable `chrome://flags/#enable-webmcp-testing`, restart the browser.
+
+The same product is fully navigable by a human when WebMCP is unavailable, but agent tools require a supported client. If the site was opened before enabling tools, no reload is needed — Paradox detects a host that appears after load.
 
 1. Open the [instrumented Ledger scenario](https://www.paradoxwebmcp.com/lab/expense-approval/ledger).
 2. Ask the agent: **"Review expense 481 and tell me whether it is below the policy limit."** It should invoke `inspect_expense` and return $2,399, version 7, below the $3,000 limit.
