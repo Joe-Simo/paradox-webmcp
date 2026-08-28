@@ -23,6 +23,7 @@ export function TraceStrip() {
   const reduceMotion = useReducedMotion();
   const events = useParadoxStore((state) => state.session.events);
   const visible = events.filter((event) => event.action !== "apply_version_guard").slice(-5);
+  if (visible.length === 0) return null;
   return (
     <section className="trace-strip" aria-labelledby="trace-title">
       <div className="trace-title" id="trace-title">Temporal sequence</div>

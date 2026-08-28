@@ -29,7 +29,6 @@ export function ExplorationWorkspace() {
           <h1>Unfold every<br />{" "}ordering of the race.</h1>
         </div>
         <div className="lab-action">
-          <p>Paradox interleaves the recorded human and agent operations, merges equivalent states, and evaluates each commit.</p>
           <Button size="lg" onClick={() => void exploreFuturesService().catch(() => undefined)} disabled={!hydrated || exploring || !completeTrace}>
             {exploring ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <ScanSearch className="size-4" aria-hidden="true" />}
             {exploring ? `Exploring… ${progress} states` : "Explore Futures"}

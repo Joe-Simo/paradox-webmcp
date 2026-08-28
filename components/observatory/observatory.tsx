@@ -148,30 +148,25 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
     {
       act: "Act 01 — Record",
       title: "The race is real.",
-      body: `That race is replayable — drive both operators yourself, from ChatGPT or the page. Every operation is recorded.`,
-      thesis: "Every operator followed the rules. The system still broke its own.",
-      datum: `${believed} · v${preview.believed.version} → ${changed} · v${preview.changed.version}`,
+      body: "Every operator followed the rules. The system still broke its own.",
       tools: ["inspect_expense", "approve_reviewed_expense"],
     },
     {
       act: "Act 02 — Explore",
       title: "Every ordering, explored.",
       body: "Paradox tries every ordering of the recorded actions and checks each outcome against one rule: approved = reviewed.",
-      datum: `${preview.schedulesExplored} schedules · ${preview.counterexamples} counterexamples`,
       tools: ["explore_futures"],
     },
     {
       act: "Act 03 — Repair",
       title: "The guard goes in.",
       body: "The shortest failure is isolated, and a version guard goes into the approval tool.",
-      datum: "9 microsteps → 3 essential operations",
       tools: ["inspect_counterexample", "apply_version_guard"],
     },
     {
       act: "Act 04 — Verify",
       title: "The color leaves the universe.",
       body: "The same failing sequence replays as blocked. Nothing survives re-exploration.",
-      datum: "STATE_CHANGED · 0 counterexamples survive",
       tools: ["verify_repair"],
     },
   ];
@@ -272,13 +267,9 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
             <motion.span className="section-label" {...reveal(0.04)}>Correctness testing for WebMCP apps</motion.span>
             <motion.h1 {...reveal(0.1)}>Your AI agent will<br />{" "}approve the wrong thing.</motion.h1>
             <motion.div {...reveal(0.3)}>
-              <div className="vignette-deck">
-                <div className="ghost-card is-left" aria-hidden="true"><div className="ghost-chrome"><i /><span>Refunds — order 1042</span></div><i className="ghost-bar" /><i className="ghost-bar is-short" /></div>
-                <div className="ghost-card is-right" aria-hidden="true"><div className="ghost-chrome"><i /><span>Bookings — room 12</span></div><i className="ghost-bar" /><i className="ghost-bar is-short" /></div>
-                <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
-              </div>
+              <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
             </motion.div>
-            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races and proves the fix — for developers shipping WebMCP tools. Run the demo below, or install it against your own app.</motion.p>
+            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races — and proves the fix.</motion.p>
             <motion.div {...reveal(0.5)}>
               <InstallLine />
             </motion.div>
@@ -303,7 +294,6 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
                 onFocus={() => selectPhase(index)}
               >
                 <i className={`obs-step-dot${index === 3 ? " is-violation" : ""}`} aria-hidden="true" />
-                <small aria-hidden="true">0{index + 1}</small>
                 <span>{label}</span>
               </button>
             ))}
@@ -325,8 +315,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
               <span className="act-index">{scene.act}</span>
               <h2>{scene.title}</h2>
               <p>{scene.body}</p>
-              {"thesis" in scene && scene.thesis ? <p className="scene-thesis">{scene.thesis}</p> : null}
-              <p className="scene-datum"><code>{scene.datum}</code></p>
+              {"datum" in scene && scene.datum ? <p className="scene-datum"><code>{scene.datum}</code></p> : null}
               {scene.tools.length > 0 && <p className="act-tools">{scene.tools.map((tool) => <code key={tool}>{tool}</code>)}</p>}
             </motion.article>
           </section>
