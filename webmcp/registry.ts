@@ -106,7 +106,7 @@ function ledgerTools(): WebMCPTool[] {
           guide: "Nothing changed between review and approval, so no race occurred this time. To reproduce the race: inspect again, have the human edit the amount, then complete the review.",
         };
       }
-      if (payload.code === "STATE_CHANGED") {
+      if ("code" in payload && payload.code === "STATE_CHANGED") {
         return {
           ...payload,
           guide: "The version guard refused a stale write. Call verify_repair from the Verify surface to prove the counterexample is eliminated across the bounded model.",
