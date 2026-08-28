@@ -598,7 +598,7 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
   padding: var(--space-2) clamp(16px, 3vw, 32px);
   backdrop-filter: blur(3px);
 }
-.journey-scenes { position: relative; z-index: 2; scroll-margin-top: 8svh; }
+.journey-scenes { position: relative; z-index: 2; scroll-margin-top: 8svh; pointer-events: none; }
 .journey-scene { display: grid; min-height: 74svh; align-items: center; justify-items: start; padding: var(--space-10) clamp(32px, 5vw, 72px); pointer-events: none; }
 .scene-card { max-width: 560px; border: 1px solid var(--night-line); border-radius: 16px; background: rgba(6, 9, 17, 0.62); padding: clamp(24px, 3vw, 40px); backdrop-filter: blur(12px); pointer-events: auto; }
 .scene-card .act-index { display: block; margin-bottom: var(--space-3); }
