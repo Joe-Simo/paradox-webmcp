@@ -211,6 +211,8 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
   const { scrollYProgress } = useScroll({ target: scenesRef, offset: ["start 0.85", "end end"] });
   const stripOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.18], [1, 0]);
+  const stripPointer = useTransform(stripOpacity, (value) => (value < 0.35 ? "none" : "auto"));
+  const heroPointer = useTransform(heroOpacity, (value) => (value < 0.35 ? "none" : "auto"));
   const push = useTransform(scrollYProgress, [0, 1], [1, 1.07]);
 
   useEffect(() => {
@@ -262,7 +264,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
             }}
           />
         </motion.div>
-        <motion.div className="observatory-hero" style={reduceMotion ? undefined : { opacity: heroOpacity }}>
+        <motion.div className="observatory-hero" style={reduceMotion ? undefined : { opacity: heroOpacity, pointerEvents: heroPointer }}>
           <div className="hero-copy">
             <motion.span className="section-label" {...reveal(0.04)}>Correctness testing for WebMCP apps</motion.span>
             <motion.h1 {...reveal(0.1)}>Your AI agent will<br />{" "}approve the wrong thing.</motion.h1>
@@ -281,7 +283,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
             </motion.div>
           </div>
         </motion.div>
-        <motion.div className="observatory-steps" style={reduceMotion ? undefined : { opacity: stripOpacity }} {...reveal(0.66)}>
+        <motion.div className="observatory-steps" style={reduceMotion ? undefined : { opacity: stripOpacity, pointerEvents: stripPointer }} {...reveal(0.66)}>
           <span className="obs-strip-label">The race</span>
           <div className="observatory-steps-row" role="group" aria-label="The race, step by step">
             {steps.map((label, index) => (
