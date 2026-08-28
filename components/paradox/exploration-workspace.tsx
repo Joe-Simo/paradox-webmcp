@@ -39,8 +39,8 @@ export function ExplorationWorkspace() {
       {!completeTrace && !run && (
         <section className="record-required">
           <Atom aria-hidden="true" />
-          <div><strong>The semantic trace is incomplete.</strong><p>Record inspect, edit, and approve in the instrumented fixture first.</p></div>
-          <Link className={buttonVariants({ variant: "secondary", size: "sm" })} href="/lab/expense-approval/ledger">Open Fixture <ArrowRight aria-hidden="true" /></Link>
+          <div><strong>The semantic trace is incomplete.</strong><p>Record inspect, edit, and approve on the ledger first.</p></div>
+          <Link className={buttonVariants({ variant: "secondary", size: "sm" })} href="/lab/expense-approval/ledger">Open the Ledger <ArrowRight aria-hidden="true" /></Link>
         </section>
       )}
 

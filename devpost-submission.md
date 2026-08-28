@@ -44,11 +44,15 @@ Paradox gives developers a concrete answer instead of an intermittent race repor
 - what the human changed;
 - what the system committed;
 - which invariant failed;
-- the shortest sequence that reproduces the failure; and
+- the shortest sequence that reproduces the failure;
 - whether the same sequence and the wider bounded model survive a proposed guard; and
 - a shippable pattern: WebMCP write-tools that carry the version their belief was formed on and reject stale commits with `STATE_CHANGED` — the same race ships in carts, bookings, refunds, and permission grants.
 
 The immediate product is an executable correctness lab for an instrumented deterministic application. The larger category is model checking and temporal correctness testing for agent-native web software.
+
+## How It Creates a Better User Experience
+
+For the person on the page, WebMCP means the agent operates the same live state they are looking at — no screen-scraping, no second tab, no stale copy of the data. In Paradox the human edits an amount while the agent inspects and approves through registered tools, and every operation lands in one shared, versioned ledger with a visible trace of who did what. The better experience is trust made concrete: after the version guard ships, an agent write built on a stale belief is refused with `STATE_CHANGED` instead of silently committing the wrong approval. Developers get the same effect one level up — instead of an intermittent bug report, they watch every ordering of a human-agent session unfold and repair the race before a real user ever hits it.
 
 ## How We Used AI
 
@@ -76,7 +80,6 @@ Claude Code later drove the observatory redesign: the full-bleed vgpu gravitatio
 - **Semantic recording:** events contain actors, actions, logical time, versions, read/write sets, review tokens, and pre/post state hashes.
 - **Bounded breadth-first exploration:** the engine searches valid schedules and naturally prioritizes short counterexamples.
 - **State deduplication:** canonically equivalent machine states merge while preserving accurate schedule multiplicity.
-- **Partial-order reduction:** declared read/write conflicts suppress irrelevant operation orderings.
 - **Deterministic invariants:** business rules are evaluated in code, not inferred by an LLM.
 - **Automatic minimization:** the nine-microstep failing schedule is reduced to three essential domain operations: inspect, edit, approve.
 - **Constrained repair:** the lab applies a real semantic version guard to the instrumented domain implementation.
@@ -132,7 +135,7 @@ Only the tools valid for the current product state are registered. Registration 
 | Unsafe approval | 36 | 36 | 11 | 27 |
 | Version-guarded approval | 36 | 34 | 10 | 0 |
 
-These values are computed by the engine and asserted by automated tests; they are not display constants.
+These values are computed by the engine and the key values are asserted by automated tests; none are display constants.
 
 **Built with:** Next.js, React, TypeScript, WebMCP, WebGPU, vgpu, Bun, Tailwind CSS, shadcn/ui, Motion, Zustand, Zod, D3, IndexedDB, Vitest, fast-check, Playwright, Vercel.
 
@@ -141,8 +144,8 @@ These values are computed by the engine and asserted by automated tests; they ar
 Paradox is a live WebMCP website, not a PWA, extension, downloadable package, or remote MCP server. Open it in ChatGPT's in-app browser or a Chrome build with WebMCP enabled. The same product is fully navigable by a human when WebMCP is unavailable, but agent tools require a supported client.
 
 1. Open the [instrumented Ledger scenario](https://www.paradoxwebmcp.com/lab/expense-approval/ledger).
-2. Ask the agent: **"Review expense 481 and tell me whether it is below the equipment limit."** It should invoke `inspect_expense` and return $2,399, version 7, below the $3,000 limit.
-3. In the human interface, choose **Edit amount**, enter `23999`, and commit the change. The expense becomes $23,999, version 8.
+2. Ask the agent: **"Review expense 481 and tell me whether it is below the policy limit."** It should invoke `inspect_expense` and return $2,399, version 7, below the $3,000 limit.
+3. In the human interface, choose **Edit Amount**, enter `23999`, and commit the change. The expense becomes $23,999, version 8.
 4. Ask the agent: **"Complete the review you started."** It should invoke `approve_reviewed_expense`. The intentionally unsafe lab implementation approves $23,999.
 5. Open **Explore Futures** and ask: **"Find any unsafe human-agent timing in this session."** It should invoke `explore_futures`.
 6. Select **Focus Counterexample** or ask: **"Explain the shortest failure."** The three-operation sequence should be `inspect_expense → edit_expense_amount → approve_reviewed_expense`.

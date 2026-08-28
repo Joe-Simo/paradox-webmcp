@@ -26,8 +26,8 @@ Paradox uses one `document.modelContext` registry. The active tool surface chang
 
 - Fixture: `inspect_expense`, `approve_reviewed_expense`
 - Exploration: `inspect_lab`, `explore_futures`, `reset_lab`
-- Finding: `inspect_counterexample`, `apply_version_guard`, `reset_lab`
-- Verification: `verify_repair`, `reset_lab`
+- Finding: `inspect_lab`, `inspect_counterexample`, `apply_version_guard`, `reset_lab`
+- Verification: `inspect_lab`, `verify_repair`, `reset_lab`
 
 Every callback reads the current Zustand state, invokes the same domain services as the human interface, and persists its result to IndexedDB. Tool outputs are intentionally compact, agent cancellation terminates active exploration Workers, and AbortControllers remove capabilities as soon as they become invalid.
 
@@ -47,7 +47,7 @@ The landing page is a cinematic relativistic black hole rendered in WebGPU, adap
 
 ## Measured golden model
 
-These values are computed by the engine and asserted by the browser flow; they are not presentation constants.
+These values are computed by the engine; the key claims are asserted by unit and browser tests; they are not presentation constants.
 
 | Model | Schedules | Unique states | Equivalent branches merged | Counterexamples |
 | --- | ---: | ---: | ---: | ---: |
@@ -78,7 +78,7 @@ bun run build
 ## Limitations
 
 - Paradox currently analyzes one instrumented deterministic domain model.
-- Exploration is bounded; a reached bound reports `INCOMPLETE_BOUND` and cannot produce verification.
+- Exploration is bounded; a reached bound reports `incomplete_bound` and cannot produce verification.
 - The demonstrated repair is a semantic version guard, not general source synthesis.
 - Zero counterexamples means none survived the explored model, not that the application is universally safe.
 - No model API participates in scheduling, hashing, invariant evaluation, or verification.

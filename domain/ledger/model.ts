@@ -164,7 +164,7 @@ export function editExpenseAmount(session: LabSession, expenseId: string, amount
   const expense = session.ledger.expenses[expenseId];
   if (!expense) return { ok: false, error: { code: "EXPENSE_NOT_FOUND", message: "Expense not found." }, session };
   if (expense.status !== "pending") {
-    return { ok: false, error: { code: "EXPENSE_NOT_PENDING", message: "Approved expenses cannot be edited." }, session };
+    return { ok: false, error: { code: "EXPENSE_NOT_PENDING", message: "Only pending expenses can be edited." }, session };
   }
   if (!Number.isSafeInteger(amountCents) || amountCents <= 0) {
     return { ok: false, error: { code: "INVALID_AMOUNT", message: "Enter a positive amount." }, session };

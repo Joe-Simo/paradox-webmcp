@@ -36,9 +36,9 @@ export function FindingFocus({ findingId }: { findingId: string }) {
         <p>{finding.violation.explanation}</p>
       </header>
       <section className="temporal-planes" aria-label="Observed, changed, and committed states">
-        <article className="plane plane-agent"><span>Observed</span><div className="plane-marker">A</div><strong>{money.format(finding.believed.amountCents / 100)}</strong><code>version {finding.believed.version}</code><p>Agent belief became fixed in the review token.</p></article>
+        <article className="plane plane-agent"><span>Observed</span><div className="plane-marker">A</div><strong>{money.format(finding.believed.amountCents / 100)}</strong><code>version {finding.believed.version}</code><p>The agent's belief was frozen into the review token.</p></article>
         <article className="plane plane-human"><span>Changed</span><div className="plane-marker">H</div><strong>{money.format(finding.changed.amountCents / 100)}</strong><code>version {finding.changed.version}</code><p>The human changed canonical state.</p></article>
-        <article className="plane plane-system"><span>Committed</span><div className="plane-marker">S</div><strong>{money.format(finding.committed.amountCents / 100)}</strong><code>approved · version {finding.committed.version}</code><p>The unsafe tool committed without semantic equality.</p></article>
+        <article className="plane plane-system"><span>Committed</span><div className="plane-marker">S</div><strong>{money.format(finding.committed.amountCents / 100)}</strong><code>approved · version {finding.committed.version}</code><p>The unsafe tool committed without checking what the agent had reviewed.</p></article>
       </section>
       <section className="invariant-failure">
         <CircleAlert aria-hidden="true" />

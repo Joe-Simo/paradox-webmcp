@@ -1,6 +1,11 @@
 {
   "name": "paradox-webmcp",
   "version": "0.1.0",
+  "description": "Semantic instrumentation and bounded correctness testing for stateful WebMCP applications.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joe-Simo/paradox-webmcp.git"
+  },
   "type": "module",
   "license": "AGPL-3.0-only",
   "main": "./dist/sdk/index.js",

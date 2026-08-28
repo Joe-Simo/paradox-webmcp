@@ -35,7 +35,7 @@ export function VerificationWorkspace() {
         <p>Paradox first replays the exact stored counterexample, then reopens the complete bounded state space.</p>
         <Button size="lg" onClick={() => void verifyRepairService().catch(() => undefined)} disabled={exploring}>
           {exploring ? <LoaderCircle className="size-4 animate-spin" aria-hidden="true" /> : <RotateCw className="size-4" aria-hidden="true" />}
-          {exploring ? `Re-exploring… ${progress}` : verification ? "Run Verification Again" : "Verify Repair"}
+          {exploring ? `Re-exploring… ${progress} states` : verification ? "Run Verification Again" : "Verify Repair"}
         </Button>
       </header>
 

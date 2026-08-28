@@ -141,7 +141,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
     {
       act: "First — what is WebMCP?",
       title: "Your site just got a second user.",
-      body: "WebMCP gives agents real tools on your pages — those tool calls above are the new second user. This page's registry is live.",
+      body: "WebMCP gives agents real tools on your pages — the same actions your buttons perform, as callable functions. This page's registry is live.",
       datum: "document.modelContext.registerTool(…) — live on this page",
       tools: [],
     },
@@ -271,7 +271,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
             <motion.div {...reveal(0.3)}>
               <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
             </motion.div>
-            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races — and proves the fix.</motion.p>
+            <motion.p className="hero-note" {...reveal(0.42)}>Paradox finds these races — and proves the fix against every explored future.</motion.p>
             <motion.div {...reveal(0.5)}>
               <InstallLine />
             </motion.div>
