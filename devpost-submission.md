@@ -195,7 +195,7 @@ https://github.com/Joe-Simo/paradox-webmcp
 
 The locked recording target is 2 minutes 45 seconds. Open in plain language before any terminology:
 
-> "The agent reviewed $2,399. The human changed it to $23,999. The agent then approved the changed expense using its old review. Paradox tries every possible timing, finds the shortest unsafe sequence, and proves whether the protection stops it."
+> "The agent reviewed $2,399. The human changed it to $23,999. And the app accepted the agent's stale review — without checking. Paradox tries every possible timing, finds the shortest unsafe sequence, and proves whether the protection stops it."
 
 Structure:
 

@@ -81,7 +81,7 @@ test("records, explores, repairs, and verifies the golden race", async ({ page }
   await page.getByRole("button", { name: "Explore futures" }).click();
   await expect(page.getByText("A stale belief crossed a commit boundary.")).toBeVisible();
   await page.getByRole("link", { name: /Focus Counterexample/i }).click();
-  await expect(page.getByRole("heading", { name: /The agent approved a state/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /The app approved a state/ })).toBeVisible();
   await page.getByRole("button", { name: /Apply Version Guard/i }).click();
   await page.getByRole("button", { name: "Verify repair" }).click();
   await expect(page.getByText("Counterexample eliminated within the explored model.")).toBeVisible();

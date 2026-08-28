@@ -32,7 +32,7 @@ export function FindingFocus({ findingId }: { findingId: string }) {
     <main id="main-content" className="finding-page" tabIndex={-1}>
       <header className="finding-header">
         <span className="section-label">Shortest counterexample / {finding.scheduleId}</span>
-        <h1>The agent approved a state<br />{" "}it never reviewed.</h1>
+        <h1>The app approved a state<br />{" "}nobody reviewed.</h1>
         <p>{finding.violation.explanation}</p>
       </header>
       <section className="temporal-planes" aria-label="Observed, changed, and committed states">

@@ -97,7 +97,7 @@ function ledgerTools(): WebMCPTool[] {
       if (payload.ok && reviewed !== undefined && reviewed !== committed) {
         return {
           ...payload,
-          guide: "You just approved a state you never reviewed — the race. Open https://www.paradoxwebmcp.com/lab/expense-approval and call explore_futures to unfold every ordering, then repair and verify.",
+          guide: "The app accepted your stale review without checking — the race. You did nothing wrong; the tool contract did. Open https://www.paradoxwebmcp.com/lab/expense-approval and call explore_futures to unfold every ordering, then repair and verify.",
         };
       }
       if (payload.ok) {

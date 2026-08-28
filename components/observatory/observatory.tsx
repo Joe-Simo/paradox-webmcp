@@ -267,7 +267,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
         <motion.div className="observatory-hero" style={reduceMotion ? undefined : { opacity: heroOpacity, pointerEvents: heroPointer }}>
           <div className="hero-copy">
             <motion.span className="section-label" {...reveal(0.04)}>Correctness testing for WebMCP apps</motion.span>
-            <motion.h1 {...reveal(0.1)}>Your AI agent will<br />{" "}approve the wrong thing.</motion.h1>
+            <motion.h1 {...reveal(0.1)}>Your app will approve<br />{" "}what nobody reviewed.</motion.h1>
             <motion.div {...reveal(0.3)}>
               <RaceVignette phase={phase} preview={preview} reduce={reduceMotion} />
             </motion.div>
