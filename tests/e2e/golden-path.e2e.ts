@@ -29,7 +29,7 @@ test.beforeEach(async ({ page }) => {
     type Tool = {
       name: string;
       description: string;
-      execute: (input: unknown, options?: { signal?: AbortSignal }) => Promise<string>;
+      execute: (input: unknown, options?: { signal?: AbortSignal }) => Promise<unknown>;
     };
     const tools = new Map<string, Tool>();
     const context = {
@@ -49,7 +49,8 @@ test.beforeEach(async ({ page }) => {
         const tool = tools.get(registered.name);
         if (!tool) throw new DOMException("Tool is no longer registered.", "InvalidStateError");
         if (options?.signal?.aborted) throw new DOMException("Tool call cancelled.", "AbortError");
-        return tool.execute(input);
+        // Per spec, the host serializes the callback's return value to JSON.
+        return JSON.stringify(await tool.execute(input));
       }
     };
     Object.defineProperty(document, "modelContext", { configurable: true, value: context });

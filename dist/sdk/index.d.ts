@@ -60,7 +60,7 @@ export type StatefulWebMCPTool = {
     };
     execute(input: unknown, options?: {
         signal?: AbortSignal;
-    }): Promise<string>;
+    }): Promise<unknown>;
 };
 export type ModelContextLike<TTool extends StatefulWebMCPTool = StatefulWebMCPTool> = {
     registerTool(tool: TTool, options?: {

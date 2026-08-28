@@ -22,7 +22,7 @@ describe("installable Paradox instrumentation", () => {
       async getTools() { return [...registered.values()].map(({ name, description }) => ({ name, description })); }
     }();
     const onToolsChanged = vi.fn();
-    const tool: StatefulWebMCPTool = { name: "inspect_expense", description: "Inspect one pending expense.", inputSchema: { type: "object" }, async execute() { return JSON.stringify({ ok: true }); } };
+    const tool: StatefulWebMCPTool = { name: "inspect_expense", description: "Inspect one pending expense.", inputSchema: { type: "object" }, async execute() { return { ok: true }; } };
     const stop = activateToolSurface({ context, tools: [tool], onToolsChanged });
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(onToolsChanged).toHaveBeenCalledWith([{ name: tool.name, description: tool.description }]);
@@ -39,7 +39,7 @@ describe("installable Paradox instrumentation", () => {
       },
     };
     const onToolsChanged = vi.fn();
-    const tool: StatefulWebMCPTool = { name: "inspect_expense", description: "Inspect one pending expense.", inputSchema: { type: "object" }, async execute() { return JSON.stringify({ ok: true }); } };
+    const tool: StatefulWebMCPTool = { name: "inspect_expense", description: "Inspect one pending expense.", inputSchema: { type: "object" }, async execute() { return { ok: true }; } };
 
     const stop = activateToolSurface({ context, tools: [tool], onToolsChanged });
     await new Promise((resolve) => setTimeout(resolve, 0));

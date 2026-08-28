@@ -33,7 +33,7 @@ document.modelContext.registerTool({
     properties: { expenseId: { type: "string", description: "Expense identifier. Defaults to 481." } },
     additionalProperties: false,
   },
-  execute: async (input) => JSON.stringify(await inspectExpenseService(parse(input).expenseId, "webmcp")),
+  execute: async (input) => inspectExpenseService(parse(input).expenseId, "webmcp"),
 });
 ```
 

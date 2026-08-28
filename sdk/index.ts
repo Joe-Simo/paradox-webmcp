@@ -58,7 +58,7 @@ export type StatefulWebMCPTool = {
   description: string;
   inputSchema: Record<string, unknown>;
   annotations?: { readOnlyHint?: boolean; untrustedContentHint?: boolean };
-  execute(input: unknown, options?: { signal?: AbortSignal }): Promise<string>;
+  execute(input: unknown, options?: { signal?: AbortSignal }): Promise<unknown>;
 };
 
 export type ModelContextLike<TTool extends StatefulWebMCPTool = StatefulWebMCPTool> = {

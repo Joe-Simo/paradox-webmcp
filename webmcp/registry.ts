@@ -20,10 +20,6 @@ type ToolExecute = (input: unknown, options: { signal: AbortSignal }) => Promise
 
 const emptySchema = { type: "object", properties: {}, additionalProperties: false };
 
-function serialize(value: unknown) {
-  return JSON.stringify(value);
-}
-
 function resultPayload<T>(result: DomainResult<T>) {
   if (result.ok) return { ok: true, ...result.data, eventId: result.event.id };
   return {
@@ -41,15 +37,15 @@ function executable(tool: Omit<WebMCPTool, "execute">, execute: ToolExecute): We
       try {
         const signal = options?.signal ?? new AbortController().signal;
         if (signal.aborted) throw new DOMException("The operation was cancelled.", "AbortError");
-        return serialize(await execute(input, { signal }));
+        return await execute(input, { signal });
       } catch (error) {
         if (error instanceof z.ZodError) {
-          return serialize({ ok: false, code: "INVALID_INPUT", message: error.issues[0]?.message ?? "Invalid tool input." });
+          return { ok: false, code: "INVALID_INPUT", message: error.issues[0]?.message ?? "Invalid tool input." };
         }
         if (error instanceof DOMException && error.name === "AbortError") {
-          return serialize({ ok: false, code: "CANCELLED", message: "The operation was cancelled." });
+          return { ok: false, code: "CANCELLED", message: "The operation was cancelled." };
         }
-        return serialize({ ok: false, code: "TOOL_ERROR", message: error instanceof Error ? error.message : "Tool execution failed." });
+        return { ok: false, code: "TOOL_ERROR", message: error instanceof Error ? error.message : "Tool execution failed." };
       }
     },
   };
