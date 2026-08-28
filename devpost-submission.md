@@ -13,7 +13,7 @@ Paradox systematically explores the interleavings between human actions and WebM
 
 Software used to have one operator at a time. WebMCP gives the same live application two: a human using the interface and an agent invoking structured tools.
 
-Each path can look correct in isolation while their interleaving is unsafe. An agent can inspect one version of an object, a human can change it, and the agent can then commit an action based on a state that is no longer true. Traditional browser tests usually exercise human workflows. Agent evaluations usually exercise tool workflows. Neither systematically tests the states created when both operators act on the same application concurrently.
+Each path can look correct in isolation while their interleaving is unsafe. This is not an agent-quality problem — in the recorded race the agent behaves exactly as instructed. It is an application-contract problem, which is why the repair lives in the tool contract, not in the model. An agent can inspect one version of an object, a human can change it, and the agent can then commit an action based on a state that is no longer true. Traditional browser tests usually exercise human workflows. Agent evaluations usually exercise tool workflows. Neither systematically tests the states created when both operators act on the same application concurrently.
 
 These failures are especially dangerous in financial systems, administrative consoles, approval workflows, collaborative editors, support applications, and internal business tools because they are timing-dependent and difficult to reproduce from a conventional bug report.
 
