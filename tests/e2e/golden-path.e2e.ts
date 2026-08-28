@@ -15,7 +15,7 @@ async function executeTool(page: import("@playwright/test").Page, name: string, 
     if (!registered) throw new Error(`Tool ${toolName} is not registered.`);
     return context.executeTool(registered, toolInput);
   }, { toolName: name, toolInput: input });
-  return JSON.parse(serialized) as ToolResult;
+  return JSON.parse(serialized as string) as ToolResult;
 }
 
 async function expectNoSeriousViolations(page: import("@playwright/test").Page) {
