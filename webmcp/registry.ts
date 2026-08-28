@@ -64,7 +64,14 @@ function ledgerTools(): WebMCPTool[] {
         additionalProperties: false,
       },
       annotations: { readOnlyHint: false },
-    }, async (input) => resultPayload(await inspectExpenseService(inspectExpenseInput.parse(input).expenseId, "webmcp"))),
+    }, async (input) => {
+      const payload = resultPayload(await inspectExpenseService(inspectExpenseInput.parse(input).expenseId, "webmcp"));
+      if (!payload.ok) return payload;
+      return {
+        ...payload,
+        guide: "You now hold a version-bound review. If a human edits this expense before you approve (Edit Amount at https://www.paradoxwebmcp.com/lab/expense-approval/ledger), completing the review reproduces the stale-approval race Paradox exists to catch.",
+      };
+    }),
     executable({
       name: "approve_reviewed_expense",
       title: "Approve reviewed expense",
@@ -83,7 +90,29 @@ function ledgerTools(): WebMCPTool[] {
       annotations: { readOnlyHint: false },
     }, async (input) => {
       const parsed = approveExpenseInput.parse(input);
-      return resultPayload(await approveExpenseService(parsed.reviewToken, parsed.expectedVersion, "webmcp"));
+      const result = await approveExpenseService(parsed.reviewToken, parsed.expectedVersion, "webmcp");
+      const payload = resultPayload(result);
+      const reviewed = result.event?.metadata.reviewedVersion;
+      const committed = result.event?.metadata.committedVersion;
+      if (payload.ok && reviewed !== undefined && reviewed !== committed) {
+        return {
+          ...payload,
+          guide: "You just approved a state you never reviewed — the race. Open https://www.paradoxwebmcp.com/lab/expense-approval and call explore_futures to unfold every ordering, then repair and verify.",
+        };
+      }
+      if (payload.ok) {
+        return {
+          ...payload,
+          guide: "Nothing changed between review and approval, so no race occurred this time. To reproduce the race: inspect again, have the human edit the amount, then complete the review.",
+        };
+      }
+      if (payload.code === "STATE_CHANGED") {
+        return {
+          ...payload,
+          guide: "The version guard refused a stale write. Call verify_repair from the Verify surface to prove the counterexample is eliminated across the bounded model.",
+        };
+      }
+      return payload;
     }),
   ];
 }
