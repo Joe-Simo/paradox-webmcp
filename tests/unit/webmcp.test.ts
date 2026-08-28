@@ -23,7 +23,7 @@ describe("WebMCP registry", () => {
     const inspect = toolsForSurface("lab").find((tool) => tool.name === "inspect_lab");
     if (!inspect) throw new Error("inspect_lab missing");
 
-    const result = JSON.parse(await inspect.execute({}));
+    const result = await inspect.execute({});
 
     expect(result).toMatchObject({ ok: true, guardMode: "unsafe", eventCount: 0 });
   });
@@ -50,7 +50,7 @@ describe("WebMCP registry", () => {
     const controller = new AbortController();
     controller.abort();
     const cancelled = await toolsForSurface("lab")[1].execute({}, { signal: controller.signal });
-    expect(JSON.parse(cancelled)).toMatchObject({ ok: false, code: "CANCELLED" });
+    expect(cancelled).toMatchObject({ ok: false, code: "CANCELLED" });
 
     const session = recordedSession();
     const run = exploreSession(session);
@@ -59,6 +59,6 @@ describe("WebMCP registry", () => {
     const inspectFinding = toolsForSurface("lab").find((tool) => tool.name === "inspect_counterexample");
     if (!inspectFinding) throw new Error("inspect_counterexample missing");
     const invalid = await inspectFinding.execute({}, { signal: new AbortController().signal });
-    expect(JSON.parse(invalid)).toMatchObject({ ok: false, code: "INVALID_INPUT" });
+    expect(invalid).toMatchObject({ ok: false, code: "INVALID_INPUT" });
   });
 });
