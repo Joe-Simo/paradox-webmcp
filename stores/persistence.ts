@@ -16,7 +16,14 @@ interface ParadoxDB extends DBSchema {
 const DB_NAME = "paradox-correctness-lab";
 const ACTIVE_SESSION_ID = "expense-approval-golden";
 
+let databasePromise: ReturnType<typeof openDatabase> | null = null;
+
 function database() {
+  databasePromise ??= openDatabase();
+  return databasePromise;
+}
+
+function openDatabase() {
   return openDB<ParadoxDB>(DB_NAME, 3, {
     upgrade(db, oldVersion, _newVersion, transaction) {
       if (!db.objectStoreNames.contains("sessions")) db.createObjectStore("sessions");

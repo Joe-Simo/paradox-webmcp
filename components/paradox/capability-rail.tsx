@@ -80,7 +80,7 @@ export function CapabilityRail() {
           <div className="capability-row" key={name}>
             <div className="capability-icon" aria-hidden="true"><Icon /></div>
             <div>
-              <code>{name.replaceAll("_", "_​")}</code>
+              <code>{name}</code>
               <p>{descriptions[name] ?? "Active structured capability."}</p>
             </div>
             <span className="capability-live" aria-label="Registered">live</span>

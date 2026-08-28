@@ -39,7 +39,7 @@ function machineHash(state: MachineState) {
 function inputsFrom(session: LabSession) {
   const expense = session.ledger.expenses["481"];
   const inspectEvent = session.events.find((event) => event.action === "inspect_expense");
-  const editEvent = session.events.find((event) => event.action === "edit_expense_amount");
+  const editEvent = session.events.filter((event) => event.action === "edit_expense_amount").at(-1);
   const inspectedAmount = Number(inspectEvent?.metadata.inspectedAmountCents ?? 239_900);
   const inspectedVersion = Number(inspectEvent?.metadata.inspectedVersion ?? 7);
   const editTarget = Number(editEvent?.metadata.amountCents ?? (expense?.amountCents === inspectedAmount ? 2_399_900 : expense?.amountCents) ?? 2_399_900);

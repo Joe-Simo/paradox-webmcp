@@ -18,7 +18,7 @@ bun add github:Joe-Simo/paradox-webmcp
 import { activateToolSurface, createSemanticEvent, defineInvariant } from "paradox-webmcp";
 ```
 
-The dependency-free package exports semantic events, deterministic invariants, and state-scoped WebMCP registration. Events distinguish `webmcp`, `local_control`, and `system` invocation sources so every operation remains auditable.
+The SDK (dependency-free source) exports semantic events, deterministic invariants, and state-scoped WebMCP registration. Events distinguish `webmcp`, `local_control`, and `system` invocation sources so every operation remains auditable.
 
 ## WebMCP tools
 

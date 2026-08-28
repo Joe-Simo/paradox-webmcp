@@ -64,11 +64,10 @@ function ledgerTools(): WebMCPTool[] {
       description: "Inspect one pending expense and create a version-bound review token.",
       inputSchema: {
         type: "object",
-        properties: { expenseId: { type: "string", description: "Expense identifier." } },
-        required: ["expenseId"],
+        properties: { expenseId: { type: "string", description: "Expense identifier. Defaults to 481." } },
         additionalProperties: false,
       },
-      annotations: { readOnlyHint: true },
+      annotations: { readOnlyHint: false },
     }, async (input) => resultPayload(await inspectExpenseService(inspectExpenseInput.parse(input).expenseId, "webmcp"))),
     executable({
       name: "approve_reviewed_expense",

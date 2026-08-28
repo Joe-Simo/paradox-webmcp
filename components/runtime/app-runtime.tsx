@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MotionConfig } from "motion/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,8 +17,13 @@ function surfaceFor(pathname: string) {
   return "lab" as const;
 }
 
+function resolveModelContext() {
+  return document.modelContext ?? navigator.modelContext;
+}
+
 export function AppRuntime({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
+  const [contextTick, setContextTick] = useState(0);
   const hydrated = useParadoxStore((state) => state.hydrated);
   const guardMode = useParadoxStore((state) => state.session.ledger.guardMode);
   const findingId = useParadoxStore((state) => state.finding?.id ?? null);
@@ -29,10 +34,18 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
-    const context = document.modelContext;
+    const context = resolveModelContext();
     if (!context) {
       paradoxStore.setState({ webmcpSupported: false, webmcpError: null, capabilities: [] });
-      return;
+      // A WebMCP host can appear after load (e.g. the user enables site tools
+      // in the agent browser while the page is open) — keep watching for it.
+      const poll = window.setInterval(() => {
+        if (resolveModelContext()) {
+          window.clearInterval(poll);
+          setContextTick((tick) => tick + 1);
+        }
+      }, 1000);
+      return () => window.clearInterval(poll);
     }
 
     return activateToolSurface({
@@ -47,7 +60,7 @@ export function AppRuntime({ children }: { children: React.ReactNode }) {
         });
       },
     });
-  }, [pathname, hydrated, guardMode, findingId]);
+  }, [pathname, hydrated, guardMode, findingId, contextTick]);
 
   return (
     <MotionConfig reducedMotion="user" transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}>

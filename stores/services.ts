@@ -15,6 +15,9 @@ import { paradoxStore } from "./paradox-store";
 import { clearDerivedWorkspace, clearWorkspace, loadWorkspace, saveRun, saveSession, saveVerification } from "./persistence";
 
 let hydrationPromise: Promise<void> | null = null;
+// Bumped whenever the session is replaced or mutated; in-flight worker results
+// from an older epoch are discarded instead of resurrecting stale state.
+let workspaceEpoch = 0;
 
 export function hydrateWorkspace() {
   if (paradoxStore.getState().hydrated) return Promise.resolve();
@@ -36,6 +39,7 @@ export function hydrateWorkspace() {
 }
 
 async function commitResult<T>(result: DomainResult<T>) {
+  if (result.event) workspaceEpoch += 1;
   paradoxStore.setState({
     session: result.session,
     run: result.event ? null : paradoxStore.getState().run,
@@ -108,6 +112,7 @@ export async function exploreFuturesService(maxNodes = 50_000, signal?: AbortSig
   if (state.exploring) throw new Error("An exploration is already running.");
   const runId = `request_${canonicalHash({ session: state.session.id, at: state.session.logicalTime, guard: state.session.ledger.guardMode })}`;
   paradoxStore.setState({ exploring: true, progress: 0, notice: null });
+  const epoch = workspaceEpoch;
   try {
     const response = await runWorker({
       type: "EXPLORE",
@@ -117,18 +122,25 @@ export async function exploreFuturesService(maxNodes = 50_000, signal?: AbortSig
       maxNodes,
     }, signal);
     if (response.type !== "COMPLETE") throw new Error(response.type === "ERROR" ? response.message : "Unexpected exploration response.");
+    if (epoch !== workspaceEpoch) {
+      paradoxStore.setState({ exploring: false });
+      throw new DOMException("The session changed during exploration.", "AbortError");
+    }
     await saveRun(response.result);
     paradoxStore.setState({ run: response.result, finding: response.result.finding, exploring: false });
     return response.result;
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Exploration failed.";
-    paradoxStore.setState({ exploring: false, notice: message });
+    if (epoch === workspaceEpoch) {
+      const message = error instanceof Error ? error.message : "Exploration failed.";
+      paradoxStore.setState({ exploring: false, notice: message });
+    }
     throw error;
   }
 }
 
 export async function applyVersionGuardService(source: InvocationSource = "local_control") {
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
+  workspaceEpoch += 1;
   const session = applyVersionGuard(paradoxStore.getState().session, source);
   paradoxStore.setState({ session, verification: null, notice: null });
   await saveSession(session);
@@ -139,25 +151,34 @@ export async function verifyRepairService(maxNodes = 50_000, signal?: AbortSigna
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
   const state = paradoxStore.getState();
   if (!state.finding) throw new Error("Explore the session before verifying a repair.");
+  if (state.exploring) throw new Error("An exploration is already running.");
   const guarded = state.session.ledger.guardMode === "versioned" ? state.session : applyVersionGuard(state.session);
   if (guarded !== state.session) await saveSession(guarded);
   paradoxStore.setState({ session: guarded, exploring: true, progress: 0, notice: null });
+  const epoch = workspaceEpoch;
   const runId = `verify_${state.finding.id}`;
   try {
     const response = await runWorker({ type: "VERIFY", runId, session: guarded, finding: state.finding, maxNodes }, signal);
     if (response.type !== "VERIFIED") throw new Error(response.type === "ERROR" ? response.message : "Unexpected verification response.");
+    if (epoch !== workspaceEpoch) {
+      paradoxStore.setState({ exploring: false });
+      throw new DOMException("The session changed during verification.", "AbortError");
+    }
     await saveRun(response.report.exploration);
     await saveVerification(response.report);
     paradoxStore.setState({ run: response.report.exploration, verification: response.report, exploring: false });
     return response.report;
   } catch (error) {
-    paradoxStore.setState({ exploring: false, notice: error instanceof Error ? error.message : "Verification failed." });
+    if (epoch === workspaceEpoch) {
+      paradoxStore.setState({ exploring: false, notice: error instanceof Error ? error.message : "Verification failed." });
+    }
     throw error;
   }
 }
 
 export async function resetLabService() {
   if (!paradoxStore.getState().hydrated) await hydrateWorkspace();
+  workspaceEpoch += 1;
   await clearWorkspace();
   const session = createInitialSession();
   await saveSession(session);

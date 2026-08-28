@@ -26,10 +26,13 @@ const event = createSemanticEvent({
 });`;
 const invariantExample = `import { defineInvariant } from "paradox-webmcp";
 
+type Ledger = { expenses: Record<string, { version: number }> };
+type ReviewEvent = { id: string; entityIds: string[]; metadata: { reviewedVersion: number } };
+
 export const reviewedStateMatchesCommit = defineInvariant({
   id: "review_version_matches_commit",
   title: "Reviewed state must equal committed state",
-  evaluate(previous, event, current) {
+  evaluate(previous: Ledger, event: ReviewEvent, current: Ledger) {
     const reviewed = event.metadata.reviewedVersion;
     const committed = current.expenses[event.entityIds[0]].version;
     return reviewed === committed
@@ -45,8 +48,11 @@ export const reviewedStateMatchesCommit = defineInvariant({
 });`;
 const registryExample = `import { activateToolSurface } from "paradox-webmcp";
 
+const context = document.modelContext ?? navigator.modelContext;
+if (!context) return; // no WebMCP host on this page
+
 const stop = activateToolSurface({
-  context: document.modelContext,
+  context,
   tools: [inspectExpense, approveReviewedExpense],
   onToolsChanged: (tools) => renderCapabilityRail(tools),
   onError: (error) => reportRegistrationFailure(error),

@@ -201,7 +201,7 @@ export function approveReviewedExpense(
     return { ok: false, error: { code: "EXPECTED_VERSION_REQUIRED", message: "The inspected version is required." }, session };
   }
 
-  if (session.ledger.guardMode === "versioned" && expense.version !== expectedVersion) {
+  if (session.ledger.guardMode === "versioned" && (expense.version !== expectedVersion || expense.version !== token.inspectedVersion)) {
     let after = advanced(session);
     const event = nextEvent(session, after, "agent", "approve_reviewed_expense", expense, [
       `reviewToken:${reviewToken}`,

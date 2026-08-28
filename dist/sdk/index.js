@@ -27,17 +27,26 @@ export function activateToolSurface({ context, tools, onToolsChanged, onError })
         if (active)
             onToolsChanged?.(registered);
     };
-    const onToolChange = () => void refresh().catch(onError);
+    const onToolChange = () => void refresh().catch((error) => {
+        if (active)
+            onError?.(error);
+    });
     const observesToolChanges = typeof context.addEventListener === "function"
         && typeof context.removeEventListener === "function";
     if (observesToolChanges)
         context.addEventListener?.("toolchange", onToolChange);
-    void Promise.all(tools.map((tool) => context.registerTool(tool, { signal: controller.signal })))
-        .then(refresh)
-        .catch((error) => {
-        if (active && !controller.signal.aborted)
+    void (async () => {
+        try {
+            await Promise.all(tools.map((tool) => context.registerTool(tool, { signal: controller.signal })));
+            await refresh();
+        }
+        catch (error) {
+            if (!active || controller.signal.aborted)
+                return;
+            controller.abort(); // roll back any partially registered tools
             onError?.(error);
-    });
+        }
+    })();
     return () => {
         active = false;
         controller.abort();
