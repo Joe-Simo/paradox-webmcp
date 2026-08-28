@@ -19,7 +19,7 @@ These failures are especially dangerous in financial systems, administrative con
 
 ## Solution
 
-Paradox is a deterministic temporal correctness lab for agent-native web applications. It records semantic domain operations from a real WebMCP application, expands them into meaningful yield points, explores valid human-agent schedules, evaluates every reached state against business invariants, and returns the shortest replayable sequence that proves a failure.
+Paradox is a testing tool for agent-native web applications — Playwright tests your pages; Paradox tests what happens when a human and an AI agent act on the same live state at the same time. It records semantic domain operations from a real WebMCP application, expands them into meaningful yield points, explores valid human-agent schedules, evaluates every reached state against business invariants, and returns the shortest replayable sequence that proves a failure.
 
 The submitted scenario uses a functional expense application called Ledger:
 

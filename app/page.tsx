@@ -25,7 +25,7 @@ export default function HomePage() {
       <section className="landing-statement" aria-labelledby="statement-title">
         <span className="section-label">Why you need this</span>
         <h2 id="statement-title">Explore every future<br />before your users do.</h2>
-        <p className="statement-sub">Traditional tests check one operator at a time. The same race ships in carts, bookings, refunds, and permissions.</p>
+        <p className="statement-sub">Playwright tests your pages. Unit tests check your functions. Paradox tests what happens when a human and an AI agent act on the same live state at the same time — because that race ships in carts, bookings, refunds, and permissions.</p>
         <p className="hero-proof"><span>{preview.schedulesExplored} schedules</span><span>{preview.uniqueStatesReached} states</span><span>{preview.counterexamples} counterexamples</span><span>Computed, not scripted</span></p>
         <Link href="/docs">Install the instrumentation <ArrowRight aria-hidden="true" /></Link>
       </section>
