@@ -367,7 +367,6 @@ main[tabindex="-1"]:focus { outline: none; box-shadow: none; }
 .trace-event strong { display: block; margin-top: 2px; font-size: 12px; line-height: 16px; }
 .trace-version { display: block; margin-top: var(--space-1); color: var(--muted-foreground); font-family: var(--font-geist-mono); font-size: 9px; line-height: 14px; }
 .trace-event code { display: block; margin-top: var(--space-2); color: var(--gray-800); font-size: 9px; line-height: 14px; }
-.trace-empty { align-self: center; color: var(--muted-foreground); font-size: 13px; line-height: 18px; }
 
 /* Ledger */
 .ledger-grid { display: grid; min-width: 0; grid-template-columns: minmax(180px, 0.7fr) minmax(420px, 1.6fr) minmax(180px, 0.7fr); grid-template-rows: 1fr auto; gap: var(--space-6); padding: var(--space-8); }

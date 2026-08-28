@@ -28,9 +28,7 @@ export function TraceStrip() {
     <section className="trace-strip" aria-labelledby="trace-title">
       <div className="trace-title" id="trace-title">Temporal sequence</div>
       <ol className="trace-events">
-        {visible.length === 0 ? (
-          <li className="trace-empty">Semantic events will appear here as humans and agents operate the fixture.</li>
-        ) : visible.map((event, index) => {
+        {visible.map((event, index) => {
           const token = typeof event.metadata.reviewToken === "string" ? ` · ${event.metadata.reviewToken}` : "";
           const source = typeof event.metadata.invocationSource === "string" && event.metadata.invocationSource in sourceLabel
             ? event.metadata.invocationSource as keyof typeof sourceLabel
