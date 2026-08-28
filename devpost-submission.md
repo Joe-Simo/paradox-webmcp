@@ -244,7 +244,7 @@ Recommended Devpost order — problem → identity → technology → resolution
 
 ## Final Release Checklist
 
-- [ ] Clean-room judge pass in the ChatGPT desktop in-app browser (fresh profile, logged out, full flow, tools appear/disappear per act, reset restores $2,399 · v7).
+- [x] Clean-room judge pass in the ChatGPT desktop in-app browser — PASSED Aug 28: full golden path via real WebMCP tools; surfaces rotated 2 → 3 → 4 → reset; results returned as clean JSON; the race reproduced and was blocked with STATE_CHANGED on a non-scripted amount ($1,337), proving results are computed live.
 - [ ] Same pass in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`.
 - [ ] Record and publish the video; paste the YouTube URL here and on the form.
 - [ ] Add a prominent "Watch the 2:45 demo" link near the top of README.md.
