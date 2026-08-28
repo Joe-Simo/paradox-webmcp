@@ -46,7 +46,13 @@ Paradox gives developers a concrete answer instead of an intermittent race repor
 - which invariant failed;
 - the shortest sequence that reproduces the failure;
 - whether the same sequence and the wider bounded model survive a proposed guard; and
-- a shippable pattern: WebMCP write-tools that carry the version their belief was formed on and reject stale commits with `STATE_CHANGED` — the same race ships in carts, bookings, refunds, and permission grants.
+- a shippable pattern: WebMCP write-tools that carry the version their belief was formed on and reject stale commits with `STATE_CHANGED`.
+
+The expense scenario is a reference implementation of a category, not the category itself. The identical race ships everywhere agents act on state a human can change mid-flight:
+
+- a shopping agent completes a purchase after the human changes the quantity;
+- a booking agent confirms a reservation after the human changes the date;
+- a permissions agent grants access after the resource's sensitivity changes.
 
 The immediate product is an executable correctness lab for an instrumented deterministic application. The larger category is model checking and temporal correctness testing for agent-native web software.
 
@@ -186,7 +192,21 @@ https://github.com/Joe-Simo/paradox-webmcp
 
 `[TODO — add the public YouTube URL; under three minutes; audio required]`
 
-The locked recording target is 2 minutes 45 seconds and will show the live sequence: inspect $2,399/v7 → human edit to $23,999/v8 → stale approval → computed counterexample → version guard → exact replay returns `STATE_CHANGED` → guarded exploration returns zero counterexamples.
+The locked recording target is 2 minutes 45 seconds. Open in plain language before any terminology:
+
+> "The agent reviewed $2,399. The human changed it to $23,999. The agent then approved the changed expense using its old review. Paradox tries every possible timing, finds the shortest unsafe sequence, and proves whether the protection stops it."
+
+Structure:
+
+- **0:00–0:15** — the $2,399 → $23,999 failure, stated plainly.
+- **0:15–0:45** — real agent inspection via WebMCP, human edit, stale approval. Show ChatGPT's **Site tools** panel so the registered tools are visibly real.
+- **0:45–1:20** — Explore Futures; the computed counterexample and the shortest failing sequence.
+- **1:20–1:55** — apply the version guard; replay the exact failure; `STATE_CHANGED`.
+- **1:55–2:15** — guarded re-exploration: zero surviving counterexamples.
+- **2:15–2:35** — the dynamic capability surface changing per act (2 → 3 → 4 tools) and the deterministic engine.
+- **2:35–2:45** — "Explore every future before your users do."
+
+Narration honesty rules: call the repair a **constrained semantic version guard** that is verified against this model — never "Paradox automatically fixes any race." Bounded claims only ("within the explored model"). No copyrighted music, no third-party logos in overlays.
 
 ## Screenshot Shot List
 
@@ -199,7 +219,7 @@ The following upload-ready PNGs were captured from the public production build a
 5. **Counterexample focus:** [`docs/submission-assets/05-counterexample-focus.png`](docs/submission-assets/05-counterexample-focus.png) — Observed / Changed / Committed planes, invariant, minimization, and repair.
 6. **Verified repair:** [`docs/submission-assets/06-verified-repair.png`](docs/submission-assets/06-verified-repair.png) — the same branch stopped at `STATE_CHANGED`, with exact replay blocked and zero surviving counterexamples.
 
-Recommended Devpost order: multiverse hero, Ledger race, counterexample explanation, verified replay. Avoid using a code screenshot as the first image.
+Recommended Devpost order — problem → identity → technology → resolution: **counterexample focus (05) first** (its three large dollar values stay readable at thumbnail size in the gallery), then observatory landing (01), multiverse exploration (04), verified repair (06); the Ledger shots (02, 03) follow as supporting detail. Avoid using a code screenshot as the first image.
 
 ## Submission Readiness Notes
 
