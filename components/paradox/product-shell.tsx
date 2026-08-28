@@ -118,7 +118,7 @@ export function ProductShell({ children }: { children: React.ReactNode }) {
           )}
         </nav>
         <Button aria-label="Reset Lab" variant="tertiary" size="sm" onClick={() => void resetLabService()} disabled={!hydrated}>
-          <RotateCcw className="size-3.5" aria-hidden="true" /> <span>Reset<span className="reset-label-suffix"> Lab</span></span>
+          <RotateCcw className="size-3.5" aria-hidden="true" /> <span className="reset-label">Reset<span className="reset-label-suffix"> Lab</span></span>
         </Button>
       </header>
       {children}
