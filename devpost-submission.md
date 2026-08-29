@@ -191,7 +191,7 @@ https://github.com/Joe-Simo/paradox-webmcp
 
 **Produced — 2:00, 4K60, AI narration (permitted per the challenge FAQ) with an original score built from Apple-licensed Final Cut Pro sound effects. Every second is live-rendered product footage; nothing is a still or a mockup, and the narration never stops for more than a beat.**
 
-`[TODO — upload to YouTube (public) and add the URL here and on the form]`
+https://youtu.be/mBkLOa7VWFw — uploaded with final title, description, chapters, and thumbnail; currently **Private**, flip to Public before submitting the form.
 
 The film opens in plain language before any terminology:
 
@@ -246,7 +246,7 @@ Recommended Devpost order — problem → identity → technology → resolution
 
 - [x] Clean-room judge pass in the ChatGPT desktop in-app browser — PASSED Aug 28: full golden path via real WebMCP tools; surfaces rotated 2 → 3 → 4 → reset; results returned as clean JSON; the race reproduced and was blocked with STATE_CHANGED on a non-scripted amount ($1,337), proving results are computed live.
 - [ ] Same pass in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`.
-- [ ] Record and publish the video; paste the YouTube URL here and on the form.
+- [x] Video produced and uploaded with full listing (https://youtu.be/mBkLOa7VWFw); still Private — flip to Public before submitting the form.
 - [ ] Add a prominent "Watch the 2:00 demo" link near the top of README.md.
 - [ ] Tag the submitted state `webmcp-challenge-v1.0`, record the commit SHA, and confirm production serves that commit.
 - [ ] Submit before the final day if possible; freeze the repo, site, and Devpost entry during judging.
@@ -269,4 +269,4 @@ The official form does **not** request a Codex session ID.
 | AI tools leveraged | Codex for architecture, implementation, testing, debugging, design refinement, deployment, and submission preparation; ChatGPT for product direction and live WebMCP agent operation/evaluation; Claude Code for the observatory redesign, the vgpu gravitational-lens implementation, the generalized SDK explorer and automatic race-analysis tier, the demo film, and design verification | Ready |
 | Learning level | `[TODO — recommended: Significant]` | Required personal choice |
 | Career AI value | `[TODO — recommended: Yes]` | Required personal choice |
-| Public demo video | `[TODO — public YouTube URL]` | Required; intentionally last |
+| Public demo video | https://youtu.be/mBkLOa7VWFw (Private until final approval — set Public before submitting) | Required; intentionally last |

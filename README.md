@@ -2,7 +2,7 @@
 
 **Explore every future before your users do.**
 
-[Live product](https://www.paradoxwebmcp.com) · [Integration guide](https://www.paradoxwebmcp.com/docs) · [Start the instrumented scenario](https://www.paradoxwebmcp.com/lab/expense-approval/ledger)
+[Watch the 2:00 demo](https://youtu.be/mBkLOa7VWFw) · [Live product](https://www.paradoxwebmcp.com) · [Integration guide](https://www.paradoxwebmcp.com/docs) · [Start the instrumented scenario](https://www.paradoxwebmcp.com/lab/expense-approval/ledger)
 
 Paradox is a testing tool for the human-agent web — think Playwright, but for what happens when an AI agent and a human act on the same state at once. It records semantic operations from an instrumented expense workflow, explores valid human-agent interleavings, finds invariant violations, produces a shortest replayable counterexample, applies a constrained version guard, and verifies the same model again.
 
