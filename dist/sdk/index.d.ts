@@ -1,3 +1,5 @@
+export { canonicalStateHash, exploreInterleavings, verifyRepair, } from "./engine";
+export type { ExploreConfig, ExploreOutcome, ExplorerCounterexample, ExplorerInvariant, ExplorerOperation, ExplorerStepResult, ExplorerTraceStep, ExplorerViolation, VerifyOutcome, } from "./engine";
 export type InvocationSource = "webmcp" | "local_control" | "system";
 export type SemanticEventInput<TAction extends string, TMetadata extends Record<string, string | number | boolean | null>> = {
     id: string;
