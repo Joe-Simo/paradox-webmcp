@@ -67,6 +67,16 @@ The agent is deliberately not trusted to judge correctness. Paradox uses no mode
 
 The active WebMCP capability surface changes with product state. Tool callbacks read the current Zustand store at execution time, so they do not capture stale React values. AbortControllers remove tools when they are no longer valid, and the capability rail reflects the actual registry returned by `document.modelContext`.
 
+## How Paradox Maps to the Judging Criteria
+
+**WebMCP Leverage.** Every agent operation runs through real tools registered on `document.modelContext` (with a `navigator.modelContext` fallback) — nothing is simulated in the UI. The capability surface is dynamic and state-scoped: 2 tools on the ledger, 3 during exploration, 4 at the finding; stale tools retire through an AbortController and `toolchange` keeps the on-page rail truthful to the actual registry. Tool results carry `guide` fields, so the tools themselves steer an agent (or a judge) through record → explore → repair → verify. Verified live end-to-end in the ChatGPT in-app browser, including a non-scripted amount ($1,337) proving results are computed, not canned.
+
+**Execution.** Deterministic bounded model checking with published, test-asserted numbers: 36 schedules, 27 counterexamples, 9 → 3 minimization, guarded re-exploration 36 / 34 / 0. Strict TypeScript, lint, 24 unit tests, 5 Playwright e2e (including accessibility), production build — plus an installable SDK whose automatic tier turns one recorded line per operation (actor, reads, writes) into a complete interleaving analysis. The 2:00 4K60 demo is rendered entirely from the live product.
+
+**Potential Impact.** The stale-read race is the defining failure mode of the human-agent web — it ships in carts, bookings, refunds, approvals, and permissions the moment an agent and a human share live state. Paradox gives WebMCP developers a Playwright-shaped tool for exactly that failure class, and proves repairs instead of asserting them.
+
+**Creativity.** The lab is the proof: a real expense application whose only color enters the universe when the race commits its violation — and drains back out as the guard eliminates every dangerous future. Counterexample-first storytelling: the bug is shown, minimized, repaired, and re-proven in one continuous product story.
+
 ## How We Used Codex
 
 Codex was used as the primary engineering collaborator for product architecture, the pure Ledger domain model, WebMCP registration and lifecycle, the bounded explorer, hashing, counterexample minimization, exact replay, browser persistence, the visual product, automated tests, accessibility checks, browser debugging, deployment, and submission preparation.
