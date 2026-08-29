@@ -81,7 +81,7 @@ Claude Code later drove the observatory redesign: the full-bleed vgpu gravitatio
 - **One real WebMCP product:** Ledger and Paradox are connected surfaces of the same application and the same stateful correctness workflow.
 - **Real human-agent race:** the unsafe approval implementation genuinely commits a human-modified expense from a stale agent review.
 - **Dynamic tools:** capabilities are registered and removed as the workflow changes rather than being simulated in the interface.
-- **The SDK ships the full tester:** `exploreInterleavings` and `verifyRepair` are exported for any app — describe your operations and invariants, and the same bounded explorer that powers the lab runs on your model; a cross-validation test reproduces the lab's published numbers through the public API alone.
+- **The SDK ships the full tester, with a fully automatic path:** record each operation as one line of declared reads and writes and `analyzeRecording` synthesizes the model, explores every interleaving, and reports every stale-belief commit — no hand-written model or invariant; `verifyRecordingRepair` proves the guarded fix. For exact semantic invariants, `exploreInterleavings`/`verifyRepair` accept micro-step models — a cross-validation test reproduces the lab's published numbers through the public API alone.
 - **Spec-aligned security posture:** zod-validated inputs, static tool metadata, structured results with no user-authored free text, accurate `readOnlyHint` annotations, state-scoped least privilege, and a `Permissions-Policy: tools=(self)` gate — with the version guard itself as the mitigation for consequential writes.
 - **A physics-true signature visual:** the landing is a cinematic relativistic black hole in WebGPU (vgpu's baked G-buffer pipeline): the frame stays monochrome until the race commits its violation — the only color that ever enters the universe — and the scroll journey through the four acts drains it back out until Verify returns the frame to monochrome. A static deep-field fallback covers browsers without WebGPU, and reduced motion renders one still frame.
 - **Four-act spine:** Record → Explore → Repair → Verify is persistent product navigation; locked acts state exactly how to unlock them.
@@ -235,7 +235,7 @@ Recommended Devpost order — problem → identity → technology → resolution
 
 ## Known Limitations
 
-- Paradox currently analyzes one instrumented deterministic domain model.
+- Automatic analysis needs only declared read/write sets per operation; exact semantic invariants require a small hand-written model.
 - Exploration is bounded. Reaching the configured node bound reports an incomplete result and cannot produce verification.
 - The submitted repair is a semantic version guard applied to this instrumented lab, not arbitrary source-code synthesis.
 - Zero counterexamples means none survived the explored model; it is not a proof of universal correctness.

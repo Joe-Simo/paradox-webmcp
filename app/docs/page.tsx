@@ -46,21 +46,23 @@ export const reviewedStateMatchesCommit = defineInvariant({
         };
   },
 });`;
-const engineExample = `import { exploreInterleavings, verifyRepair } from "paradox-webmcp";
+const engineExample = `import { analyzeRecording, createRecorder, verifyRecordingRepair } from "paradox-webmcp";
 
-// Describe your operations as sequences of atomic micro-steps.
-const outcome = exploreInterleavings({
-  initial: ledgerState,
-  operations: [inspectExpense, editAmount, approveExpense],
-  invariants: [approvedMustEqualReviewed],
+// 1. Record: one line per operation — what it read, what it wrote.
+const recorder = createRecorder();
+recorder.record("inspect_expense", { actor: "agent", reads: ["expense:481:version"], writes: ["review:481"] });
+recorder.record("edit_expense_amount", { actor: "human", reads: [], writes: ["expense:481:version"] });
+recorder.record("approve_reviewed_expense", { actor: "agent", reads: ["review:481", "expense:481:version"], writes: ["expense:481:status"] });
+
+// 2. Analyze: every interleaving, automatically. No model, no invariant.
+const analysis = analyzeRecording(recorder.events());
+analysis.hazard; // → approve committed after its reads were overwritten
+
+// 3. Repair and prove: version-guard the writers, replay, re-explore.
+const verdict = verifyRecordingRepair(recorder.events(), analysis.exploration.counterexample!.trace, {
+  guarded: ["inspect_expense", "approve_reviewed_expense"],
 });
-
-// The shortest failing schedule, minimized to essential operations:
-outcome.counterexample?.minimized.operations;
-
-// Repair the tool contract, then prove it:
-const verdict = verifyRepair(guardedConfig, outcome.counterexample!.trace);
-// verdict.verified → exact replay no longer violates, zero counterexamples survive.`;
+// verdict.verified → the hazard is gone in every ordering.`;
 const registryExample = `import { activateToolSurface } from "paradox-webmcp";
 
 export function exposeLedgerTools() {
@@ -98,8 +100,8 @@ export default function DocumentationPage() {
           <section id="record" className="docs-section"><div><span>02</span><h2>Record domain operations, not clicks</h2></div><p>Wrap the service boundary shared by the human interface and WebMCP callbacks. Declare actor, source, read set, write set, versions, and canonical state hashes.</p><CodeBlock label="semantic-events.ts">{eventExample}</CodeBlock></section>
           <section id="invariants" className="docs-section"><div><span>03</span><h2>Express the business rule</h2></div><p>Invariants are deterministic functions over previous state, the semantic event, and current state. An LLM never decides whether a branch is safe.</p><CodeBlock label="invariants.ts">{invariantExample}</CodeBlock></section>
           <section id="webmcp-client" className="docs-section"><div><span>04</span><h2>Register only the tools valid now</h2></div><p>The lifecycle helper registers one state-specific tool surface, listens for registry changes, and removes stale capabilities with an AbortController.</p><CodeBlock label="webmcp-surface.ts">{registryExample}</CodeBlock><div className="docs-note"><strong>Client requirement</strong><p>WebMCP tools exist while the page is open in a browser that exposes <code>document.modelContext</code>. Elsewhere, Paradox labels local evaluation controls instead of claiming tools are registered.</p></div></section>
-          <section id="engine" className="docs-section"><div><span>05</span><h2>Explore every ordering, then prove the fix</h2></div><p>The SDK ships the bounded interleaving explorer itself. Describe your operations as micro-step sequences, state your invariants, and it walks every schedule, merges equivalent states, minimizes the first counterexample to its essential operations, and verifies a repaired contract by exact replay plus full re-exploration. The same expense race expressed through this API reproduces the lab engine&apos;s published numbers exactly.</p><CodeBlock label="explore.ts">{engineExample}</CodeBlock></section>
-          <section id="limits" className="docs-section docs-limits"><div><span>06</span><h2>Know the explored boundary</h2></div><ul><li>Paradox currently analyzes instrumented deterministic domain models.</li><li>Exploration is bounded and reports an incomplete result if that bound is reached.</li><li>The included product contains one complete expense-approval scenario.</li><li>The demonstrated repair is a semantic version guard, not arbitrary source synthesis.</li><li>Zero findings means none survived the explored model — not universal correctness.</li></ul></section>
+          <section id="engine" className="docs-section"><div><span>05</span><h2>Explore every ordering, then prove the fix</h2></div><p>Record what each operation read and wrote — one line each — and <code>analyzeRecording</code> does the rest: it synthesizes the model from the recording, walks every interleaving, and reports every schedule where an operation committed on an overwritten belief, minimized to the essential operations. <code>verifyRecordingRepair</code> proves the version-guarded fix. For exact semantic invariants beyond the structural race, the underlying <code>exploreInterleavings</code> and <code>verifyRepair</code> accept hand-written micro-step models — the expense race expressed that way reproduces the lab engine&apos;s published numbers exactly.</p><CodeBlock label="explore.ts">{engineExample}</CodeBlock></section>
+          <section id="limits" className="docs-section docs-limits"><div><span>06</span><h2>Know the explored boundary</h2></div><ul><li>Automatic analysis needs only each operation&apos;s declared reads and writes; exact semantic invariants need a small hand-written model.</li><li>Exploration is bounded and reports an incomplete result if that bound is reached.</li><li>The included product contains one complete expense-approval scenario.</li><li>The demonstrated repair is a semantic version guard, not arbitrary source synthesis.</li><li>Zero findings means none survived the explored model — not universal correctness.</li></ul></section>
           <section className="docs-cta"><div><span className="section-label">Reference implementation</span><h2>See the instrumentation operate a real WebMCP race.</h2></div><Link className={buttonVariants({ size: "lg" })} href="/lab/expense-approval/ledger">Run the lab <ArrowRight aria-hidden="true" /></Link></section>
         </article>
       </main>
