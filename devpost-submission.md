@@ -189,23 +189,23 @@ https://github.com/Joe-Simo/paradox-webmcp
 
 ## Demo Video
 
-**Deferred by product decision until the final submission pass.**
+**Produced — 2:39.8, 4K60, AI narration (permitted per the challenge FAQ) with an original score built from Apple-licensed Final Cut Pro sound effects. Every second is live-rendered product footage; nothing is a still or a mockup.**
 
-`[TODO — add the public YouTube URL; under three minutes; audio required]`
+`[TODO — upload to YouTube (public) and add the URL here and on the form]`
 
-The locked recording target is 2 minutes 45 seconds. Open in plain language before any terminology:
+The film opens in plain language before any terminology:
 
 > "The agent reviewed $2,399. The human changed it to $23,999. And the app accepted the agent's stale review — without checking. Paradox tries every possible timing, finds the shortest unsafe sequence, and proves whether the protection stops it."
 
 Structure:
 
-- **0:00–0:15** — the $2,399 → $23,999 failure, stated plainly.
-- **0:15–0:45** — real agent inspection via WebMCP, human edit, stale approval. Show ChatGPT's **Site tools** panel so the registered tools are visibly real.
-- **0:45–1:20** — Explore Futures; the computed counterexample and the shortest failing sequence.
-- **1:20–1:55** — apply the version guard; replay the exact failure; `STATE_CHANGED`.
-- **1:55–2:15** — guarded re-exploration: zero surviving counterexamples.
-- **2:15–2:35** — the dynamic capability surface changing per act (2 → 3 → 4 tools) and the deterministic engine.
-- **2:35–2:45** — final frame holds the proof before the brand: "Exact replay: BLOCKED — STATE_CHANGED · Full exploration: 0 surviving counterexamples", then "Explore every future before your users do."
+- **0:00–0:10** — letterboxed titles over the black hole; the working product is on screen from the first second and the app accepts the stale review on cue.
+- **0:10–0:42** — the product's own iris transition into the lab; live WebMCP inspection, human edit, stale approval, crimson violation.
+- **0:42–1:17** — Explore Futures; the computed counterexample and the shortest failing sequence.
+- **1:17–1:52** — the version guard; the exact failure replayed and blocked with `STATE_CHANGED`.
+- **1:52–2:12** — guarded re-exploration: zero surviving counterexamples.
+- **2:12–2:31** — one continuous live shot pushed in on the capability rail as it reorganizes 2 → 3 → 4 tools on camera.
+- **2:31–2:40** — the proof card ("Exact replay: BLOCKED — STATE_CHANGED · 0 surviving counterexamples"), then the title over the drifting event horizon.
 
 Narration honesty rules: call the repair a **constrained semantic version guard** that is verified against this model — never "Paradox automatically fixes any race." Bounded claims only ("within the explored model"). No copyrighted music, no third-party logos in overlays.
 
