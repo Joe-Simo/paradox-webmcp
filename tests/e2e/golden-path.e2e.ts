@@ -109,6 +109,7 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
   const exploration = await executeTool(page, "explore_futures", { maxNodes: 50_000 });
   expect(exploration.ok).toBe(true);
   expect(Number(exploration.counterexamples)).toBeGreaterThan(0);
+  expect(String(exploration.guide)).toContain("inspect_counterexample");
   const findingId = String(exploration.findingId);
 
   await expect.poll(() => toolNames(page)).toEqual(["inspect_lab", "inspect_counterexample", "apply_version_guard", "reset_lab"]);
@@ -118,7 +119,8 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
     sequence: ["inspect_expense", "edit_expense_amount", "approve_reviewed_expense"],
   });
   const guard = await executeTool(page, "apply_version_guard", { findingId });
-  expect(guard).toEqual({ ok: true, guardMode: "versioned" });
+  expect(guard).toMatchObject({ ok: true, guardMode: "versioned" });
+  expect(String(guard.guide)).toContain("verify_repair");
   await expect(page.getByRole("heading", { name: /The dangerous future/ })).toBeVisible();
 
   await expect.poll(() => toolNames(page)).toEqual(["inspect_lab", "verify_repair", "reset_lab"]);
@@ -129,6 +131,7 @@ test("runs the complete dynamic WebMCP lifecycle without route-assisted tool cha
     verified: true,
     counterexamples: 0,
   });
+  expect(String(verification.guide)).toContain("within these bounds");
   await expect(page.getByText("Counterexample eliminated within the explored model.")).toBeVisible();
 });
 

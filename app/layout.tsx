@@ -15,10 +15,8 @@ export const metadata: Metadata = {
   authors: [{ name: "Joe Simo", url: "https://github.com/Joe-Simo" }],
   creator: "Joe Simo",
   category: "developer tools",
-  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    url: "/",
     title: "Paradox — Explore every future before your users do",
     description: "A testing tool for WebMCP apps: bounded exploration of every human-agent interleaving, with a proven repair.",
     siteName: "Paradox",

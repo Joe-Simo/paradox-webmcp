@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Documentation",
   description: "Install Paradox, record what each operation reads and writes, and let it explore every human-agent interleaving of your app automatically — then prove your repair.",
+  alternates: { canonical: "/docs" },
 };
 
 const install = "bun add github:Joe-Simo/paradox-webmcp";

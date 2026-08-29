@@ -25,7 +25,8 @@ The SDK (dependency-free source) exports the complete tester — including a ful
 Paradox registers real tools on the page's model context (`document.modelContext`, with a `navigator.modelContext` fallback). Under the hood every tool goes through the standard registration call:
 
 ```ts
-document.modelContext.registerTool({
+const context = document.modelContext ?? navigator.modelContext;
+await context?.registerTool({
   name: "inspect_expense",
   description: "Inspect one pending expense and create a version-bound review token.",
   inputSchema: {

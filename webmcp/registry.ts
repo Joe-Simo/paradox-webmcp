@@ -186,6 +186,9 @@ function exploreTool(): WebMCPTool {
       reduced: run.partialOrderReductions,
       counterexamples: run.counterexamples,
       findingId: run.finding?.id ?? null,
+      guide: run.counterexamples > 0 && run.finding
+        ? `${run.counterexamples} of ${run.schedulesExplored} explored futures violate the invariant. Call inspect_counterexample with findingId "${run.finding.id}" to see the shortest one, then apply_version_guard to repair the tool contract.`
+        : "No invariant violation was reached within the explored bound. Nothing to repair on this run.",
     };
   });
 }
@@ -222,7 +225,11 @@ function findingTools(): WebMCPTool[] {
     }, async (input) => {
       const { findingId } = findingInput.parse(input);
       if (paradoxStore.getState().finding?.id !== findingId) return { ok: false, code: "FINDING_NOT_FOUND" };
-      return applyVersionGuardService("webmcp");
+      const payload = await applyVersionGuardService("webmcp");
+      return {
+        ...payload,
+        guide: "Version guard installed — the tool contract now rejects reviews of a changed state. Call verify_repair with the same findingId to replay the exact counterexample and re-explore every schedule.",
+      };
     }),
   ];
 }
@@ -245,6 +252,9 @@ function verifyTool(): WebMCPTool {
       schedules: report.exploration.schedulesExplored,
       states: report.exploration.uniqueStatesReached,
       counterexamples: report.exploration.counterexamples,
+      guide: report.verified
+        ? "The exact counterexample no longer reproduces and zero counterexamples remain within the explored model — the repair is proven within these bounds, not beyond them. The story is complete; reset_lab restores the initial state."
+        : "The repair is not yet proven: the guarded exploration still reaches counterexamples within the explored model.",
     };
   });
 }

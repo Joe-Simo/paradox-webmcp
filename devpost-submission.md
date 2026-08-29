@@ -1,7 +1,6 @@
-# Paradox
+# Paradox — Devpost Submission Dossier
 
-### ⏳ Not submitted yet
-Nothing has been sent to Devpost.
+The canonical content for the WebMCP Challenge entry. Fields marked `[TODO]` are personal choices entered on the form at submission time.
 
 ## One-line Summary
 
@@ -196,7 +195,7 @@ https://github.com/Joe-Simo/paradox-webmcp
 
 The film opens in plain language before any terminology:
 
-> "The agent reviewed $2,399. The human changed it to $23,999. And the app accepted the agent's stale review — without checking. Paradox tries every possible timing, finds the shortest unsafe sequence, and proves whether the protection stops it."
+> "The agent reviewed $2,399. The human changed it to $23,999. And the app accepted the agent's stale review — without checking. … This is Paradox — a testing tool for WebMCP apps."
 
 Structure:
 

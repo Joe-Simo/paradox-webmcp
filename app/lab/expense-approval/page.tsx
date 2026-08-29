@@ -2,7 +2,7 @@ import { CapabilityRail } from "@/components/paradox/capability-rail";
 import { ExplorationWorkspace } from "@/components/paradox/exploration-workspace";
 import { TraceStrip } from "@/components/paradox/trace-strip";
 
-export const metadata: Metadata = { title: "Explore Futures" };
+export const metadata: Metadata = { title: "Explore Futures", alternates: { canonical: "/lab/expense-approval" } };
 
 export default function ExpenseApprovalLabPage() {
   return (

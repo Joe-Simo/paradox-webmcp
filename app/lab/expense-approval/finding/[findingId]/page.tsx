@@ -1,7 +1,7 @@
 import { CapabilityRail } from "@/components/paradox/capability-rail";
 import { FindingFocus } from "@/components/paradox/finding-focus";
 
-export const metadata: Metadata = { title: "Counterexample" };
+export const metadata: Metadata = { title: "Counterexample", alternates: { canonical: "/lab/expense-approval" } };
 
 export default async function FindingPage({ params }: { params: Promise<{ findingId: string }> }) {
   const { findingId } = await params;

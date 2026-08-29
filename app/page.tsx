@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Github } from "lucide-react";
 import { Observatory } from "@/components/observatory/observatory";
 import { AppRuntime } from "@/components/runtime/app-runtime";
 import { computeGoldenPreview } from "@/paradox/explorer/golden-preview";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default function HomePage() {
   const preview = computeGoldenPreview();
