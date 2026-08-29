@@ -3,6 +3,18 @@ export {
   exploreInterleavings,
   verifyRepair,
 } from "./engine";
+export {
+  analyzeRecording,
+  createRecorder,
+  verifyRecordingRepair,
+} from "./analyze";
+export type {
+  AnalyzeOptions,
+  RecordedOperation,
+  RecorderEvent,
+  RecordingAnalysis,
+  StaleCommitHazard,
+} from "./analyze";
 export type {
   ExploreConfig,
   ExploreOutcome,

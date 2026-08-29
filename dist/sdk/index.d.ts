@@ -1,4 +1,6 @@
 export { canonicalStateHash, exploreInterleavings, verifyRepair, } from "./engine";
+export { analyzeRecording, createRecorder, verifyRecordingRepair, } from "./analyze";
+export type { AnalyzeOptions, RecordedOperation, RecorderEvent, RecordingAnalysis, StaleCommitHazard, } from "./analyze";
 export type { ExploreConfig, ExploreOutcome, ExplorerCounterexample, ExplorerInvariant, ExplorerOperation, ExplorerStepResult, ExplorerTraceStep, ExplorerViolation, VerifyOutcome, } from "./engine";
 export type InvocationSource = "webmcp" | "local_control" | "system";
 export type SemanticEventInput<TAction extends string, TMetadata extends Record<string, string | number | boolean | null>> = {
