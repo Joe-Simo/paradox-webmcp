@@ -9,7 +9,7 @@ export default function OpenGraphImage() {
     <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#04060c", color: "#f2f5fc", padding: "58px 64px", fontFamily: "Arial, sans-serif" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(255,255,255,0.16)", paddingBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 28, fontWeight: 700 }}><span style={{ width: 18, height: 18, border: "1px solid #f2f5fc", transform: "rotate(45deg)", display: "flex" }} />Paradox</div>
-        <div style={{ fontSize: 18, color: "#9aa4bb" }}>WebMCP correctness lab</div>
+        <div style={{ fontSize: 18, color: "#9aa4bb" }}>A testing tool for WebMCP apps</div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         <div style={{ display: "flex", color: "#7fb1ff", fontSize: 18, letterSpacing: 2, textTransform: "uppercase" }}>Human + agent · one live state</div>

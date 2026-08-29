@@ -15,7 +15,7 @@ bun add github:Joe-Simo/paradox-webmcp
 ```
 
 ```ts
-import { activateToolSurface, createSemanticEvent, defineInvariant, exploreInterleavings, verifyRepair } from "paradox-webmcp";
+import { createRecorder, analyzeRecording, verifyRecordingRepair, activateToolSurface, createSemanticEvent, defineInvariant, exploreInterleavings, verifyRepair } from "paradox-webmcp";
 ```
 
 The SDK (dependency-free source) exports the complete tester — including a fully automatic path: `createRecorder` captures each operation as one line (actor, reads, writes), and `analyzeRecording` synthesizes the model from the recording itself, explores every interleaving, and reports every schedule where an operation committed on an overwritten belief; `verifyRecordingRepair` proves the version-guarded fix. No hand-written model, no hand-written invariant. Beneath it sit the precision primitives: semantic events, deterministic invariants, state-scoped WebMCP registration — and the bounded interleaving explorer itself. `exploreInterleavings` walks every schedule of your operations, merges canonically equivalent states, checks your invariants, and minimizes the first counterexample to its essential operations; `verifyRepair` replays that counterexample exactly against your repaired contract and re-explores the full model. A cross-validation test expresses the expense race purely through this public API and reproduces the lab engine's published numbers — 36 schedules, 27 counterexamples, 9 → 3 minimization, verified guard — two independent implementations agreeing. Events distinguish `webmcp`, `local_control`, and `system` invocation sources so every operation remains auditable.

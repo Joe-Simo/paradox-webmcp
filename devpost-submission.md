@@ -5,9 +5,9 @@ Nothing has been sent to Devpost.
 
 ## One-line Summary
 
-Paradox systematically explores the interleavings between human actions and WebMCP agent operations, finds invalid application states, produces the shortest replayable counterexample, and verifies whether a semantic guard eliminates the dangerous future. It is built for developers shipping WebMCP applications in which humans and agents can modify the same live state.
+Paradox is a testing tool for WebMCP apps. It systematically explores the interleavings between human actions and WebMCP agent operations, finds invalid application states, produces the shortest replayable counterexample, and verifies whether a semantic guard eliminates the dangerous future. It is built for developers shipping WebMCP applications in which humans and agents can modify the same live state.
 
-**Tagline:** The correctness lab for the human-agent web.
+**Tagline:** A testing tool for WebMCP apps — find the race, prove the fix.
 
 ## Problem
 
@@ -74,7 +74,7 @@ Codex was used as the primary engineering collaborator for product architecture,
 
 Codex also helped keep the central claim testable: it traced every displayed result back to engine data, exercised the complete human-agent flow in Playwright, and verified lint, strict TypeScript, unit and property tests, end-to-end tests, and the production build.
 
-Claude Code later drove the observatory redesign: the full-bleed vgpu gravitational-lens landing, the four-act navigation spine, the plain-language clarity pass across the lab, and a verification loop covering WebGPU, static-fallback, reduced-motion, and mobile branches plus the full automated suite.
+Claude Code later drove the observatory redesign — the full-bleed vgpu gravitational-lens landing, the four-act navigation spine, the plain-language clarity pass across the lab, and a verification loop covering WebGPU, static-fallback, reduced-motion, and mobile branches plus the full automated suite — and then completed the SDK: it generalized the lab's engine into the dependency-free `exploreInterleavings`/`verifyRepair` explorer, built the fully automatic tier (`createRecorder`/`analyzeRecording`/`verifyRecordingRepair`), wrote the cross-validation tests that reproduce the lab's published numbers through the public API alone, produced the 4K demo film, and ran the final copy pass that keeps the framing on the tool contract rather than the agent.
 
 ## Key Features
 
@@ -190,7 +190,7 @@ https://github.com/Joe-Simo/paradox-webmcp
 
 ## Demo Video
 
-**Produced — 2:39.8, 4K60, AI narration (permitted per the challenge FAQ) with an original score built from Apple-licensed Final Cut Pro sound effects. Every second is live-rendered product footage; nothing is a still or a mockup.**
+**Produced — 2:00, 4K60, AI narration (permitted per the challenge FAQ) with an original score built from Apple-licensed Final Cut Pro sound effects. Every second is live-rendered product footage; nothing is a still or a mockup, and the narration never stops for more than a beat.**
 
 `[TODO — upload to YouTube (public) and add the URL here and on the form]`
 
@@ -201,12 +201,12 @@ The film opens in plain language before any terminology:
 Structure:
 
 - **0:00–0:10** — letterboxed titles over the black hole; the working product is on screen from the first second and the app accepts the stale review on cue.
-- **0:10–0:42** — the product's own iris transition into the lab; live WebMCP inspection, human edit, stale approval, crimson violation.
-- **0:42–1:17** — Explore Futures; the computed counterexample and the shortest failing sequence.
-- **1:17–1:52** — the version guard; the exact failure replayed and blocked with `STATE_CHANGED`.
-- **1:52–2:12** — guarded re-exploration: zero surviving counterexamples.
-- **2:12–2:31** — one continuous live shot pushed in on the capability rail as it reorganizes 2 → 3 → 4 tools on camera.
-- **2:31–2:40** — the proof card ("Exact replay: BLOCKED — STATE_CHANGED · 0 surviving counterexamples"), then the title over the drifting event horizon.
+- **0:10–0:39** — the product's own iris transition into the lab; live WebMCP inspection, human edit, stale approval, crimson violation.
+- **0:39–1:01** — Explore Futures; 36 schedules, 27 violating futures, the shortest failing sequence.
+- **1:01–1:21** — the counterexample in focus; the version guard installed on the tool contract.
+- **1:21–1:32** — the exact failure replayed and blocked with `STATE_CHANGED`; guarded re-exploration leaves zero survivors.
+- **1:32–1:51** — one continuous live shot pushed in on the capability rail as it reorganizes 2 → 3 → 4 tools on camera.
+- **1:51–2:00** — the proof card ("Exact replay: BLOCKED — STATE_CHANGED · 0 surviving counterexamples"), then the title over the drifting event horizon.
 
 Narration honesty rules: call the repair a **constrained semantic version guard** that is verified against this model — never "Paradox automatically fixes any race." Bounded claims only ("within the explored model"). No copyrighted music, no third-party logos in overlays.
 
@@ -217,7 +217,7 @@ The following upload-ready PNGs were captured from the public production build a
 1. **Observatory landing at the unsafe commit:** [`docs/submission-assets/01-paradox-landing.png`](docs/submission-assets/01-paradox-landing.png) — the WebGPU black hole at the Commit act, crimson flooding an otherwise monochrome frame.
 2. **Ledger inspection:** [`docs/submission-assets/02-ledger-inspected.png`](docs/submission-assets/02-ledger-inspected.png) — $2,399/v7 with the agent review token.
 3. **Unsafe commit:** [`docs/submission-assets/03-ledger-unsafe-commit.png`](docs/submission-assets/03-ledger-unsafe-commit.png) — $23,999/v8 approved while the agent belief remains $2,399/v7.
-4. **Hero / project thumbnail:** [`docs/submission-assets/04-multiverse-finding.png`](docs/submission-assets/04-multiverse-finding.png) — the computed $23,999/v8 counterexample branch, metrics, and shortest failure.
+4. **Multiverse exploration:** [`docs/submission-assets/04-multiverse-finding.png`](docs/submission-assets/04-multiverse-finding.png) — the computed $23,999/v8 counterexample branch, metrics, and shortest failure.
 5. **Counterexample focus:** [`docs/submission-assets/05-counterexample-focus.png`](docs/submission-assets/05-counterexample-focus.png) — Observed / Changed / Committed planes, invariant, minimization, and repair.
 6. **Verified repair:** [`docs/submission-assets/06-verified-repair.png`](docs/submission-assets/06-verified-repair.png) — the same branch stopped at `STATE_CHANGED`, with exact replay blocked and zero surviving counterexamples.
 
@@ -248,7 +248,7 @@ Recommended Devpost order — problem → identity → technology → resolution
 - [x] Clean-room judge pass in the ChatGPT desktop in-app browser — PASSED Aug 28: full golden path via real WebMCP tools; surfaces rotated 2 → 3 → 4 → reset; results returned as clean JSON; the race reproduced and was blocked with STATE_CHANGED on a non-scripted amount ($1,337), proving results are computed live.
 - [ ] Same pass in Chrome 149+ with `chrome://flags/#enable-webmcp-testing`.
 - [ ] Record and publish the video; paste the YouTube URL here and on the form.
-- [ ] Add a prominent "Watch the 2:45 demo" link near the top of README.md.
+- [ ] Add a prominent "Watch the 2:00 demo" link near the top of README.md.
 - [ ] Tag the submitted state `webmcp-challenge-v1.0`, record the commit SHA, and confirm production serves that commit.
 - [ ] Submit before the final day if possible; freeze the repo, site, and Devpost entry during judging.
 
@@ -267,7 +267,7 @@ The official form does **not** request a Codex session ID.
 | Testing instructions | Use the ten-step WebMCP workflow above | Ready |
 | Public repository | https://github.com/Joe-Simo/paradox-webmcp | Ready |
 | Tested agent/client | ChatGPT in-app browser for live WebMCP; Playwright Chromium for automated product and registry-lifecycle verification | Ready; recheck live before submission |
-| AI tools leveraged | Codex for architecture, implementation, testing, debugging, design refinement, deployment, and submission preparation; ChatGPT for product direction and live WebMCP agent operation/evaluation; Claude Code for the observatory redesign, the vgpu gravitational-lens implementation, and design verification | Ready |
+| AI tools leveraged | Codex for architecture, implementation, testing, debugging, design refinement, deployment, and submission preparation; ChatGPT for product direction and live WebMCP agent operation/evaluation; Claude Code for the observatory redesign, the vgpu gravitational-lens implementation, the generalized SDK explorer and automatic race-analysis tier, the demo film, and design verification | Ready |
 | Learning level | `[TODO — recommended: Significant]` | Required personal choice |
 | Career AI value | `[TODO — recommended: Yes]` | Required personal choice |
 | Public demo video | `[TODO — public YouTube URL]` | Required; intentionally last |

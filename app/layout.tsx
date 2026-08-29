@@ -6,10 +6,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.paradoxwebmcp.com"),
   title: {
-    default: "Paradox — WebMCP Correctness Lab",
+    default: "Paradox — Testing Tool for WebMCP Apps",
     template: "%s — Paradox",
   },
-  description: "Paradox explores bounded human-agent WebMCP interleavings, finds replayable business-invariant violations, and verifies semantic guards.",
+  description: "Paradox is a testing tool for WebMCP apps: it explores every human-agent interleaving of your live state, finds replayable invariant violations, and proves the repair.",
   applicationName: "Paradox",
   keywords: ["WebMCP", "model checking", "agent evaluation", "concurrency testing", "semantic instrumentation"],
   authors: [{ name: "Joe Simo", url: "https://github.com/Joe-Simo" }],
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     type: "website",
     url: "/",
     title: "Paradox — Explore every future before your users do",
-    description: "The bounded correctness lab for humans and WebMCP agents operating one live application.",
+    description: "A testing tool for WebMCP apps: bounded exploration of every human-agent interleaving, with a proven repair.",
     siteName: "Paradox",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Paradox — WebMCP Correctness Lab",
-    description: "Explore the dangerous futures created when humans and agents use the same application.",
+    title: "Paradox — Testing Tool for WebMCP Apps",
+    description: "Find the race a human and an agent ship together — and prove the fix against every explored future.",
   },
 };
 

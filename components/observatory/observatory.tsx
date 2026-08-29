@@ -21,7 +21,7 @@ const steps = ["Inspect", "Change", "Approve", "Commit"] as const;
 const phaseAnnouncements = [
   "Agent inspected 2,399 dollars at version 7 and created a version 7 review.",
   "Human changed the live expense to 23,999 dollars and version 8. The agent belief remains at version 7.",
-  "Agent attempts approval using the stale version 7 review while the live expense is version 8.",
+  "The app accepts an approval backed by the stale version 7 review while the live expense is version 8.",
   "System commits the version 8 expense at 23,999 dollars. The reviewed-version invariant is violated.",
 ] as const;
 
@@ -133,7 +133,7 @@ export function Observatory({ preview }: { preview: GoldenPreview }) {
   const phaseStatus = [
     `The agent inspects ${believed} · v${preview.believed.version}`,
     `The human changes it to ${changed} · v${preview.changed.version}`,
-    `The agent approves from its stale v${preview.believed.version} review`,
+    `The app accepts the stale v${preview.believed.version} review as current`,
     `${changed} committed from a v${preview.believed.version} review — invariant violated`,
   ] as const;
 
