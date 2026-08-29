@@ -17,7 +17,7 @@ import {
   type ExplorerOperation,
   type ExplorerTraceStep,
   type VerifyOutcome,
-} from "./engine.js";
+} from "./engine";
 
 export type RecordedOperation = {
   /** Semantic action name, e.g. "approve_reviewed_expense". */
