@@ -17,7 +17,7 @@ import {
   type ExplorerOperation,
   type ExplorerTraceStep,
   type VerifyOutcome,
-} from "./engine";
+} from "./engine.js";
 
 export type RecordedOperation = {
   /** Semantic action name, e.g. "approve_reviewed_expense". */
@@ -53,14 +53,20 @@ export function createRecorder() {
 }
 
 type HazardState = {
-  versions: Record<string, number>;
+  /** key -> actor -> count of writes committed to that key by that actor. */
+  writes: Record<string, Record<string, number>>;
+  /** operation id -> key -> other-actor write count observed at read time. */
   snapshots: Record<string, Record<string, number>>;
   outcomes: Record<string, "committed" | "blocked" | "stale_commit">;
   staleDetails: Record<string, { keys: string[] }>;
 };
 
 export type AnalyzeOptions = {
-  /** Operations (by action name) whose commits carry a version guard on their reads. */
+  /**
+   * Operations whose commits carry a version guard on their reads — matched
+   * by action name or by the suffixed operation id (`edit#2`) that
+   * `minimizedOperations` and `hazard.operation` report.
+   */
   guarded?: string[];
   maxNodes?: number;
 };
@@ -79,14 +85,33 @@ export type RecordingAnalysis = {
   minimizedOperations: string[];
 };
 
-function operationId(event: RecordedOperation, index: number, all: RecordedOperation[]) {
-  const duplicates = all.filter((candidate) => candidate.action === event.action);
-  return duplicates.length > 1 ? `${event.action}#${index + 1}` : event.action;
+/** Stable, collision-free ids: duplicate actions get per-occurrence suffixes. */
+function operationIds(recorded: RecordedOperation[]): string[] {
+  const totals = new Map<string, number>();
+  for (const event of recorded) totals.set(event.action, (totals.get(event.action) ?? 0) + 1);
+  const seen = new Map<string, number>();
+  const used = new Set<string>();
+  return recorded.map((event) => {
+    const occurrence = (seen.get(event.action) ?? 0) + 1;
+    seen.set(event.action, occurrence);
+    let id = (totals.get(event.action) ?? 0) > 1 ? `${event.action}#${occurrence}` : event.action;
+    while (used.has(id)) id = `${id}#`;
+    used.add(id);
+    return id;
+  });
+}
+
+/** Writes to `key` since the snapshot by anyone other than `actor`. */
+function otherActorWrites(writes: Record<string, Record<string, number>>, key: string, actor: string): number {
+  let count = 0;
+  for (const [writer, n] of Object.entries(writes[key] ?? {})) if (writer !== actor) count += n;
+  return count;
 }
 
 function synthesizeOperations(recorded: RecordedOperation[], guarded: Set<string>): ExplorerOperation<HazardState>[] {
+  const ids = operationIds(recorded);
   return recorded.map((event, index) => {
-    const id = operationId(event, index, recorded);
+    const id = ids[index];
     return {
       id,
       actor: event.actor,
@@ -94,17 +119,24 @@ function synthesizeOperations(recorded: RecordedOperation[], guarded: Set<string
       apply(state, phase) {
         if (phase === 0) {
           const snapshot: Record<string, number> = {};
-          for (const key of event.reads) snapshot[key] = state.versions[key] ?? 0;
+          for (const key of event.reads) snapshot[key] = otherActorWrites(state.writes, key, event.actor);
           state.snapshots[id] = snapshot;
           return state;
         }
         const snapshot = state.snapshots[id] ?? {};
-        const overwritten = event.reads.filter((key) => (state.versions[key] ?? 0) !== (snapshot[key] ?? 0));
-        if (overwritten.length > 0 && guarded.has(event.action)) {
+        // Only writes by a DIFFERENT actor invalidate a read — an actor
+        // cannot interleave with itself.
+        const overwritten = event.reads.filter(
+          (key) => otherActorWrites(state.writes, key, event.actor) !== (snapshot[key] ?? 0),
+        );
+        if (overwritten.length > 0 && (guarded.has(event.action) || guarded.has(id))) {
           state.outcomes[id] = "blocked";
           return { state, skipRemainingSteps: true };
         }
-        for (const key of event.writes) state.versions[key] = (state.versions[key] ?? 0) + 1;
+        for (const key of event.writes) {
+          const byActor = state.writes[key] ?? (state.writes[key] = {});
+          byActor[event.actor] = (byActor[event.actor] ?? 0) + 1;
+        }
         if (overwritten.length > 0 && event.writes.length > 0) {
           state.outcomes[id] = "stale_commit";
           state.staleDetails[id] = { keys: overwritten };
@@ -118,7 +150,7 @@ function synthesizeOperations(recorded: RecordedOperation[], guarded: Set<string
 }
 
 function initialState(): HazardState {
-  return { versions: {}, snapshots: {}, outcomes: {}, staleDetails: {} };
+  return { writes: {}, snapshots: {}, outcomes: {}, staleDetails: {} };
 }
 
 const staleCommitInvariant = {
@@ -159,8 +191,9 @@ function replayHazardTrace(
     const phase = phases[operation.id] ?? 0;
     if (phase >= operation.steps) continue;
     const produced = operation.apply(structuredClone(state), phase);
-    const wrapped = typeof produced === "object" && produced !== null && "skipRemainingSteps" in (produced as object)
-      ? (produced as { state: HazardState; skipRemainingSteps?: boolean })
+    const wrapped = typeof produced === "object" && produced !== null
+      && "state" in (produced as object) && "skipRemainingSteps" in (produced as object)
+      ? (produced as { state: HazardState; skipRemainingSteps: boolean })
       : null;
     state = wrapped ? wrapped.state : (produced as HazardState);
     phases[operation.id] = wrapped?.skipRemainingSteps ? operation.steps : phase + 1;
@@ -180,7 +213,8 @@ export function analyzeRecording(recorded: RecordedOperation[], options?: Analyz
     const offender = Object.entries(finalState.outcomes).find(([, outcome]) => outcome === "stale_commit");
     if (offender) {
       const operation = offender[0];
-      const source = recorded.find((event, index) => operationId(event, index, recorded) === operation);
+      const ids = operationIds(recorded);
+      const source = recorded.find((event, index) => ids[index] === operation);
       hazard = {
         operation,
         actor: source?.actor ?? "unknown",

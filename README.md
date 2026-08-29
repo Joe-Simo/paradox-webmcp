@@ -107,6 +107,7 @@ bun run build
 ## Limitations
 
 - Automatic analysis needs only declared read/write sets per operation; exact semantic invariants require a small hand-written model.
+- Modeled state must be JSON-plain data (plain objects, arrays, strings, numbers, booleans, null); Map, Set, and Date are rejected loudly rather than hashed unsoundly.
 - Exploration is bounded; a reached bound reports `incomplete_bound` and cannot produce verification.
 - The demonstrated repair is a semantic version guard, not general source synthesis.
 - Zero counterexamples means none survived the explored model, not that the application is universally safe.

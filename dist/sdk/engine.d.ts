@@ -1,6 +1,12 @@
+/**
+ * A step either returns the next state directly, or wraps it to also skip the
+ * operation's remaining steps. The wrapped form must always carry BOTH keys —
+ * `skipRemainingSteps` is required so a bare `{ state }` can never be
+ * mistaken for (or mistakenly used as) a wrapper.
+ */
 export type ExplorerStepResult<S> = S | {
     state: S;
-    skipRemainingSteps?: boolean;
+    skipRemainingSteps: boolean;
 };
 export type ExplorerOperation<S> = {
     /** Unique operation id, e.g. "approve_reviewed_expense". */
@@ -11,7 +17,12 @@ export type ExplorerOperation<S> = {
     steps: number;
     /** Optional gate: may this operation take its next step in this state? */
     enabled?: (state: S, phase: number) => boolean;
-    /** Pure step function. Receives a structuredClone of the state. */
+    /**
+     * Pure step function. Receives a structuredClone of the state. State must
+     * be JSON-plain data (plain objects, arrays, strings, finite numbers,
+     * booleans, null) so canonical hashing is sound — Map/Set/Date and friends
+     * are rejected loudly by canonicalStateHash.
+     */
     apply: (state: S, phase: number) => ExplorerStepResult<S>;
 };
 export type ExplorerInvariant<S> = {

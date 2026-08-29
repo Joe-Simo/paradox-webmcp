@@ -7,22 +7,31 @@
 // violating schedule as a counterexample, minimizes it to the essential
 // operations, and can verify a repaired operation set by exact replay plus
 // full re-exploration. Deterministic and dependency-free.
-// ---------- canonical hashing (stable stringify + FNV-1a 64) ----------
+// ---------- canonical hashing (stable stringify + 64-bit FNV-style mix) ----------
 function stableStringify(value) {
+    if (typeof value === "bigint") {
+        throw new TypeError("canonicalStateHash: state must be JSON-plain data (bigint found)");
+    }
     if (value === null || typeof value !== "object")
         return JSON.stringify(value) ?? "undefined";
     if (Array.isArray(value))
         return `[${value.map((item) => stableStringify(item)).join(",")}]`;
+    if (value instanceof Map || value instanceof Set || value instanceof Date || value instanceof RegExp
+        || value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+        throw new TypeError(`canonicalStateHash: state must be JSON-plain data (${value.constructor.name} found) — convert to plain objects and arrays first`);
+    }
     const record = value;
     const keys = Object.keys(record).sort();
     return `{${keys.map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`).join(",")}}`;
 }
+// FNV-inspired 64-bit mix over UTF-16 code units, computed in two 32-bit
+// halves. Deterministic and non-cryptographic; not bit-exact FNV-1a. Used
+// only to key state-equivalence merging within one exploration run.
 function fnv1a64(text) {
     let high = 0xcbf29ce4;
     let low = 0x84222325;
     for (let i = 0; i < text.length; i++) {
         low ^= text.charCodeAt(i);
-        // 64-bit FNV prime 0x100000001b3 via 32-bit halves.
         const newLow = (low & 0xffff) * 0x1b3 + (((low >>> 16) * 0x1b3) << 16);
         const carry = Math.floor((low & 0xffff) * 0x1b3 / 0x10000) + ((low >>> 16) * 0x1b3 & 0xffff);
         high = (high * 0x1b3 + low + Math.floor(carry / 0x10000)) >>> 0;
@@ -47,8 +56,9 @@ function enabledOperations(operations, state, phases) {
 function applyOperationStep(operation, state, phases) {
     const phase = phases[operation.id] ?? 0;
     const produced = operation.apply(structuredClone(state), phase);
-    // The wrapped form is discriminated by its `skipRemainingSteps` key.
-    const wrapped = typeof produced === "object" && produced !== null && "skipRemainingSteps" in produced
+    // The wrapped form is discriminated by carrying BOTH wrapper keys.
+    const wrapped = typeof produced === "object" && produced !== null
+        && "state" in produced && "skipRemainingSteps" in produced
         ? produced
         : null;
     const nextState = wrapped ? wrapped.state : produced;

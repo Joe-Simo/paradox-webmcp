@@ -9,7 +9,7 @@
 // overwritten belief — minimized to the essential operations. Marking an
 // operation as version-guarded models the belief-carrying write pattern:
 // its commit is blocked instead when any of its reads changed.
-import { exploreInterleavings, verifyRepair, } from "./engine";
+import { exploreInterleavings, verifyRepair, } from "./engine.js";
 /** Minimal session recorder: ordering and identity handled for you. */
 export function createRecorder() {
     const events = [];
@@ -29,13 +29,35 @@ export function createRecorder() {
         events: () => [...events],
     };
 }
-function operationId(event, index, all) {
-    const duplicates = all.filter((candidate) => candidate.action === event.action);
-    return duplicates.length > 1 ? `${event.action}#${index + 1}` : event.action;
+/** Stable, collision-free ids: duplicate actions get per-occurrence suffixes. */
+function operationIds(recorded) {
+    const totals = new Map();
+    for (const event of recorded)
+        totals.set(event.action, (totals.get(event.action) ?? 0) + 1);
+    const seen = new Map();
+    const used = new Set();
+    return recorded.map((event) => {
+        const occurrence = (seen.get(event.action) ?? 0) + 1;
+        seen.set(event.action, occurrence);
+        let id = (totals.get(event.action) ?? 0) > 1 ? `${event.action}#${occurrence}` : event.action;
+        while (used.has(id))
+            id = `${id}#`;
+        used.add(id);
+        return id;
+    });
+}
+/** Writes to `key` since the snapshot by anyone other than `actor`. */
+function otherActorWrites(writes, key, actor) {
+    let count = 0;
+    for (const [writer, n] of Object.entries(writes[key] ?? {}))
+        if (writer !== actor)
+            count += n;
+    return count;
 }
 function synthesizeOperations(recorded, guarded) {
+    const ids = operationIds(recorded);
     return recorded.map((event, index) => {
-        const id = operationId(event, index, recorded);
+        const id = ids[index];
         return {
             id,
             actor: event.actor,
@@ -44,18 +66,22 @@ function synthesizeOperations(recorded, guarded) {
                 if (phase === 0) {
                     const snapshot = {};
                     for (const key of event.reads)
-                        snapshot[key] = state.versions[key] ?? 0;
+                        snapshot[key] = otherActorWrites(state.writes, key, event.actor);
                     state.snapshots[id] = snapshot;
                     return state;
                 }
                 const snapshot = state.snapshots[id] ?? {};
-                const overwritten = event.reads.filter((key) => (state.versions[key] ?? 0) !== (snapshot[key] ?? 0));
-                if (overwritten.length > 0 && guarded.has(event.action)) {
+                // Only writes by a DIFFERENT actor invalidate a read — an actor
+                // cannot interleave with itself.
+                const overwritten = event.reads.filter((key) => otherActorWrites(state.writes, key, event.actor) !== (snapshot[key] ?? 0));
+                if (overwritten.length > 0 && (guarded.has(event.action) || guarded.has(id))) {
                     state.outcomes[id] = "blocked";
                     return { state, skipRemainingSteps: true };
                 }
-                for (const key of event.writes)
-                    state.versions[key] = (state.versions[key] ?? 0) + 1;
+                for (const key of event.writes) {
+                    const byActor = state.writes[key] ?? (state.writes[key] = {});
+                    byActor[event.actor] = (byActor[event.actor] ?? 0) + 1;
+                }
                 if (overwritten.length > 0 && event.writes.length > 0) {
                     state.outcomes[id] = "stale_commit";
                     state.staleDetails[id] = { keys: overwritten };
@@ -69,7 +95,7 @@ function synthesizeOperations(recorded, guarded) {
     });
 }
 function initialState() {
-    return { versions: {}, snapshots: {}, outcomes: {}, staleDetails: {} };
+    return { writes: {}, snapshots: {}, outcomes: {}, staleDetails: {} };
 }
 const staleCommitInvariant = {
     id: "no_stale_commit",
@@ -106,7 +132,8 @@ function replayHazardTrace(recorded, options, trace) {
         if (phase >= operation.steps)
             continue;
         const produced = operation.apply(structuredClone(state), phase);
-        const wrapped = typeof produced === "object" && produced !== null && "skipRemainingSteps" in produced
+        const wrapped = typeof produced === "object" && produced !== null
+            && "state" in produced && "skipRemainingSteps" in produced
             ? produced
             : null;
         state = wrapped ? wrapped.state : produced;
@@ -126,7 +153,8 @@ export function analyzeRecording(recorded, options) {
         const offender = Object.entries(finalState.outcomes).find(([, outcome]) => outcome === "stale_commit");
         if (offender) {
             const operation = offender[0];
-            const source = recorded.find((event, index) => operationId(event, index, recorded) === operation);
+            const ids = operationIds(recorded);
+            const source = recorded.find((event, index) => ids[index] === operation);
             hazard = {
                 operation,
                 actor: source?.actor ?? "unknown",

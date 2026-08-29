@@ -2,19 +2,19 @@ export {
   canonicalStateHash,
   exploreInterleavings,
   verifyRepair,
-} from "./engine";
+} from "./engine.js";
 export {
   analyzeRecording,
   createRecorder,
   verifyRecordingRepair,
-} from "./analyze";
+} from "./analyze.js";
 export type {
   AnalyzeOptions,
   RecordedOperation,
   RecorderEvent,
   RecordingAnalysis,
   StaleCommitHazard,
-} from "./analyze";
+} from "./analyze.js";
 export type {
   ExploreConfig,
   ExploreOutcome,
@@ -25,7 +25,7 @@ export type {
   ExplorerTraceStep,
   ExplorerViolation,
   VerifyOutcome,
-} from "./engine";
+} from "./engine.js";
 
 export type InvocationSource = "webmcp" | "local_control" | "system";
 

@@ -1,4 +1,4 @@
-import { type ExploreOutcome, type ExplorerTraceStep, type VerifyOutcome } from "./engine";
+import { type ExploreOutcome, type ExplorerTraceStep, type VerifyOutcome } from "./engine.js";
 export type RecordedOperation = {
     /** Semantic action name, e.g. "approve_reviewed_expense". */
     action: string;
@@ -19,7 +19,11 @@ export declare function createRecorder(): {
     events: () => RecorderEvent[];
 };
 export type AnalyzeOptions = {
-    /** Operations (by action name) whose commits carry a version guard on their reads. */
+    /**
+     * Operations whose commits carry a version guard on their reads — matched
+     * by action name or by the suffixed operation id (`edit#2`) that
+     * `minimizedOperations` and `hazard.operation` report.
+     */
     guarded?: string[];
     maxNodes?: number;
 };

@@ -8,7 +8,13 @@
 // operations, and can verify a repaired operation set by exact replay plus
 // full re-exploration. Deterministic and dependency-free.
 
-export type ExplorerStepResult<S> = S | { state: S; skipRemainingSteps?: boolean };
+/**
+ * A step either returns the next state directly, or wraps it to also skip the
+ * operation's remaining steps. The wrapped form must always carry BOTH keys —
+ * `skipRemainingSteps` is required so a bare `{ state }` can never be
+ * mistaken for (or mistakenly used as) a wrapper.
+ */
+export type ExplorerStepResult<S> = S | { state: S; skipRemainingSteps: boolean };
 
 export type ExplorerOperation<S> = {
   /** Unique operation id, e.g. "approve_reviewed_expense". */
@@ -19,7 +25,12 @@ export type ExplorerOperation<S> = {
   steps: number;
   /** Optional gate: may this operation take its next step in this state? */
   enabled?: (state: S, phase: number) => boolean;
-  /** Pure step function. Receives a structuredClone of the state. */
+  /**
+   * Pure step function. Receives a structuredClone of the state. State must
+   * be JSON-plain data (plain objects, arrays, strings, finite numbers,
+   * booleans, null) so canonical hashing is sound — Map/Set/Date and friends
+   * are rejected loudly by canonicalStateHash.
+   */
   apply: (state: S, phase: number) => ExplorerStepResult<S>;
 };
 
@@ -72,22 +83,31 @@ export type ExploreConfig<S> = {
   maxNodes?: number;
 };
 
-// ---------- canonical hashing (stable stringify + FNV-1a 64) ----------
+// ---------- canonical hashing (stable stringify + 64-bit FNV-style mix) ----------
 
 function stableStringify(value: unknown): string {
+  if (typeof value === "bigint") {
+    throw new TypeError("canonicalStateHash: state must be JSON-plain data (bigint found)");
+  }
   if (value === null || typeof value !== "object") return JSON.stringify(value) ?? "undefined";
   if (Array.isArray(value)) return `[${value.map((item) => stableStringify(item)).join(",")}]`;
+  if (value instanceof Map || value instanceof Set || value instanceof Date || value instanceof RegExp
+    || value instanceof ArrayBuffer || ArrayBuffer.isView(value)) {
+    throw new TypeError(`canonicalStateHash: state must be JSON-plain data (${value.constructor.name} found) — convert to plain objects and arrays first`);
+  }
   const record = value as Record<string, unknown>;
   const keys = Object.keys(record).sort();
   return `{${keys.map((key) => `${JSON.stringify(key)}:${stableStringify(record[key])}`).join(",")}}`;
 }
 
+// FNV-inspired 64-bit mix over UTF-16 code units, computed in two 32-bit
+// halves. Deterministic and non-cryptographic; not bit-exact FNV-1a. Used
+// only to key state-equivalence merging within one exploration run.
 function fnv1a64(text: string): string {
   let high = 0xcbf29ce4;
   let low = 0x84222325;
   for (let i = 0; i < text.length; i++) {
     low ^= text.charCodeAt(i);
-    // 64-bit FNV prime 0x100000001b3 via 32-bit halves.
     const newLow = (low & 0xffff) * 0x1b3 + (((low >>> 16) * 0x1b3) << 16);
     const carry = Math.floor((low & 0xffff) * 0x1b3 / 0x10000) + ((low >>> 16) * 0x1b3 & 0xffff);
     high = (high * 0x1b3 + low + Math.floor(carry / 0x10000)) >>> 0;
@@ -120,9 +140,10 @@ function enabledOperations<S>(operations: ExplorerOperation<S>[], state: S, phas
 function applyOperationStep<S>(operation: ExplorerOperation<S>, state: S, phases: Phases): { state: S; phases: Phases } {
   const phase = phases[operation.id] ?? 0;
   const produced = operation.apply(structuredClone(state), phase);
-  // The wrapped form is discriminated by its `skipRemainingSteps` key.
-  const wrapped = typeof produced === "object" && produced !== null && "skipRemainingSteps" in (produced as object)
-    ? (produced as { state: S; skipRemainingSteps?: boolean })
+  // The wrapped form is discriminated by carrying BOTH wrapper keys.
+  const wrapped = typeof produced === "object" && produced !== null
+    && "state" in (produced as object) && "skipRemainingSteps" in (produced as object)
+    ? (produced as { state: S; skipRemainingSteps: boolean })
     : null;
   const nextState = wrapped ? wrapped.state : (produced as S);
   const nextPhases: Phases = { ...phases, [operation.id]: wrapped?.skipRemainingSteps ? operation.steps : phase + 1 };

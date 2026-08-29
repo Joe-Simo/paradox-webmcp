@@ -60,11 +60,26 @@ describe("automatic recording analysis", () => {
     expect(analysis.hazard).toBeNull();
   });
 
-  it("distinguishes duplicate actions in one recording", () => {
+  it("stays quiet when one actor overwrites its own reads — no self-interleaving", () => {
     const recorder = createRecorder();
     recorder.record("edit", { actor: "human", reads: ["x"], writes: ["x"] });
     recorder.record("edit", { actor: "human", reads: ["x"], writes: ["x"] });
     const analysis = analyzeRecording(recorder.events());
     expect(analysis.exploration.complete).toBe(true);
+    expect(analysis.hazard).toBeNull();
+    expect(analysis.exploration.counterexamples).toBe(0);
+  });
+
+  it("accepts suffixed operation ids in guarded — the natural round-trip works", () => {
+    const recorder = createRecorder();
+    recorder.record("edit", { actor: "human", reads: ["x"], writes: ["x"] });
+    recorder.record("edit", { actor: "agent", reads: ["x"], writes: ["x"] });
+    const unsafe = analyzeRecording(recorder.events());
+    expect(unsafe.hazard).not.toBeNull();
+    expect(unsafe.minimizedOperations.length).toBeGreaterThan(0);
+    const verdict = verifyRecordingRepair(recorder.events(), unsafe.exploration.counterexample?.trace ?? [], {
+      guarded: ["edit#1", "edit#2"],
+    });
+    expect(verdict.verified).toBe(true);
   });
 });

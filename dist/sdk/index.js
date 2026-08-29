@@ -1,5 +1,5 @@
-export { canonicalStateHash, exploreInterleavings, verifyRepair, } from "./engine";
-export { analyzeRecording, createRecorder, verifyRecordingRepair, } from "./analyze";
+export { canonicalStateHash, exploreInterleavings, verifyRepair, } from "./engine.js";
+export { analyzeRecording, createRecorder, verifyRecordingRepair, } from "./analyze.js";
 export function createSemanticEvent(input) {
     return {
         id: input.id,
