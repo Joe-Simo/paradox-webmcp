@@ -1,6 +1,7 @@
 # Paradox — Devpost Submission Dossier
 
-The canonical content for the WebMCP Challenge entry. Fields marked `[TODO]` are personal choices entered on the form at submission time.
+**SUBMITTED — August 29, 2026.** Public project page: https://devpost.com/software/paradox-qzsn3g
+Submitted tag: `webmcp-challenge-v1.0` (4bcc666). Editable on Devpost until Sep 3, 2026 4:00 PM EDT; repo, site, and entry are frozen through judging unless a defect demands a fix.
 
 ## One-line Summary
 
