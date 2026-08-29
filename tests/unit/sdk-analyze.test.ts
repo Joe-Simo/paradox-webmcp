@@ -42,7 +42,10 @@ describe("automatic recording analysis", () => {
     const unsafe = analyzeRecording(events);
     const trace = unsafe.exploration.counterexample?.trace;
     expect(trace).toBeDefined();
-    const verdict = verifyRecordingRepair(events, trace ?? [], { guarded: ["approve_reviewed_expense"] });
+    // Guarding approve alone is insufficient: the analyzer also catches the
+    // subtler race where inspect commits its review token on an overwritten
+    // read. Every read-then-write operation carries the guard.
+    const verdict = verifyRecordingRepair(events, trace ?? [], { guarded: ["inspect_expense", "approve_reviewed_expense"] });
     expect(verdict.exactReplay.violationReproduced).toBe(false);
     expect(verdict.exploration.counterexamples).toBe(0);
     expect(verdict.verified).toBe(true);

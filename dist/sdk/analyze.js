@@ -56,7 +56,7 @@ function synthesizeOperations(recorded, guarded) {
                 }
                 for (const key of event.writes)
                     state.versions[key] = (state.versions[key] ?? 0) + 1;
-                if (overwritten.length > 0) {
+                if (overwritten.length > 0 && event.writes.length > 0) {
                     state.outcomes[id] = "stale_commit";
                     state.staleDetails[id] = { keys: overwritten };
                 }
